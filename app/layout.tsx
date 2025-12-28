@@ -52,6 +52,9 @@ export default function RootLayout({
             <p className="mt-4 text-gray-400">
               If you have information regarding ongoing fraud, email admin@somaliscan.com
             </p>
+            <p className="mt-6 text-gray-600">
+              Powered by <a href="https://fruitdatalabs.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">fruitdatalabs.xyz</a>
+            </p>
           </footer>
         </div>
       </body>
