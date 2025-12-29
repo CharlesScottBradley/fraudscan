@@ -1,0 +1,243 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+interface Provider {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  license_type: string;
+  total_funding?: number;
+  fraud_status?: string;
+}
+
+interface StateMapProps {
+  providers: Provider[];
+  center: [number, number];
+  zoom: number;
+}
+
+export default function StateMap({ providers, center, zoom }: StateMapProps) {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
+
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: center,
+      zoom: zoom,
+    });
+
+    map.current.on('load', () => {
+      if (!map.current) return;
+
+      // Add providers as a GeoJSON source
+      const geojson: GeoJSON.FeatureCollection = {
+        type: 'FeatureCollection',
+        features: providers
+          .filter(p => p.latitude && p.longitude)
+          .map(provider => ({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [provider.longitude, provider.latitude],
+            },
+            properties: {
+              id: provider.id,
+              name: provider.name,
+              license_type: provider.license_type,
+              total_funding: provider.total_funding || 0,
+              fraud_status: provider.fraud_status || 'none',
+            },
+          })),
+      };
+
+      map.current.addSource('providers', {
+        type: 'geojson',
+        data: geojson,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50,
+      });
+
+      // Cluster circles
+      map.current.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'providers',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step',
+            ['get', 'point_count'],
+            '#22c55e',
+            10,
+            '#16a34a',
+            50,
+            '#15803d',
+          ],
+          'circle-radius': [
+            'step',
+            ['get', 'point_count'],
+            15,
+            10,
+            20,
+            50,
+            25,
+          ],
+        },
+      });
+
+      // Cluster count labels
+      map.current.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'providers',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12,
+        },
+        paint: {
+          'text-color': '#ffffff',
+        },
+      });
+
+      // Individual provider points
+      map.current.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'providers',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': [
+            'case',
+            ['>', ['get', 'total_funding'], 0],
+            '#22c55e',
+            '#666666',
+          ],
+          'circle-radius': [
+            'case',
+            ['>', ['get', 'total_funding'], 1000000],
+            10,
+            ['>', ['get', 'total_funding'], 0],
+            7,
+            5,
+          ],
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#ffffff',
+        },
+      });
+
+      // Click on cluster to zoom
+      map.current.on('click', 'clusters', (e) => {
+        if (!map.current) return;
+        const features = map.current.queryRenderedFeatures(e.point, {
+          layers: ['clusters'],
+        });
+        const clusterId = features[0].properties?.cluster_id;
+        const source = map.current.getSource('providers') as mapboxgl.GeoJSONSource;
+        source.getClusterExpansionZoom(clusterId, (err, zoomLevel) => {
+          if (err || !map.current || zoomLevel === null || zoomLevel === undefined) return;
+          const geometry = features[0].geometry;
+          if (geometry.type === 'Point') {
+            map.current.easeTo({
+              center: geometry.coordinates as [number, number],
+              zoom: zoomLevel,
+            });
+          }
+        });
+      });
+
+      // Click on individual point
+      map.current.on('click', 'unclustered-point', (e) => {
+        if (!e.features?.[0]) return;
+        const props = e.features[0].properties;
+        const provider = providers.find(p => p.id === props?.id);
+        if (provider) {
+          setSelectedProvider(provider);
+        }
+      });
+
+      // Change cursor on hover
+      map.current.on('mouseenter', 'clusters', () => {
+        if (map.current) map.current.getCanvas().style.cursor = 'pointer';
+      });
+      map.current.on('mouseleave', 'clusters', () => {
+        if (map.current) map.current.getCanvas().style.cursor = '';
+      });
+      map.current.on('mouseenter', 'unclustered-point', () => {
+        if (map.current) map.current.getCanvas().style.cursor = 'pointer';
+      });
+      map.current.on('mouseleave', 'unclustered-point', () => {
+        if (map.current) map.current.getCanvas().style.cursor = '';
+      });
+    });
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [providers, center, zoom]);
+
+  const formatMoney = (amount: number) => {
+    if (amount >= 1000000) return `$${(amount / 1000000).toFixed(2)}M`;
+    if (amount >= 1000) return `$${(amount / 1000).toFixed(0)}K`;
+    return `$${amount.toLocaleString()}`;
+  };
+
+  return (
+    <div className="relative w-full h-[600px]">
+      <div ref={mapContainer} className="w-full h-full" />
+
+      {/* Provider popup */}
+      {selectedProvider && (
+        <div className="absolute top-4 right-4 bg-black border border-gray-700 p-4 max-w-sm">
+          <button
+            onClick={() => setSelectedProvider(null)}
+            className="absolute top-2 right-2 text-gray-500 hover:text-white"
+          >
+            x
+          </button>
+          <h3 className="font-bold pr-6">{selectedProvider.name}</h3>
+          <p className="text-gray-400 text-sm">{selectedProvider.license_type}</p>
+          {selectedProvider.total_funding && selectedProvider.total_funding > 0 && (
+            <p className="text-green-500 font-mono mt-2">
+              {formatMoney(selectedProvider.total_funding)}
+            </p>
+          )}
+          <a
+            href={`/provider/${selectedProvider.id}`}
+            className="text-sm text-gray-400 hover:text-white mt-2 inline-block"
+          >
+            View details →
+          </a>
+        </div>
+      )}
+
+      {/* Legend */}
+      <div className="absolute bottom-4 left-4 bg-black/80 p-3 text-xs">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+          <span>Has funding data</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-gray-500" />
+          <span>No funding data</span>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "SomaliScan",
-  description: "Minnesota Daycare CCAP Funding Transparency",
+  description: "Child Care Subsidy Fraud Tracker",
 };
 
 export default function RootLayout({
@@ -33,6 +33,9 @@ export default function RootLayout({
             </Link>
             <nav className="flex gap-8 text-sm">
               <Link href="/" className="text-gray-400 hover:text-white">
+                Map
+              </Link>
+              <Link href="/leaderboard" className="text-gray-400 hover:text-white">
                 Leaderboard
               </Link>
               <Link href="/database" className="text-gray-400 hover:text-white">
@@ -48,7 +51,7 @@ export default function RootLayout({
           </main>
 
           <footer className="py-8 px-6 text-center text-gray-500 text-sm">
-            <p>Data sourced from Minnesota DHS Licensing Lookup</p>
+            <p>Data sourced from state licensing databases and court records</p>
             <p className="mt-4 text-gray-400">
               If you have information regarding ongoing fraud, email admin@somaliscan.com
             </p>
