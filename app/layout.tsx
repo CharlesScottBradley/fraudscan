@@ -48,6 +48,9 @@ export default function RootLayout({
               <Link href="/donations/network" className="text-gray-400 hover:text-white">
                 Network
               </Link>
+              <Link href="/about" className="text-gray-400 hover:text-white">
+                About
+              </Link>
               <Link href="/tip" className="text-green-500 hover:text-green-400">
                 Submit Tip
               </Link>
