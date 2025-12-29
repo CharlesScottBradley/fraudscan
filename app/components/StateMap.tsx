@@ -236,10 +236,17 @@ function StateMapInner({ providers, center, zoom }: StateMapProps) {
   }
 
   return (
-    <div className="relative w-full h-[600px]">
+    <div className="relative w-full h-[600px] overflow-hidden rounded">
       <style jsx global>{`
         .mapboxgl-canvas { outline: none; }
         .mapboxgl-ctrl-logo { display: none !important; }
+        .mapboxgl-ctrl-attrib {
+          background: rgba(0,0,0,0.7) !important;
+          font-size: 10px !important;
+          padding: 2px 5px !important;
+        }
+        .mapboxgl-ctrl-attrib a { color: #888 !important; }
+        .mapboxgl-ctrl-bottom-right { bottom: 0 !important; right: 0 !important; }
       `}</style>
       <div ref={mapContainer} className="w-full h-full" />
 

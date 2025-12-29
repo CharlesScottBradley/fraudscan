@@ -133,30 +133,6 @@ async function getStateStats(stateCode: string) {
   };
 }
 
-async function getStatePPPLoans(stateCode: string) {
-  const stateUpper = stateCode.toUpperCase();
-
-  // Get PPP loans for this state (limit to 1000 for performance)
-  const { data: loans } = await supabase
-    .from('ppp_loans')
-    .select(`
-      id,
-      loan_number,
-      borrower_name,
-      borrower_city,
-      business_type,
-      current_approval_amount,
-      forgiveness_amount,
-      jobs_reported,
-      loan_status
-    `)
-    .eq('borrower_state', stateUpper)
-    .order('current_approval_amount', { ascending: false })
-    .limit(1000);
-
-  return loans || [];
-}
-
 async function getPPPStats(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
@@ -205,37 +181,11 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, pppLoans, pppStats] = await Promise.all([
+  const [providers, stats, pppStats] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
-    getStatePPPLoans(state),
     getPPPStats(state),
   ]);
-
-  // Format providers for table
-  const providersForTable = providers.map(p => ({
-    id: p.id,
-    license_number: p.license_number,
-    name: p.name,
-    city: p.city,
-    license_type: p.license_type,
-    total_funding: p.total_funding,
-    type: 'provider' as const,
-  }));
-
-  // Format PPP loans for table
-  const pppLoansForTable = pppLoans.map(l => ({
-    id: l.id,
-    loan_number: l.loan_number,
-    borrower_name: l.borrower_name,
-    borrower_city: l.borrower_city,
-    business_type: l.business_type,
-    current_approval_amount: l.current_approval_amount,
-    forgiveness_amount: l.forgiveness_amount,
-    jobs_reported: l.jobs_reported,
-    loan_status: l.loan_status,
-    type: 'ppp_loan' as const,
-  }));
 
   return (
     <div>
@@ -303,11 +253,12 @@ export default async function StatePage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Data Table */}
+      {/* Data Table - server-side paginated */}
       <StateDataTable
-        providers={providersForTable}
-        pppLoans={pppLoansForTable}
+        stateCode={state.toUpperCase()}
         stateName={stateInfo.name}
+        initialProviderCount={stats.providerCount}
+        initialPPPCount={pppStats.count}
       />
     </div>
   );
