@@ -41,6 +41,9 @@ export default function RootLayout({
               <Link href="/database" className="text-gray-400 hover:text-white">
                 Database
               </Link>
+              <Link href="/donations" className="text-gray-400 hover:text-white">
+                Donations
+              </Link>
             </nav>
           </header>
 
