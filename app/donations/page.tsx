@@ -129,12 +129,18 @@ export default async function DonationsPage() {
       )}
 
       {/* Quick links */}
-      <div className="flex gap-4 mb-8">
+      <div className="flex flex-wrap gap-4 mb-8">
         <Link
           href="/donations/search"
           className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium"
         >
           Search All Donations
+        </Link>
+        <Link
+          href="/donations/network"
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium"
+        >
+          Funding Network Analysis
         </Link>
         <Link
           href="/donations/federal"
