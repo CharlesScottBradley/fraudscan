@@ -7,6 +7,7 @@ type DataType = 'all' | 'providers' | 'ppp_loans';
 
 interface Provider {
   id: string;
+  license_number: string;
   name: string;
   city: string | null;
   license_type: string | null;
@@ -252,7 +253,7 @@ export default function StateDataTable({ providers, pppLoans, stateName }: Props
                 <td className="p-3 text-right">
                   {item.type === 'provider' ? (
                     <Link
-                      href={`/provider/${item.id}`}
+                      href={`/provider/${item.license_number}`}
                       className="text-gray-400 hover:text-white text-xs"
                     >
                       View →

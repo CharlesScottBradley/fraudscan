@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 
 interface Provider {
   id: string;
+  license_number: string;
   name: string;
   latitude: number;
   longitude: number;
@@ -258,7 +259,7 @@ function StateMapInner({ providers, center, zoom }: StateMapProps) {
             </p>
           )}
           <a
-            href={`/provider/${selectedProvider.id}`}
+            href={`/provider/${selectedProvider.license_number}`}
             className="text-sm text-gray-400 hover:text-white mt-2 inline-block"
           >
             View details →

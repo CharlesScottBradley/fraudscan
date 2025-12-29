@@ -215,6 +215,7 @@ export default async function StatePage({ params }: PageProps) {
   // Format providers for table
   const providersForTable = providers.map(p => ({
     id: p.id,
+    license_number: p.license_number,
     name: p.name,
     city: p.city,
     license_type: p.license_type,
@@ -282,6 +283,7 @@ export default async function StatePage({ params }: PageProps) {
           <StateMap
             providers={providers.map(p => ({
               id: p.id,
+              license_number: p.license_number,
               name: p.name,
               latitude: p.latitude,
               longitude: p.longitude,
