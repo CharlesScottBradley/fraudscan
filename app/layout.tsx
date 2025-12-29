@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
+import Navigation from "./components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,29 +33,7 @@ export default function RootLayout({
             <Link href="/" className="text-xl font-bold tracking-tight">
               SomaliScan
             </Link>
-            <nav className="flex gap-6 text-sm">
-              <Link href="/" className="text-gray-400 hover:text-white">
-                Map
-              </Link>
-              <Link href="/cases" className="text-gray-400 hover:text-white">
-                Cases
-              </Link>
-              <Link href="/database" className="text-gray-400 hover:text-white">
-                Database
-              </Link>
-              <Link href="/donations" className="text-gray-400 hover:text-white">
-                Donations
-              </Link>
-              <Link href="/donations/network" className="text-gray-400 hover:text-white">
-                Network
-              </Link>
-              <Link href="/about" className="text-gray-400 hover:text-white">
-                About
-              </Link>
-              <Link href="/tip" className="text-green-500 hover:text-green-400">
-                Submit Tip
-              </Link>
-            </nav>
+            <Navigation />
           </header>
 
           <main className="flex-1 px-6 pb-12">
