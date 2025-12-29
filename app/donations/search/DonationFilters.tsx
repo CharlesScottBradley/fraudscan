@@ -14,12 +14,19 @@ interface FilterParams {
   party?: string;
   contributorType?: string;
   recipientType?: string;
+  state?: string;
 }
 
 interface DonationFiltersProps {
   currentParams: FilterParams;
   years: number[];
+  states: string[];
 }
+
+const STATE_NAMES: Record<string, string> = {
+  'MN': 'Minnesota',
+  // Add more as we add states
+};
 
 const CONTRIBUTOR_TYPES = [
   { value: 'all', label: 'All Types' },
@@ -48,7 +55,7 @@ const AMOUNT_PRESETS = [
   { value: '100000', label: '$100,000+' },
 ];
 
-export function DonationFilters({ currentParams, years }: DonationFiltersProps) {
+export function DonationFilters({ currentParams, years, states }: DonationFiltersProps) {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -153,7 +160,21 @@ export function DonationFilters({ currentParams, years }: DonationFiltersProps) 
           </div>
 
           {/* Dropdowns row */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div>
+              <label className="block text-sm text-gray-500 mb-1">State</label>
+              <select
+                value={currentParams.state || 'all'}
+                onChange={(e) => updateFilters({ state: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
+              >
+                <option value="all">All states</option>
+                {states.map((state) => (
+                  <option key={state} value={state}>{STATE_NAMES[state] || state}</option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm text-gray-500 mb-1">Year</label>
               <select

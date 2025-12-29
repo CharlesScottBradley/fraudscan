@@ -13,6 +13,7 @@ interface SearchParams {
   party?: string;
   contributorType?: string;
   recipientType?: string;
+  state?: string;
   page?: string;
 }
 
@@ -85,6 +86,11 @@ async function searchDonations(params: SearchParams): Promise<{ donations: Donat
     query = query.eq('recipient_type', params.recipientType);
   }
 
+  // State filter
+  if (params.state && params.state !== 'all') {
+    query = query.eq('state', params.state.toUpperCase());
+  }
+
   // Pagination
   const page = parseInt(params.page || '1');
   const offset = (page - 1) * PAGE_SIZE;
@@ -108,9 +114,14 @@ async function getFilterStats() {
     .select('year')
     .order('year', { ascending: false });
 
-  const uniqueYears = [...new Set(years?.map(y => y.year))].filter(Boolean);
+  const { data: statesData } = await supabase
+    .from('political_donations')
+    .select('state');
 
-  return { years: uniqueYears };
+  const uniqueYears = [...new Set(years?.map(y => y.year))].filter(Boolean);
+  const uniqueStates = [...new Set(statesData?.map(s => s.state))].filter(Boolean).sort();
+
+  return { years: uniqueYears, states: uniqueStates };
 }
 
 export const revalidate = 0; // Dynamic page
@@ -153,7 +164,7 @@ export default async function DonationsSearchPage({
 }) {
   const params = await searchParams;
   const { donations, total } = await searchDonations(params);
-  const { years } = await getFilterStats();
+  const { years, states } = await getFilterStats();
 
   const currentPage = parseInt(params.page || '1');
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -163,7 +174,8 @@ export default async function DonationsSearchPage({
     (params.year && params.year !== 'all') ||
     params.party ||
     (params.contributorType && params.contributorType !== 'all') ||
-    (params.recipientType && params.recipientType !== 'all');
+    (params.recipientType && params.recipientType !== 'all') ||
+    (params.state && params.state !== 'all');
 
   return (
     <div>
@@ -183,6 +195,7 @@ export default async function DonationsSearchPage({
       <DonationFilters
         currentParams={params}
         years={years}
+        states={states}
       />
 
       {/* Results summary */}

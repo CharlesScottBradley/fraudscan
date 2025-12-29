@@ -1,38 +1,26 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import DonationsMap from '../components/DonationsMap';
 
-interface DonationStats {
-  total_donations: number;
-  total_amount: number;
-  unique_recipients: number;
-  unique_contributors: number;
-}
+const STATE_NAMES: Record<string, string> = {
+  'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas',
+  'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware',
+  'DC': 'Washington DC', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii',
+  'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa',
+  'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine',
+  'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota',
+  'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska',
+  'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico',
+  'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio',
+  'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island',
+  'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas',
+  'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington',
+  'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming',
+};
 
-interface TopRecipient {
-  recipient_name: string;
-  recipient_type: string;
-  total_amount: number;
-  donation_count: number;
-}
-
-interface TopContributor {
-  contributor_name: string;
-  contributor_employer: string | null;
-  total_amount: number;
-  donation_count: number;
-}
-
-interface RecentDonation {
-  id: string;
-  recipient_name: string;
-  contributor_name: string;
-  amount: number;
-  receipt_date: string;
-  contributor_employer: string | null;
-}
-
-async function getDonationStats(): Promise<DonationStats> {
-  const { count } = await supabase
+async function getDonationStats() {
+  // Get total stats
+  const { count: totalDonations } = await supabase
     .from('political_donations')
     .select('*', { count: 'exact', head: true });
 
@@ -42,294 +30,141 @@ async function getDonationStats(): Promise<DonationStats> {
 
   const totalAmount = amounts?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
 
-  // Get unique counts
-  const { data: recipients } = await supabase
+  // Get stats by state
+  const { data: stateData } = await supabase
     .from('political_donations')
-    .select('recipient_name')
-    .limit(100000);
+    .select('state, amount');
 
-  const { data: contributors } = await supabase
-    .from('political_donations')
-    .select('contributor_name')
-    .limit(100000);
+  const stateStats: Record<string, { total_amount: number; donation_count: number }> = {};
 
-  const uniqueRecipients = new Set(recipients?.map(r => r.recipient_name)).size;
-  const uniqueContributors = new Set(contributors?.filter(c => c.contributor_name).map(c => c.contributor_name)).size;
+  // Initialize all states with zero
+  Object.keys(STATE_NAMES).forEach(code => {
+    stateStats[code] = { total_amount: 0, donation_count: 0 };
+  });
+
+  // Aggregate by state
+  stateData?.forEach(d => {
+    const state = d.state?.toUpperCase();
+    if (state && stateStats[state]) {
+      stateStats[state].total_amount += d.amount || 0;
+      stateStats[state].donation_count += 1;
+    }
+  });
+
+  // Get states with data
+  const statesWithData = Object.entries(stateStats)
+    .filter(([_, data]) => data.donation_count > 0)
+    .sort((a, b) => b[1].total_amount - a[1].total_amount);
 
   return {
-    total_donations: count || 0,
-    total_amount: totalAmount,
-    unique_recipients: uniqueRecipients,
-    unique_contributors: uniqueContributors,
+    totalDonations: totalDonations || 0,
+    totalAmount,
+    stateStats,
+    statesWithData,
   };
-}
-
-async function getTopRecipients(): Promise<TopRecipient[]> {
-  // Use RPC or aggregate manually since Supabase JS doesn't support GROUP BY well
-  const { data } = await supabase
-    .from('political_donations')
-    .select('recipient_name, recipient_type, amount')
-    .order('amount', { ascending: false })
-    .limit(50000);
-
-  if (!data) return [];
-
-  // Aggregate in JS
-  const recipientMap = new Map<string, { type: string; total: number; count: number }>();
-
-  data.forEach(d => {
-    const existing = recipientMap.get(d.recipient_name) || { type: d.recipient_type || '', total: 0, count: 0 };
-    existing.total += d.amount || 0;
-    existing.count += 1;
-    recipientMap.set(d.recipient_name, existing);
-  });
-
-  return Array.from(recipientMap.entries())
-    .map(([name, data]) => ({
-      recipient_name: name,
-      recipient_type: data.type,
-      total_amount: data.total,
-      donation_count: data.count,
-    }))
-    .sort((a, b) => b.total_amount - a.total_amount)
-    .slice(0, 25);
-}
-
-async function getTopContributors(): Promise<TopContributor[]> {
-  const { data } = await supabase
-    .from('political_donations')
-    .select('contributor_name, contributor_employer, amount')
-    .not('contributor_name', 'is', null)
-    .order('amount', { ascending: false })
-    .limit(50000);
-
-  if (!data) return [];
-
-  const contributorMap = new Map<string, { employer: string | null; total: number; count: number }>();
-
-  data.forEach(d => {
-    if (!d.contributor_name) return;
-    const existing = contributorMap.get(d.contributor_name) || { employer: d.contributor_employer, total: 0, count: 0 };
-    existing.total += d.amount || 0;
-    existing.count += 1;
-    contributorMap.set(d.contributor_name, existing);
-  });
-
-  return Array.from(contributorMap.entries())
-    .map(([name, data]) => ({
-      contributor_name: name,
-      contributor_employer: data.employer,
-      total_amount: data.total,
-      donation_count: data.count,
-    }))
-    .sort((a, b) => b.total_amount - a.total_amount)
-    .slice(0, 25);
-}
-
-async function getRecentDonations(): Promise<RecentDonation[]> {
-  const { data } = await supabase
-    .from('political_donations')
-    .select('id, recipient_name, contributor_name, amount, receipt_date, contributor_employer')
-    .order('receipt_date', { ascending: false })
-    .limit(50);
-
-  return (data || []) as RecentDonation[];
 }
 
 export const revalidate = 60;
 
 function formatMoney(amount: number): string {
+  if (amount >= 1000000000) {
+    return `$${(amount / 1000000000).toFixed(2)}B`;
+  }
   if (amount >= 1000000) {
     return `$${(amount / 1000000).toFixed(2)}M`;
   }
   if (amount >= 1000) {
-    return `$${(amount / 1000).toFixed(1)}K`;
+    return `$${(amount / 1000).toFixed(0)}K`;
   }
   return `$${amount.toLocaleString()}`;
 }
 
-function formatDate(dateStr: string): string {
-  if (!dateStr) return '-';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function getRecipientTypeLabel(type: string): string {
-  switch (type) {
-    case 'PCC': return 'Candidate';
-    case 'PTU': return 'Party';
-    case 'PCF': return 'Committee';
-    default: return type || 'Other';
-  }
-}
-
 export default async function DonationsPage() {
-  const [stats, topRecipients, topContributors, recentDonations] = await Promise.all([
-    getDonationStats(),
-    getTopRecipients(),
-    getTopContributors(),
-    getRecentDonations(),
-  ]);
+  const { totalDonations, totalAmount, stateStats, statesWithData } = await getDonationStats();
 
   return (
     <div>
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold mb-2">Political Donations</h1>
+        <p className="text-gray-500">Campaign finance data across the United States</p>
+      </div>
+
+      {/* Hero stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         <div>
-          <h1 className="text-2xl font-bold mb-2">Political Donations</h1>
-          <p className="text-gray-500">Minnesota Campaign Finance data from 2015-present</p>
+          <p className="text-green-500 font-mono text-4xl font-bold">
+            {formatMoney(totalAmount)}
+          </p>
+          <p className="text-gray-500 mt-1">Total donations tracked</p>
         </div>
+        <div>
+          <p className="text-white font-mono text-4xl font-bold">
+            {totalDonations.toLocaleString()}
+          </p>
+          <p className="text-gray-500 mt-1">Individual contributions</p>
+        </div>
+        <div>
+          <p className="text-white font-mono text-4xl font-bold">
+            {statesWithData.length}
+          </p>
+          <p className="text-gray-500 mt-1">States covered</p>
+        </div>
+      </div>
+
+      {/* Map */}
+      <div className="mb-12">
+        <DonationsMap stateData={stateStats} />
+      </div>
+
+      {/* Top states */}
+      {statesWithData.length > 0 && (
+        <div className="mb-12">
+          <h2 className="text-lg font-bold mb-4">States by Donation Volume</h2>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {statesWithData.slice(0, 10).map(([code, data]) => (
+              <Link
+                key={code}
+                href={`/donations/${code.toLowerCase()}`}
+                className="border border-gray-800 p-4 hover:border-gray-600 transition-colors"
+              >
+                <p className="font-bold">{STATE_NAMES[code] || code}</p>
+                <p className="text-green-500 font-mono">{formatMoney(data.total_amount)}</p>
+                <p className="text-gray-500 text-sm">{data.donation_count.toLocaleString()} donations</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Quick links */}
+      <div className="flex gap-4 mb-8">
         <Link
           href="/donations/search"
           className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium"
         >
-          Search & Filter
+          Search All Donations
+        </Link>
+        <Link
+          href="/donations/federal"
+          className="text-gray-400 hover:text-white text-sm py-2"
+        >
+          Federal donations →
         </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <div>
-          <p className="text-green-500 font-mono text-3xl font-bold">
-            {formatMoney(stats.total_amount)}
-          </p>
-          <p className="text-gray-500 mt-1">Total contributions</p>
-        </div>
-        <div>
-          <p className="text-white font-mono text-3xl font-bold">
-            {stats.total_donations.toLocaleString()}
-          </p>
-          <p className="text-gray-500 mt-1">Individual donations</p>
-        </div>
-        <div>
-          <p className="text-white font-mono text-3xl font-bold">
-            {stats.unique_recipients.toLocaleString()}
-          </p>
-          <p className="text-gray-500 mt-1">Recipients</p>
-        </div>
-        <div>
-          <p className="text-white font-mono text-3xl font-bold">
-            {stats.unique_contributors.toLocaleString()}
-          </p>
-          <p className="text-gray-500 mt-1">Contributors</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Top Recipients */}
-        <div>
-          <h2 className="text-lg font-bold mb-4">Top Recipients</h2>
-          <div className="border border-gray-800">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-800">
-                  <th className="p-3 font-normal">#</th>
-                  <th className="p-3 font-normal">Recipient</th>
-                  <th className="p-3 font-normal">Type</th>
-                  <th className="p-3 font-normal text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topRecipients.map((recipient, index) => (
-                  <tr key={recipient.recipient_name} className="border-b border-gray-900 hover:bg-gray-950">
-                    <td className="p-3 text-gray-500">{index + 1}</td>
-                    <td className="p-3">
-                      <Link
-                        href={`/donations/recipient/${encodeURIComponent(recipient.recipient_name)}`}
-                        className="hover:underline"
-                      >
-                        {recipient.recipient_name}
-                      </Link>
-                    </td>
-                    <td className="p-3 text-gray-400">
-                      <span className="px-2 py-0.5 bg-gray-800 text-xs">
-                        {getRecipientTypeLabel(recipient.recipient_type)}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right font-mono text-green-500">
-                      {formatMoney(recipient.total_amount)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Top Contributors */}
-        <div>
-          <h2 className="text-lg font-bold mb-4">Top Contributors</h2>
-          <div className="border border-gray-800">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-800">
-                  <th className="p-3 font-normal">#</th>
-                  <th className="p-3 font-normal">Contributor</th>
-                  <th className="p-3 font-normal text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topContributors.map((contributor, index) => (
-                  <tr key={contributor.contributor_name} className="border-b border-gray-900 hover:bg-gray-950">
-                    <td className="p-3 text-gray-500">{index + 1}</td>
-                    <td className="p-3">
-                      <Link
-                        href={`/donations/contributor/${encodeURIComponent(contributor.contributor_name)}`}
-                        className="hover:underline"
-                      >
-                        {contributor.contributor_name}
-                      </Link>
-                      {contributor.contributor_employer && (
-                        <span className="block text-xs text-gray-500">{contributor.contributor_employer}</span>
-                      )}
-                    </td>
-                    <td className="p-3 text-right font-mono text-green-500">
-                      {formatMoney(contributor.total_amount)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Donations */}
-      <div>
-        <h2 className="text-lg font-bold mb-4">Recent Donations</h2>
-        <div className="border border-gray-800">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-gray-500 border-b border-gray-800">
-                <th className="p-3 font-normal">Date</th>
-                <th className="p-3 font-normal">Contributor</th>
-                <th className="p-3 font-normal">Recipient</th>
-                <th className="p-3 font-normal text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentDonations.map((donation) => (
-                <tr key={donation.id} className="border-b border-gray-900 hover:bg-gray-950">
-                  <td className="p-3 text-gray-400">{formatDate(donation.receipt_date)}</td>
-                  <td className="p-3">
-                    {donation.contributor_name || 'Anonymous'}
-                    {donation.contributor_employer && (
-                      <span className="block text-xs text-gray-500">{donation.contributor_employer}</span>
-                    )}
-                  </td>
-                  <td className="p-3">{donation.recipient_name}</td>
-                  <td className="p-3 text-right font-mono text-green-500">
-                    ${donation.amount.toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="mt-8 text-sm text-gray-500">
-        <p>Source: <a href="https://cfb.mn.gov" className="underline hover:text-gray-300" target="_blank" rel="noopener">Minnesota Campaign Finance Board</a></p>
-        <p className="mt-1">Data includes contributions over $200 from 2015 to present.</p>
+      {/* Data sources */}
+      <div className="text-sm text-gray-500 border-t border-gray-800 pt-8">
+        <p className="font-medium text-gray-400 mb-2">Data Sources</p>
+        <ul className="space-y-1">
+          {statesWithData.map(([code]) => (
+            <li key={code}>
+              <span className="text-white">{STATE_NAMES[code]}</span>
+              {code === 'MN' && (
+                <span className="text-gray-600"> — <a href="https://cfb.mn.gov" className="underline hover:text-gray-400" target="_blank" rel="noopener">Campaign Finance Board</a></span>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
