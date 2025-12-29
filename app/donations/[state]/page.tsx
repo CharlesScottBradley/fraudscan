@@ -51,107 +51,52 @@ interface RecentDonation {
 async function getDonationStats(state: string): Promise<DonationStats | null> {
   const stateUpper = state.toUpperCase();
 
-  const { count } = await supabase
-    .from('political_donations')
-    .select('*', { count: 'exact', head: true })
-    .eq('state', stateUpper);
+  const { data } = await supabase.rpc('get_state_donation_stats', { state_code: stateUpper });
 
-  if (!count || count === 0) return null;
-
-  const { data: amounts } = await supabase
-    .from('political_donations')
-    .select('amount')
-    .eq('state', stateUpper);
-
-  const totalAmount = amounts?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
-
-  const { data: recipients } = await supabase
-    .from('political_donations')
-    .select('recipient_name')
-    .eq('state', stateUpper)
-    .limit(100000);
-
-  const { data: contributors } = await supabase
-    .from('political_donations')
-    .select('contributor_name')
-    .eq('state', stateUpper)
-    .limit(100000);
-
-  const uniqueRecipients = new Set(recipients?.map(r => r.recipient_name)).size;
-  const uniqueContributors = new Set(contributors?.filter(c => c.contributor_name).map(c => c.contributor_name)).size;
+  if (!data || data.length === 0 || data[0].total_donations === 0) return null;
 
   return {
-    total_donations: count || 0,
-    total_amount: totalAmount,
-    unique_recipients: uniqueRecipients,
-    unique_contributors: uniqueContributors,
+    total_donations: data[0].total_donations || 0,
+    total_amount: parseFloat(data[0].total_amount) || 0,
+    unique_recipients: data[0].unique_recipients || 0,
+    unique_contributors: data[0].unique_contributors || 0,
   };
 }
 
 async function getTopRecipients(state: string): Promise<TopRecipient[]> {
   const stateUpper = state.toUpperCase();
 
-  const { data } = await supabase
-    .from('political_donations')
-    .select('recipient_name, recipient_type, amount')
-    .eq('state', stateUpper)
-    .order('amount', { ascending: false })
-    .limit(50000);
+  const { data } = await supabase.rpc('get_state_top_recipients', {
+    state_code: stateUpper,
+    limit_count: 25
+  });
 
   if (!data) return [];
 
-  const recipientMap = new Map<string, { type: string; total: number; count: number }>();
-
-  data.forEach(d => {
-    const existing = recipientMap.get(d.recipient_name) || { type: d.recipient_type || '', total: 0, count: 0 };
-    existing.total += d.amount || 0;
-    existing.count += 1;
-    recipientMap.set(d.recipient_name, existing);
-  });
-
-  return Array.from(recipientMap.entries())
-    .map(([name, data]) => ({
-      recipient_name: name,
-      recipient_type: data.type,
-      total_amount: data.total,
-      donation_count: data.count,
-    }))
-    .sort((a, b) => b.total_amount - a.total_amount)
-    .slice(0, 25);
+  return data.map((d: { recipient_name: string; recipient_type: string; total_amount: string; donation_count: number }) => ({
+    recipient_name: d.recipient_name,
+    recipient_type: d.recipient_type || '',
+    total_amount: parseFloat(d.total_amount) || 0,
+    donation_count: d.donation_count || 0,
+  }));
 }
 
 async function getTopContributors(state: string): Promise<TopContributor[]> {
   const stateUpper = state.toUpperCase();
 
-  const { data } = await supabase
-    .from('political_donations')
-    .select('contributor_name, contributor_employer, amount')
-    .eq('state', stateUpper)
-    .not('contributor_name', 'is', null)
-    .order('amount', { ascending: false })
-    .limit(50000);
+  const { data } = await supabase.rpc('get_state_top_contributors', {
+    state_code: stateUpper,
+    limit_count: 25
+  });
 
   if (!data) return [];
 
-  const contributorMap = new Map<string, { employer: string | null; total: number; count: number }>();
-
-  data.forEach(d => {
-    if (!d.contributor_name) return;
-    const existing = contributorMap.get(d.contributor_name) || { employer: d.contributor_employer, total: 0, count: 0 };
-    existing.total += d.amount || 0;
-    existing.count += 1;
-    contributorMap.set(d.contributor_name, existing);
-  });
-
-  return Array.from(contributorMap.entries())
-    .map(([name, data]) => ({
-      contributor_name: name,
-      contributor_employer: data.employer,
-      total_amount: data.total,
-      donation_count: data.count,
-    }))
-    .sort((a, b) => b.total_amount - a.total_amount)
-    .slice(0, 25);
+  return data.map((d: { contributor_name: string; contributor_employer: string | null; total_amount: string; donation_count: number }) => ({
+    contributor_name: d.contributor_name,
+    contributor_employer: d.contributor_employer,
+    total_amount: parseFloat(d.total_amount) || 0,
+    donation_count: d.donation_count || 0,
+  }));
 }
 
 async function getRecentDonations(state: string): Promise<RecentDonation[]> {
