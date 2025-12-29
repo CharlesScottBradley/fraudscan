@@ -51,6 +51,7 @@ async function getTotalFunding(): Promise<number> {
   return data.reduce((sum, p) => sum + (p.total_amount || 0), 0);
 }
 
+// Revalidate every 60 seconds
 export const revalidate = 60;
 
 function formatMoney(amount: number): string {
