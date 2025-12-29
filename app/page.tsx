@@ -2,33 +2,62 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import USMap from './components/USMap';
 
-// State centers for map navigation
+// All US states for map navigation
 const STATE_INFO: Record<string, { name: string; abbr: string }> = {
-  MN: { name: 'Minnesota', abbr: 'MN' },
-  WI: { name: 'Wisconsin', abbr: 'WI' },
-  MI: { name: 'Michigan', abbr: 'MI' },
-  TX: { name: 'Texas', abbr: 'TX' },
-  FL: { name: 'Florida', abbr: 'FL' },
+  AL: { name: 'Alabama', abbr: 'AL' },
+  AK: { name: 'Alaska', abbr: 'AK' },
+  AZ: { name: 'Arizona', abbr: 'AZ' },
+  AR: { name: 'Arkansas', abbr: 'AR' },
   CA: { name: 'California', abbr: 'CA' },
-  NY: { name: 'New York', abbr: 'NY' },
-  IL: { name: 'Illinois', abbr: 'IL' },
-  OH: { name: 'Ohio', abbr: 'OH' },
-  PA: { name: 'Pennsylvania', abbr: 'PA' },
+  CO: { name: 'Colorado', abbr: 'CO' },
+  CT: { name: 'Connecticut', abbr: 'CT' },
+  DE: { name: 'Delaware', abbr: 'DE' },
+  FL: { name: 'Florida', abbr: 'FL' },
   GA: { name: 'Georgia', abbr: 'GA' },
+  HI: { name: 'Hawaii', abbr: 'HI' },
+  ID: { name: 'Idaho', abbr: 'ID' },
+  IL: { name: 'Illinois', abbr: 'IL' },
+  IN: { name: 'Indiana', abbr: 'IN' },
+  IA: { name: 'Iowa', abbr: 'IA' },
+  KS: { name: 'Kansas', abbr: 'KS' },
+  KY: { name: 'Kentucky', abbr: 'KY' },
+  LA: { name: 'Louisiana', abbr: 'LA' },
+  ME: { name: 'Maine', abbr: 'ME' },
+  MD: { name: 'Maryland', abbr: 'MD' },
+  MA: { name: 'Massachusetts', abbr: 'MA' },
+  MI: { name: 'Michigan', abbr: 'MI' },
+  MN: { name: 'Minnesota', abbr: 'MN' },
+  MS: { name: 'Mississippi', abbr: 'MS' },
+  MO: { name: 'Missouri', abbr: 'MO' },
+  MT: { name: 'Montana', abbr: 'MT' },
+  NE: { name: 'Nebraska', abbr: 'NE' },
+  NV: { name: 'Nevada', abbr: 'NV' },
+  NH: { name: 'New Hampshire', abbr: 'NH' },
+  NJ: { name: 'New Jersey', abbr: 'NJ' },
+  NM: { name: 'New Mexico', abbr: 'NM' },
+  NY: { name: 'New York', abbr: 'NY' },
   NC: { name: 'North Carolina', abbr: 'NC' },
+  ND: { name: 'North Dakota', abbr: 'ND' },
+  OH: { name: 'Ohio', abbr: 'OH' },
+  OK: { name: 'Oklahoma', abbr: 'OK' },
+  OR: { name: 'Oregon', abbr: 'OR' },
+  PA: { name: 'Pennsylvania', abbr: 'PA' },
+  RI: { name: 'Rhode Island', abbr: 'RI' },
+  SC: { name: 'South Carolina', abbr: 'SC' },
+  SD: { name: 'South Dakota', abbr: 'SD' },
+  TN: { name: 'Tennessee', abbr: 'TN' },
+  TX: { name: 'Texas', abbr: 'TX' },
+  UT: { name: 'Utah', abbr: 'UT' },
+  VT: { name: 'Vermont', abbr: 'VT' },
+  VA: { name: 'Virginia', abbr: 'VA' },
+  WA: { name: 'Washington', abbr: 'WA' },
+  WV: { name: 'West Virginia', abbr: 'WV' },
+  WI: { name: 'Wisconsin', abbr: 'WI' },
+  WY: { name: 'Wyoming', abbr: 'WY' },
+  DC: { name: 'District of Columbia', abbr: 'DC' },
 };
 
 async function getStateStats(): Promise<Record<string, { count: number; funding: number }>> {
-  // Get provider counts by state
-  const { data: providers } = await supabase
-    .from('providers')
-    .select('state');
-
-  // Get funding by state (via provider join)
-  const { data: payments } = await supabase
-    .from('payments')
-    .select('total_amount, providers(state)');
-
   const stats: Record<string, { count: number; funding: number }> = {};
 
   // Initialize all states
@@ -36,13 +65,27 @@ async function getStateStats(): Promise<Record<string, { count: number; funding:
     stats[code] = { count: 0, funding: 0 };
   });
 
-  // Count providers
-  providers?.forEach(p => {
-    const state = p.state?.toUpperCase();
-    if (state && stats[state]) {
-      stats[state].count++;
+  // Get provider counts per state using individual count queries
+  // This is more efficient than fetching all rows
+  const stateCountPromises = Object.keys(STATE_INFO).map(async (state) => {
+    const { count } = await supabase
+      .from('providers')
+      .select('*', { count: 'exact', head: true })
+      .eq('state', state);
+    return { state, count: count || 0 };
+  });
+
+  const stateCounts = await Promise.all(stateCountPromises);
+  stateCounts.forEach(({ state, count }) => {
+    if (stats[state]) {
+      stats[state].count = count;
     }
   });
+
+  // Get funding by state (via provider join)
+  const { data: payments } = await supabase
+    .from('payments')
+    .select('total_amount, providers(state)');
 
   // Sum funding
   payments?.forEach((p) => {
