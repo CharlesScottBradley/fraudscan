@@ -51,17 +51,24 @@ export default function USMap({ stateData }: USMapProps) {
 
   const getStateColor = (stateCode: string) => {
     const data = stateData[stateCode];
-    if (!data || data.funding === 0) return '#1a1a1a';
 
-    const maxFunding = Math.max(...Object.values(stateData).map(d => d.funding));
-    if (maxFunding === 0) return '#1a1a1a';
+    // No data at all - dark
+    if (!data || data.count === 0) return '#1a1a1a';
 
-    const intensity = data.funding / maxFunding;
-    const r = Math.round(34 + (34 * (1 - intensity)));
-    const g = Math.round(197 - (100 * (1 - intensity)));
-    const b = Math.round(94 - (60 * (1 - intensity)));
+    // Has funding data - show green intensity based on funding
+    if (data.funding > 0) {
+      const maxFunding = Math.max(...Object.values(stateData).map(d => d.funding));
+      if (maxFunding === 0) return '#22c55e'; // base green
 
-    return `rgb(${r}, ${g}, ${b})`;
+      const intensity = data.funding / maxFunding;
+      const r = Math.round(34 + (34 * (1 - intensity)));
+      const g = Math.round(197 - (100 * (1 - intensity)));
+      const b = Math.round(94 - (60 * (1 - intensity)));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // Has providers but no funding - show blue
+    return '#3b82f6';
   };
 
   const formatMoney = (amount: number) => {
@@ -124,7 +131,8 @@ export default function USMap({ stateData }: USMapProps) {
       {/* Legend */}
       <div className="absolute bottom-4 left-4 text-xs text-gray-500">
         <p>Click a state to view providers</p>
-        <p className="text-green-500">Green = fraud amount tracked</p>
+        <p><span className="text-green-500">■</span> Green = fraud data available</p>
+        <p><span className="text-blue-500">■</span> Blue = providers tracked</p>
       </div>
     </div>
   );
