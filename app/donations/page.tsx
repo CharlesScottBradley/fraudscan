@@ -19,21 +19,13 @@ const STATE_NAMES: Record<string, string> = {
 };
 
 async function getDonationStats() {
-  // Get total stats
-  const { count: totalDonations } = await supabase
-    .from('political_donations')
-    .select('*', { count: 'exact', head: true });
+  // Get totals using RPC function (avoids row limits)
+  const { data: totals } = await supabase.rpc('get_donation_totals');
+  const totalDonations = totals?.[0]?.total_donations || 0;
+  const totalAmount = parseFloat(totals?.[0]?.total_amount || '0');
 
-  const { data: amounts } = await supabase
-    .from('political_donations')
-    .select('amount');
-
-  const totalAmount = amounts?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
-
-  // Get stats by state
-  const { data: stateData } = await supabase
-    .from('political_donations')
-    .select('state, amount');
+  // Get stats by state using RPC function
+  const { data: stateData } = await supabase.rpc('get_donation_stats_by_state');
 
   const stateStats: Record<string, { total_amount: number; donation_count: number }> = {};
 
@@ -42,12 +34,12 @@ async function getDonationStats() {
     stateStats[code] = { total_amount: 0, donation_count: 0 };
   });
 
-  // Aggregate by state
-  stateData?.forEach(d => {
+  // Populate from RPC results
+  stateData?.forEach((d: { state: string; donation_count: number; total_amount: string }) => {
     const state = d.state?.toUpperCase();
     if (state && stateStats[state]) {
-      stateStats[state].total_amount += d.amount || 0;
-      stateStats[state].donation_count += 1;
+      stateStats[state].total_amount = parseFloat(d.total_amount) || 0;
+      stateStats[state].donation_count = d.donation_count || 0;
     }
   });
 
@@ -57,7 +49,7 @@ async function getDonationStats() {
     .sort((a, b) => b[1].total_amount - a[1].total_amount);
 
   return {
-    totalDonations: totalDonations || 0,
+    totalDonations,
     totalAmount,
     stateStats,
     statesWithData,
