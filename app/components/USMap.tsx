@@ -7,10 +7,10 @@ import {
   Geographies,
   Geography,
 } from 'react-simple-maps';
+import { EntityType, ENTITY_COLORS } from './EntityTypeFilter';
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
-// State FIPS codes to abbreviations
 const FIPS_TO_ABBR: Record<string, string> = {
   '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA',
   '08': 'CO', '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL',
@@ -41,40 +41,96 @@ const STATE_NAMES: Record<string, string> = {
   'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming',
 };
 
-interface USMapProps {
-  stateData: Record<string, { count: number; funding: number }>;
+export interface EntityStats {
+  count: number;
+  geocoded?: number;
+  funding?: number;
+  amount?: number;
+  flagged?: number;
 }
 
-export default function USMap({ stateData }: USMapProps) {
+export interface StateEntityStats {
+  childcare: EntityStats;
+  nursing_home: EntityStats;
+  ppp: EntityStats & { amount: number; flagged: number };
+  fraud_cases: { count: number; amount: number };
+  total_count: number;
+  total_funding: number;
+}
+
+interface USMapProps {
+  stateData: Record<string, StateEntityStats>;
+  activeEntityType?: EntityType;
+  colorBy?: 'count' | 'funding' | 'fraud';
+}
+
+export default function USMap({ stateData, activeEntityType = 'all', colorBy = 'count' }: USMapProps) {
   const router = useRouter();
   const [hoveredState, setHoveredState] = useState<string | null>(null);
 
-  const getStateColor = (stateCode: string) => {
+  const getStateCount = (stateCode: string): number => {
     const data = stateData[stateCode];
-
-    // No data at all - dark
-    if (!data || data.count === 0) return '#1a1a1a';
-
-    // Has funding data - show green intensity based on funding
-    if (data.funding > 0) {
-      const maxFunding = Math.max(...Object.values(stateData).map(d => d.funding));
-      if (maxFunding === 0) return '#22c55e'; // base green
-
-      const intensity = data.funding / maxFunding;
-      const r = Math.round(34 + (34 * (1 - intensity)));
-      const g = Math.round(197 - (100 * (1 - intensity)));
-      const b = Math.round(94 - (60 * (1 - intensity)));
-      return `rgb(${r}, ${g}, ${b})`;
+    if (!data) return 0;
+    
+    switch (activeEntityType) {
+      case 'childcare': return data.childcare?.count || 0;
+      case 'nursing_home': return data.nursing_home?.count || 0;
+      case 'ppp': return data.ppp?.count || 0;
+      default: return data.total_count || 0;
     }
+  };
 
-    // Has providers but no funding - show blue
-    return '#3b82f6';
+  const getStateColor = (stateCode: string): string => {
+    const count = getStateCount(stateCode);
+    if (count === 0) return '#111';
+    
+    const baseColor = ENTITY_COLORS[activeEntityType] || ENTITY_COLORS.all;
+    const maxCount = Math.max(...Object.keys(stateData).map(s => getStateCount(s)));
+    const intensity = maxCount > 0 ? count / maxCount : 0;
+    
+    return adjustColorIntensity(baseColor, intensity);
+  };
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(0)}K`;
+    return num.toLocaleString();
   };
 
   const formatMoney = (amount: number) => {
+    if (amount >= 1000000000) return `$${(amount / 1000000000).toFixed(1)}B`;
     if (amount >= 1000000) return `$${(amount / 1000000).toFixed(1)}M`;
     if (amount >= 1000) return `$${(amount / 1000).toFixed(0)}K`;
     return `$${amount.toLocaleString()}`;
+  };
+
+  const getTooltipContent = (stateCode: string) => {
+    const data = stateData[stateCode];
+    if (!data) return null;
+
+    const count = getStateCount(stateCode);
+    if (count === 0) return { name: STATE_NAMES[stateCode], count: 0, detail: 'No data' };
+
+    let detail = '';
+    switch (activeEntityType) {
+      case 'childcare':
+        detail = `${formatNumber(data.childcare.count)} providers`;
+        break;
+      case 'nursing_home':
+        detail = `${formatNumber(data.nursing_home.count)} facilities`;
+        break;
+      case 'ppp':
+        detail = `${formatNumber(data.ppp.count)} loans · ${formatMoney(data.ppp.amount)}`;
+        break;
+      default:
+        const parts = [];
+        if (data.childcare.count > 0) parts.push(`${formatNumber(data.childcare.count)} childcare`);
+        if (data.ppp.count > 0) parts.push(`${formatNumber(data.ppp.count)} PPP`);
+        if (data.nursing_home.count > 0) parts.push(`${formatNumber(data.nursing_home.count)} nursing`);
+        detail = parts.join(' · ') || 'No data';
+    }
+
+    return { name: STATE_NAMES[stateCode], count, detail };
   };
 
   return (
@@ -94,17 +150,15 @@ export default function USMap({ stateData }: USMapProps) {
                   key={geo.rsmKey}
                   geography={geo}
                   fill={getStateColor(stateCode)}
-                  stroke="#333"
+                  stroke="#222"
                   strokeWidth={0.5}
                   style={{
                     default: { outline: 'none' },
-                    hover: { outline: 'none', fill: '#3b82f6' },
+                    hover: { outline: 'none', fill: '#444' },
                     pressed: { outline: 'none' },
                   }}
                   onClick={() => {
-                    if (stateCode) {
-                      router.push(`/state/${stateCode.toLowerCase()}`);
-                    }
+                    if (stateCode) router.push(`/state/${stateCode.toLowerCase()}`);
                   }}
                   onMouseEnter={() => setHoveredState(stateCode)}
                   onMouseLeave={() => setHoveredState(null)}
@@ -115,25 +169,31 @@ export default function USMap({ stateData }: USMapProps) {
         </Geographies>
       </ComposableMap>
 
-      {/* Tooltip */}
+      {/* Minimal tooltip */}
       {hoveredState && (
-        <div className="absolute top-4 right-4 bg-black border border-gray-700 p-4 text-sm">
-          <p className="font-bold">{STATE_NAMES[hoveredState] || hoveredState}</p>
-          <p className="text-gray-400">
-            {stateData[hoveredState]?.count || 0} providers
-          </p>
-          <p className="text-green-500 font-mono">
-            {formatMoney(stateData[hoveredState]?.funding || 0)} tracked
-          </p>
+        <div className="absolute top-4 right-4 text-sm">
+          {(() => {
+            const tip = getTooltipContent(hoveredState);
+            if (!tip) return null;
+            return (
+              <>
+                <p className="font-medium">{tip.name}</p>
+                <p className="text-gray-500">{tip.detail}</p>
+              </>
+            );
+          })()}
         </div>
       )}
-
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 text-xs text-gray-500">
-        <p>Click a state to view providers</p>
-        <p><span className="text-green-500">■</span> Green = fraud data available</p>
-        <p><span className="text-blue-500">■</span> Blue = providers tracked</p>
-      </div>
     </div>
   );
+}
+
+function adjustColorIntensity(hexColor: string, intensity: number): string {
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+  
+  const factor = 0.2 + (intensity * 0.8);
+  
+  return `rgb(${Math.round(r * factor)}, ${Math.round(g * factor)}, ${Math.round(b * factor)})`;
 }

@@ -32,12 +32,12 @@ export default function RootLayout({
             <Link href="/" className="text-xl font-bold tracking-tight">
               SomaliScan
             </Link>
-            <nav className="flex gap-8 text-sm">
+            <nav className="flex gap-6 text-sm">
               <Link href="/" className="text-gray-400 hover:text-white">
                 Map
               </Link>
-              <Link href="/leaderboard" className="text-gray-400 hover:text-white">
-                Leaderboard
+              <Link href="/cases" className="text-gray-400 hover:text-white">
+                Cases
               </Link>
               <Link href="/database" className="text-gray-400 hover:text-white">
                 Database
@@ -47,6 +47,9 @@ export default function RootLayout({
               </Link>
               <Link href="/donations/network" className="text-gray-400 hover:text-white">
                 Network
+              </Link>
+              <Link href="/tip" className="text-green-500 hover:text-green-400">
+                Submit Tip
               </Link>
             </nav>
           </header>
@@ -60,7 +63,7 @@ export default function RootLayout({
           <footer className="py-8 px-6 text-center text-gray-500 text-sm">
             <p>Data sourced from state licensing databases and court records</p>
             <p className="mt-4 text-gray-400">
-              If you have information regarding ongoing fraud, email admin@somaliscan.com
+              Have information about fraud? <Link href="/tip" className="text-green-500 hover:underline">Submit a tip</Link> or email admin@somaliscan.com
             </p>
             <p className="mt-6 text-gray-600">
               Powered by <a href="https://fruitdatalabs.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">fruitdatalabs.xyz</a>
