@@ -20,7 +20,29 @@ async function getProviders(filters: {
   county?: string;
   type?: string;
   status?: string;
-}): Promise<ProviderWithPayments[]> {
+  page: number;
+  perPage: number;
+}): Promise<{ providers: ProviderWithPayments[]; totalCount: number }> {
+  // Build count query
+  let countQuery = supabase
+    .from('providers')
+    .select('*', { count: 'exact', head: true });
+
+  if (filters.county && filters.county !== 'all') {
+    countQuery = countQuery.eq('county', filters.county);
+  }
+  if (filters.type && filters.type !== 'all') {
+    countQuery = countQuery.eq('license_type', filters.type);
+  }
+  if (filters.status && filters.status !== 'all') {
+    countQuery = countQuery.eq('license_status', filters.status);
+  }
+
+  const { count } = await countQuery;
+  const totalCount = count || 0;
+
+  // Build data query with pagination
+  const offset = (filters.page - 1) * filters.perPage;
   let query = supabase
     .from('providers')
     .select(`
@@ -30,7 +52,8 @@ async function getProviders(filters: {
         total_amount
       )
     `)
-    .order('name', { ascending: true });
+    .order('name', { ascending: true })
+    .range(offset, offset + filters.perPage - 1);
 
   if (filters.county && filters.county !== 'all') {
     query = query.eq('county', filters.county);
@@ -46,20 +69,23 @@ async function getProviders(filters: {
 
   if (error) {
     console.error('Error fetching providers:', error);
-    return [];
+    return { providers: [], totalCount: 0 };
   }
 
-  return (data || []) as ProviderWithPayments[];
+  return { providers: (data || []) as ProviderWithPayments[], totalCount };
 }
 
 async function getFilterOptions() {
-  const { data: providers } = await supabase
-    .from('providers')
-    .select('county, license_type, license_status');
+  // Use distinct queries for each filter option
+  const [countiesResult, typesResult, statusesResult] = await Promise.all([
+    supabase.from('providers').select('county').not('county', 'is', null).limit(10000),
+    supabase.from('providers').select('license_type').not('license_type', 'is', null).limit(10000),
+    supabase.from('providers').select('license_status').not('license_status', 'is', null).limit(10000),
+  ]);
 
-  const counties = [...new Set(providers?.map(p => p.county).filter(Boolean))].sort();
-  const types = [...new Set(providers?.map(p => p.license_type).filter(Boolean))].sort();
-  const statuses = [...new Set(providers?.map(p => p.license_status).filter(Boolean))].sort();
+  const counties = [...new Set(countiesResult.data?.map(p => p.county).filter(Boolean))].sort() as string[];
+  const types = [...new Set(typesResult.data?.map(p => p.license_type).filter(Boolean))].sort() as string[];
+  const statuses = [...new Set(statusesResult.data?.map(p => p.license_status).filter(Boolean))].sort() as string[];
 
   return { counties, types, statuses };
 }
@@ -84,20 +110,20 @@ export default async function DatabasePage({ searchParams }: PageProps) {
   const page = parseInt(params.page || '1', 10);
   const perPage = parseInt(params.perPage || '25', 10);
 
-  const [allProviders, filterOptions] = await Promise.all([
-    getProviders({ county, type, status }),
+  const [providerResult, filterOptions] = await Promise.all([
+    getProviders({ county, type, status, page, perPage }),
     getFilterOptions(),
   ]);
 
-  const providersWithTotals = allProviders.map(p => ({
+  const { providers: rawProviders, totalCount } = providerResult;
+
+  const providers = rawProviders.map(p => ({
     ...p,
     totalFunding: p.payments?.reduce((sum, pay) => sum + (pay.total_amount || 0), 0) || 0,
   }));
 
-  const totalCount = providersWithTotals.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const startIndex = (page - 1) * perPage;
-  const providers = providersWithTotals.slice(startIndex, startIndex + perPage);
 
   const buildPageUrl = (newPage: number) => {
     const searchParams = new URLSearchParams();

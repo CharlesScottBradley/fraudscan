@@ -6,6 +6,23 @@ interface ProviderWithPayments extends Provider {
 }
 
 async function getProvidersWithFunding(): Promise<ProviderWithPayments[]> {
+  // First get all provider IDs that have payments
+  const { data: paymentProviders, error: paymentError } = await supabase
+    .from('payments')
+    .select('provider_id');
+
+  if (paymentError || !paymentProviders) {
+    console.error('Error fetching payment providers:', paymentError);
+    return [];
+  }
+
+  const providerIds = [...new Set(paymentProviders.map(p => p.provider_id))];
+
+  if (providerIds.length === 0) {
+    return [];
+  }
+
+  // Then fetch only those providers with their payments
   const { data, error } = await supabase
     .from('providers')
     .select(`
@@ -15,7 +32,7 @@ async function getProvidersWithFunding(): Promise<ProviderWithPayments[]> {
         total_amount
       )
     `)
-    .order('name', { ascending: true });
+    .in('id', providerIds);
 
   if (error) {
     console.error('Error fetching providers:', error);
