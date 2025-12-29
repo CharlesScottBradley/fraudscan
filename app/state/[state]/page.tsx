@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import StateMap from '../../components/StateMap';
+import StateDataTable from './StateDataTable';
 
 // All US states with map centers
 const STATE_INFO: Record<string, { name: string; center: [number, number]; zoom: number }> = {
@@ -132,6 +133,51 @@ async function getStateStats(stateCode: string) {
   };
 }
 
+async function getStatePPPLoans(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  // Get PPP loans for this state (limit to 1000 for performance)
+  const { data: loans } = await supabase
+    .from('ppp_loans')
+    .select(`
+      id,
+      loan_number,
+      borrower_name,
+      borrower_city,
+      business_type,
+      current_approval_amount,
+      forgiveness_amount,
+      jobs_reported,
+      loan_status
+    `)
+    .eq('borrower_state', stateUpper)
+    .order('current_approval_amount', { ascending: false })
+    .limit(1000);
+
+  return loans || [];
+}
+
+async function getPPPStats(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { count } = await supabase
+    .from('ppp_loans')
+    .select('*', { count: 'exact', head: true })
+    .eq('borrower_state', stateUpper);
+
+  const { data: sumData } = await supabase
+    .from('ppp_loans')
+    .select('current_approval_amount')
+    .eq('borrower_state', stateUpper);
+
+  const totalAmount = sumData?.reduce((sum, l) => sum + (l.current_approval_amount || 0), 0) || 0;
+
+  return {
+    count: count || 0,
+    totalAmount,
+  };
+}
+
 export const revalidate = 60;
 
 function formatMoney(amount: number): string {
@@ -159,14 +205,36 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const providers = await getStateProviders(state);
-  const stats = await getStateStats(state);
+  const [providers, stats, pppLoans, pppStats] = await Promise.all([
+    getStateProviders(state),
+    getStateStats(state),
+    getStatePPPLoans(state),
+    getPPPStats(state),
+  ]);
 
-  // Top funded providers
-  const topFunded = [...providers]
-    .filter(p => p.total_funding > 0)
-    .sort((a, b) => b.total_funding - a.total_funding)
-    .slice(0, 10);
+  // Format providers for table
+  const providersForTable = providers.map(p => ({
+    id: p.id,
+    name: p.name,
+    city: p.city,
+    license_type: p.license_type,
+    total_funding: p.total_funding,
+    type: 'provider' as const,
+  }));
+
+  // Format PPP loans for table
+  const pppLoansForTable = pppLoans.map(l => ({
+    id: l.id,
+    loan_number: l.loan_number,
+    borrower_name: l.borrower_name,
+    borrower_city: l.borrower_city,
+    business_type: l.business_type,
+    current_approval_amount: l.current_approval_amount,
+    forgiveness_amount: l.forgiveness_amount,
+    jobs_reported: l.jobs_reported,
+    loan_status: l.loan_status,
+    type: 'ppp_loan' as const,
+  }));
 
   return (
     <div>
@@ -181,84 +249,64 @@ export default async function StatePage({ params }: PageProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
-          <p className="text-green-500 font-mono text-2xl font-bold">
-            {formatMoney(stats.totalFunding)}
+          <p className="text-green-500 font-mono text-xl font-bold">
+            {formatMoney(pppStats.totalAmount)}
           </p>
-          <p className="text-gray-500 text-sm">Fraud tracked</p>
+          <p className="text-gray-500 text-sm">PPP Loans</p>
         </div>
         <div className="border border-gray-800 p-4">
-          <p className="text-white font-mono text-2xl font-bold">
+          <p className="text-white font-mono text-xl font-bold">
+            {pppStats.count.toLocaleString()}
+          </p>
+          <p className="text-gray-500 text-sm">PPP Recipients</p>
+        </div>
+        <div className="border border-gray-800 p-4">
+          <p className="text-white font-mono text-xl font-bold">
             {stats.providerCount.toLocaleString()}
           </p>
           <p className="text-gray-500 text-sm">Providers</p>
         </div>
         <div className="border border-gray-800 p-4">
-          <p className="text-white font-mono text-2xl font-bold">
-            {topFunded.length}
+          <p className="text-green-500 font-mono text-xl font-bold">
+            {formatMoney(stats.totalFunding)}
           </p>
-          <p className="text-gray-500 text-sm">With funding data</p>
+          <p className="text-gray-500 text-sm">Provider Funding</p>
         </div>
       </div>
 
-      {/* Map */}
-      <div className="mb-8">
-        <StateMap
-          providers={providers.map(p => ({
-            id: p.id,
-            name: p.name,
-            latitude: p.latitude,
-            longitude: p.longitude,
-            license_type: p.license_type,
-            total_funding: p.total_funding,
-          }))}
-          center={stateInfo.center}
-          zoom={stateInfo.zoom}
-        />
-      </div>
-
-      {/* Top funded table */}
-      {topFunded.length > 0 && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Top Funded Providers</h2>
-          <table className="w-full">
-            <thead>
-              <tr className="text-left text-gray-500 text-sm border-b border-gray-800">
-                <th className="pb-3 font-normal w-12">#</th>
-                <th className="pb-3 font-normal">Provider</th>
-                <th className="pb-3 font-normal">City</th>
-                <th className="pb-3 font-normal">Type</th>
-                <th className="pb-3 font-normal text-right">Funding</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topFunded.map((provider, index) => (
-                <tr key={provider.id} className="border-b border-gray-900 hover:bg-gray-950">
-                  <td className="py-3 text-gray-500">{index + 1}</td>
-                  <td className="py-3">
-                    <Link
-                      href={`/provider/${provider.license_number}`}
-                      className="hover:underline"
-                    >
-                      {provider.name}
-                    </Link>
-                  </td>
-                  <td className="py-3 text-gray-400">{provider.city || '-'}</td>
-                  <td className="py-3 text-gray-400 text-sm">{provider.license_type}</td>
-                  <td className="py-3 text-right font-mono text-green-500">
-                    {formatMoney(provider.total_funding)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Map - only show if there are geocoded providers */}
+      {stats.withCoordinates > 0 && (
+        <div className="mb-8">
+          <StateMap
+            providers={providers.map(p => ({
+              id: p.id,
+              name: p.name,
+              latitude: p.latitude,
+              longitude: p.longitude,
+              license_type: p.license_type,
+              total_funding: p.total_funding,
+            }))}
+            center={stateInfo.center}
+            zoom={stateInfo.zoom}
+          />
         </div>
       )}
 
-      {topFunded.length === 0 && (
-        <p className="text-gray-500">No funding data available for {stateInfo.name} yet.</p>
+      {stats.withCoordinates === 0 && (
+        <div className="mb-8 border border-gray-800 p-8 text-center">
+          <p className="text-gray-500">No geocoded provider locations for {stateInfo.name} yet.</p>
+          <p className="text-gray-600 text-sm mt-2">PPP loan data is available in the table below.</p>
+        </div>
       )}
+
+      {/* Data Table */}
+      <StateDataTable
+        providers={providersForTable}
+        pppLoans={pppLoansForTable}
+        stateName={stateInfo.name}
+      />
     </div>
   );
 }
