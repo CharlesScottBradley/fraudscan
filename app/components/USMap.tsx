@@ -2,58 +2,43 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+} from 'react-simple-maps';
 
-// US state paths for SVG map
-const US_STATES: Record<string, { name: string; path: string }> = {
-  MN: {
-    name: 'Minnesota',
-    path: 'M538.7,181.5l-0.3-8.7l-0.8-7.5l-0.5-8.5l-1.1-4.9l-0.7-14.7l0.4-1.4l3-1.5l0.6-2.1l2-1.1l0.1-3.9l0.7-0.4l0.5-10l-38.3-0.4l-0.2,3.9l-2.2,2.4l-0.4,2.9l-3.4,2.9l-1.2,4.9l0.4,4.9l-2.4,2.4l-2.1,0.2l-0.5,1.1l-3.7-0.7l-3.2,1.7l-0.7,0.9l-2.2-0.2l-4.8,3.4l-0.7-0.7l-3.7,1.7l-2.6,0.9l-5.7,0.5l-1,0.7l-2.7-0.2l-3.1,1.5l-1.6-0.9l-2.1,0.7l-3.4,2.4l-0.8,1.9l-2.9-0.2l-1.3,1.6l-1.2,6.5l-1.6,1.3l-1.5,3.8l-1.5,0.9l0,2.7l-2.7,1.8l0.1,1.4l-2.4,0.6l-0.5,3.9l2.2,3.9l1.9,0.4l2.9,5.4l3.9,2.2l1,4.1l2.2,3.2l3.3,1.1l1.4,1.2l0.8,3.9l3.9,3.8l0.9,2.9l-0.4,2.2l0.7,2.2l-0.1,2.4l79.2,0l0.4-3.9l2.2-5.1l5.1-4.8l1.3-4.7l0.5-8.5z'
-  },
-  WI: {
-    name: 'Wisconsin',
-    path: 'M581.7,196.8l-0.4-1.9l-1.2-0.7l-0.4-2.2l1.1-2.4l-0.2-0.7l0.8-2.4l1.1-0.4l-0.4-3.4l-1.6-1.3l-1.4-3.9l-0.5-2.5l0.4-2.2l-0.4-2.2l1-1.4l0.1-2l-0.8-0.7l0.7-2.5l1.4-2.4l-0.8-1.9l0.4-2l-1.1-0.2l-1.2-2.1l-3.1,1l-8.9,2.5l-2.9-0.5l-6.9,0.7l-0.8-0.4l-3.9,1.9l-0.3,8.5l-1.3,4.7l-5.1,4.8l-2.2,5.1l-0.4,3.9l1.9,0l0.7,3.1l2.9,0.7l1.4,0.4l0.7,1.5l3.1,0.7l0.4,1.2l-0.7,2.6l0.4,2.9l2.2,1.2l0.4,2.2l1.6,1.6l1.1-0.2l2.7-2.4l1.8-0.5l4.1,1.1l1.7-0.4l1.4,0.7l0,1.5l0.9,0.4l3.3-0.7l1.1,0.7l2.4-0.4l0.8-1.8l1.5-0.5l0.7,0.4l1.4-2.2l0.4-3.8z'
-  },
-  MI: {
-    name: 'Michigan',
-    path: 'M620.7,188.9l1.8-2.4l1.9-1.4l2.2-0.2l1-1l2.3,0.3l-1-4.3l-1.4-1.6l-0.4-1.7l-2.5-1.7l-1.7,0.2l-2.7,2.3l-1.9,0.4l-0.2,0.6l-2.7,0.8l-1.1,1.5l-0.4,2.8l-2.5,0.2l-0.3,0.6l-2.8,0.8l-1.5,0l-0.9,1.7l-1.5,0.4l-0.5,0.4l0.2,2.7l1.2,2.5l0.9,0.7l0.7,2.7l-0.9,2.7l0.9,0.8l2.3-0.2l0.9-1.6l0.8-0.2l1.3-2.3l2.7-1.3l1.4,0.6l2.5-0.2l0.4-0.5l1.9-0.8z M571.1,135.1l0.5-0.7l1.5-0.2l2.5-2l3.1-0.5l0.6-2.5l1.9-2.4l0-0.7l-1.7-0.4l-4.7,0.4l-1.3,1.8l-1.4,0.6l-0.1,0.7l-1.9,0.1l-1.9,1.7l0.9,1.6l0.7,0.9l1.1,1.7z'
-  },
-  // Add more states as needed - for now, focus on key fraud states
-  TX: {
-    name: 'Texas',
-    path: 'M378.8,404.3l-1-0.2l-33-3.8l-0.5,6l-0.9,3.9l1.2,3.6l0.7,7.2l1.3,2l-0.5,4.2l-2.2,3.5l-0.3,1.7l-2.2,0.1l-1.5,5.4l-0.2,2.9l-2.9,1.2l-2.7,2.2l-0.7,2.3l-1.9,1.4l-0.3,2.2l-3.9,0.4l-4.5,2.6l-2.2,3.4l0.5,1.4l-2.5,1.5l-1.5,3.5l0.2,1.9l-1.6,0.8l0.3,3.7l2.9,2.7l1,3.3l2.6,1.6l1.9-0.9l2.4,0.8l1.9,1.7l1.9,0.2l2.1,1.3l3.3,4.9l2.9-0.5l3.8,1.7l2.2,2.5l2.9-0.8l1.9,0.7l0.2,2.6l1.7,1.9l-0.9,5.9l2.6,3.5l-0.4,2.8l0.7,2.4l-0.4,1.9l1.1,2.4l3.7,0.6l2.3,1.8l3.8,0.7l2.9,1.3l1.5-0.6l2.7,2.5l2.7-2.3l1-2.6l1.7-1.2l0.7-2.9l1.8-2.9l2.4-1.7l1.1-3.7l4.3-4.5l0.9-2.9l2.9-2.2l1.5-0.2l1.2-1.5l3.1-0.2l4.9-2.9l3.6-3.5l0.7-2.7l1.7-3.4l0.2-2.9l1.4-0.4l2-3l2.7-0.4l3.6-2l0.7-2.6l2.2-2.9l0.9-2.9l2.2-2.1l0.2-1.5l2-3.3l2.4-0.7l0.1-1.2l-0.1-0.6l-0.9-1.2l2-3.2l-0.1-5.2l-0.9-3.4l-1-1.6l0.2-3.3l-1.7-4.3l-0.4-3.2l0.4-2.6l-1.5-4l0.2-5.6l-2-4.5l-39.9,3.2z'
-  },
-  FL: {
-    name: 'Florida',
-    path: 'M660.2,430.3l-1.2-3.2l-1.3-2.6l-2.5-2.9l-0.9-3.3l-2.5-0.6l-1.7-3.9l-3.4-2.7l-2.5-0.6l-0.5,0.7l0.5,2.4l-0.7,1l0.2,1.9l2.1,1.7l2.4,4.3l3.9,4.7l2.6,5.9l1.2,4.9l0.3,5.9l-0.9,2.9l0.5,2.9l2.4,3.4l1.7,0.4l1.3-2l-0.5-2.7l-1.5-1.4l0.4-2.9l2.4-3.9l2.3-2l0.6-3.7l-0.7-2.5l-2.2-1.3l-0.4-1.4z M616.5,397.5l-2.5-0.3l-4-0.9l-2.9-0.9l-0.5-2.2l-4.6-0.1l-4.9-0.3l-1.5-0.8l-1.1,0.6l-8.9-0.2l-9.6-0.6l-5.1,0.3l0.9,3.9l1.5,4.2l3.8,5.1l3.1,5.4l1.2,0.4l0.9,2l3.5,3.1l2,0.5l0.4,2.9l1.9,2.5l2.9,2.4l2.5,3.5l3,1.6l2.9,2.4l0.9,2l-0.2,2.4l2.5,4.9l2.5,3l0.6,3.3l2.5,2.9l0.7,3.1l1,0.5l1.1-1.3l-0.5-3l1.5-0.7l3.1,1l2.9-0.9l1.7-2.3l0.3-4.2l-2.4-3l-0.4-2l-2.6-2l-2.4-4.4l1.4-1.7l-2.7-4.5l-0.2-1.8l-1.7-0.8l-0.6-1.6l1.3-1.9l-3.4-3.1l-0.2-2l1.7-1.6l0-1.7l-2.1-2.9l1.3-3.9l2.3-3l-0.4-0.7l0.9-2.7z'
-  },
-  CA: {
-    name: 'California',
-    path: 'M137.4,350.5l-1.7-0.2l-1.4,1.3l-0.2,4.7l1.8,2.6l0.3,4.6l0.8,0.9l-0.5,5.2l-1.9,1.3l-1.2,3.6l1,5.9l1.2,3.5l1.5,1.7l0.9,4.4l1.7,3.9l2.2,3l1.9,0.1l0.4,1l2.7,1.3l1.7,2.9l-0.4,2.5l-1.9,0.4l-0.2,3.5l1.7,2.9l-0.3,7.5l-1.9,0.8l0.4,2.5l0.9,0.1l0.3,3.3l-2.9,4.7l-0.1,2.6l-3.9,5.2l-0.2,1.9l-1.2,3.5l-1.1,0.1l-0.8,3.7l-1.7,2.3l0.6,1.4l37.9,8.2l25.9,4.2l-10.6-52.9l-11.9-42.7l-33.9-6.7z'
-  },
-  NY: {
-    name: 'New York',
-    path: 'M750.8,177l-3.6-1.2l-2-2.4l-3.7-0.1l-2.7-2l-10-2.5l-5.7-1l-0.5,2.6l0.9,1.9l0.7,2.6l1.5,2.5l-0.1,1.7l1.6,2.9l-0.2,1.8l-2.5,2.7l-2.7,1.7l-3.6,1.2l-4.5,0.5l-2.7,1.5l-2.4,0.4l-0.5,0.8l-5.3,0l-0.8-1.1l-1.5,1l-0.2,2l-1.9,2.9l-0.8,0.1l-0.7,2.5l0.5,8.2l-0.7,2.2l0.8,0.7l0.2,2.9l-1,1.3l-0.9-0.1l-1.9,2l0.2,0.9l-1.6,1.6l0.2,0.8l1.7-0.4l1.8-2.3l0.5,0.4l0.2,2.9l2.7,0.2l1.1-2.6l1.4-0.4l3.3-4.9l1.3-0.2l5.2-4.3l4.9-5.3l3.1-4.1l2.7-4.5l1.7-0.4l2.4-1.2l7-0.4l2.2,1.2l1.3-0.6l5.9-0.1l1.8-1.8l1.5-3l2.3-2.7l1.6-3.4l3.3-4.4z'
-  },
-  IL: {
-    name: 'Illinois',
-    path: 'M563.6,265.3l0.5-2.6l-0.8-2.1l-0.8-5.2l0.5-5.2l1.6-3l0.2-3.5l-0.9-1.4l-0.1-3.7l-1.2-2.5l-1.7-1l-0.2-1.5l-1.7,0.4l-1.4-0.7l-1.7,0.4l-4.1-1.1l-1.8,0.5l-2.7,2.4l-1.1,0.2l-1.6-1.6l-0.4-2.2l-2.2-1.2l-0.4-2.9l0.7-2.6l-0.4-1.2l-3.1-0.7l-0.7-1.5l-1.4-0.4l-2.9-0.7l-0.7-3.1l-1.9,0l0.1,2.4l-0.7,2.2l0.4,2.2l-0.9,2.9l-3.9,3.8l-0.8,3.9l-1.4,1.2l-3.3,1.1l-2.2,3.2l-1,4.1l-3.9,2.2l-2.9,5.4l-1.9,0.4l-2.2,3.9l0.5,3.9l2.4,0.6l0.1,1.4l2.7,1.8l0,2.7l1.5,0.9l1.5,3.8l1.6,1.3l1.2,6.5l1.3,1.6l2.9-0.2l0.8,1.9l3.4,2.4l2.1,0.7l1.6-0.9l3.1,1.5l2.7-0.2l1,0.7l5.7,0.5l2.6,0.9l3.7,1.7l0.7-0.7l4.8,3.4l2.2-0.2l0.7,0.9z'
-  },
-  OH: {
-    name: 'Ohio',
-    path: 'M640.5,231.3l-0.8-4.7l-1.5-3.3l-0.9-0.5l-1.4-4.1l-1.7-0.7l-2-3.1l-2.2-0.4l-0.4-1.2l-1.8,0.2l-0.8,1.2l-1.9,0.5l-0.2,1.5l-1.4,0.5l-0.2-0.5l-2-0.5l-3.3-1.3l-1.1,0.5l-2.4,2.6l-3,0.9l-1.1,0.7l-0.7-0.4l-1.5,0.5l-0.8,1.8l-2.4,0.4l-1.1-0.7l-3.3,0.7l-0.9-0.4l0,1.5l-1.4,0.7l1.7,1l1.2,2.5l0.1,3.7l0.9,1.4l-0.2,3.5l-1.6,3l-0.5,5.2l0.8,5.2l0.8,2.1l-0.5,2.6l0.2,0.7l2.4,1l0.4,1.2l2.9,2.9l0.2,1l1.9,1.4l3,0.5l1.1,1.5l2.5,0.9l0.5-0.3l2.2,1l1.8-1.5l2.9,0.2l1.1-0.7l0.9,0.7l0.5,1.2l3.4-0.2l0.7-3.5l0.9-1.7l0.7-2.5l2.3-2.7l0.5-1.7l1.9-2l0.4-4.2l2.2-0.2l0.9-0.8l2.2-0.2l0.5-2.2l1.1-0.2l1.6-2.5z'
-  },
-  PA: {
-    name: 'Pennsylvania',
-    path: 'M732.7,207.3l-0.5-0.9l-4.1-0.9l-3.7,1.2l-0.5-0.4l-1.2,1.3l-1.5-1.2l-4.1,1.5l-0.7,0.9l-2.3-0.2l-3.2,1.1l-3.3,0.7l-0.4-0.5l-1.9,0.7l-3.5,0.2l-2.5,1l-3.1-0.2l-2.2,0.7l-2-0.2l-6.9,1.5l-3.7,0.5l-4.3,0.7l0.4,2.5l0.7,3.7l1,4.4l0.5,2l0.9,4.7l0.9,0.9l0.9,3.1l0.2,1.9l0.7,0.9l0.9,0l0.5,1.4l2.5,0.5l1.5-1l1.9,1.4l1.9-0.2l2.2-0.7l0.5-0.9l2.9,1l0.5,1.7l2.9,0.9l1.7-0.2l1.9,1.4l3.2-0.2l1.5-1.9l2.9-1.4l3.4-1.9l2.9-0.5l1.4-3l1.8-1.5l1.6,0.1l1-0.7l1.7-0.2l1.8-1.4l0.7-2.3l2.5-3l2.2-2.8l0.9-3l0-3l-1.4-4.3z'
-  },
-  GA: {
-    name: 'Georgia',
-    path: 'M616.5,397.5l-2.5-0.3l-4-0.9l-2.9-0.9l-0.5-2.2l-4.6-0.1l-4.9-0.3l-1.5-0.8l-1.1,0.6l-8.9-0.2l-9.6-0.6l-5.1,0.3l0.9,3.9l1.5,4.2l3.8,5.1l3.1,5.4l1.2,0.4l0.9,2l-1.4-0.7l-1.9-2.3l-0.5-1.7l-2.2-0.7l-1.4-1.5l-1.5,0.3l-0.4,1.2l-2.2,0.5l-2.7-1.3l-1.4-1.6l-1.4,0.4l-1.9-1l-1.6,0.6l-0.5,1.2l-3.1,2.7l-2.5,0l-1.5-1.1l-0.2-2.2l-1.6-0.7l-0.6,0.6l-1.7,3.9l-0.5,3.4l2.2,4.9l1.9,2.7l-0.2,3l2.5,4.2l2.4,3.1l2.4,0.7l1.5,1.5l1.8,0.3l3.9,3.2l1.8,0.3l0.5,1.4l38.7,4l1.5-3.4l3.1-6.4l2-3.2l0.3-4.2l-2.4-3l-0.4-2l-2.6-2l-2.4-4.4l1.4-1.7z'
-  },
-  NC: {
-    name: 'North Carolina',
-    path: 'M729.4,311.4l-1.2-1.8l-0.6,0.5l-1.5-0.4l-0.1-0.9l-4.6,0.2l-4.7,2.6l-3.1,3.6l-1.2,0l-0.6,1.2l-2.9,0.2l-1.4,1.1l-2.5-0.1l-1.6,0.9l-1.9-0.4l-1.9,1.1l-2.8-0.1l-1.7,0.6l-1.5-0.4l-5.6,3.1l-4.9,1.4l-4.9,2.3l-2,1.6l-2.2,0.3l-0.4,0.9l-3.6-0.1l-0.6,0.8l-2.9,0l-3.1,1.3l-1.4,1.6l-1.7-0.2l-1,1l-3,0.1l-3.9,2.1l-3.6,1.6l-0.5,1.1l-3.8,2.7l-0.7-0.2l-2.6,2l-0.7,1.7l-1.3,0.1l-0.4,1.2l-1.8,0.9l-0.1,1.6l-2.4-0.4l-2.7,0.8l-1.7,2.2l-3.5,0.6l2.6,1.9l1.9,0.2l1.9,1.1l3.1,0l1.5,1.6l0.5,1.6l2.1,0.1l0.9,2.4l3.9,1.1l3.8-1.2l2.6-2.3l1.9-0.4l2.1-1.1l1.1-2l2.8-0.9l1.3-1.1l1.8,0.5l3.6-1.9l2.9,0.9l0.7-0.6l4.9,0.1l2.2-1.7l2.4,0.3l1.1-1.7l3.5-1.3l1.7-1.2l2.4-3.7l4.3-2.2l3.9-1.9l0.8,0.3l2.9-1.7l1.9,0.4l3.9-2.9l3-0.4l3.9-1.3l5.4-3.3l3.9-1.5l2.5-0.2l0.5-1.7l3.6-1.8l0.7-2.1z'
-  },
+const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
+
+// State FIPS codes to abbreviations
+const FIPS_TO_ABBR: Record<string, string> = {
+  '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA',
+  '08': 'CO', '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL',
+  '13': 'GA', '15': 'HI', '16': 'ID', '17': 'IL', '18': 'IN',
+  '19': 'IA', '20': 'KS', '21': 'KY', '22': 'LA', '23': 'ME',
+  '24': 'MD', '25': 'MA', '26': 'MI', '27': 'MN', '28': 'MS',
+  '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH',
+  '34': 'NJ', '35': 'NM', '36': 'NY', '37': 'NC', '38': 'ND',
+  '39': 'OH', '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI',
+  '45': 'SC', '46': 'SD', '47': 'TN', '48': 'TX', '49': 'UT',
+  '50': 'VT', '51': 'VA', '53': 'WA', '54': 'WV', '55': 'WI',
+  '56': 'WY',
+};
+
+const STATE_NAMES: Record<string, string> = {
+  'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas',
+  'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware',
+  'DC': 'Washington DC', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii',
+  'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa',
+  'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine',
+  'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota',
+  'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska',
+  'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico',
+  'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio',
+  'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island',
+  'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas',
+  'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington',
+  'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming',
 };
 
 interface USMapProps {
@@ -68,11 +53,10 @@ export default function USMap({ stateData }: USMapProps) {
     const data = stateData[stateCode];
     if (!data || data.funding === 0) return '#1a1a1a';
 
-    // Color intensity based on funding amount
     const maxFunding = Math.max(...Object.values(stateData).map(d => d.funding));
-    const intensity = data.funding / maxFunding;
+    if (maxFunding === 0) return '#1a1a1a';
 
-    // Green gradient based on fraud amount
+    const intensity = data.funding / maxFunding;
     const r = Math.round(34 + (34 * (1 - intensity)));
     const g = Math.round(197 - (100 * (1 - intensity)));
     const b = Math.round(94 - (60 * (1 - intensity)));
@@ -88,36 +72,51 @@ export default function USMap({ stateData }: USMapProps) {
 
   return (
     <div className="relative">
-      <svg
-        viewBox="0 0 960 600"
-        className="w-full h-auto"
-        style={{ maxHeight: '70vh' }}
+      <ComposableMap
+        projection="geoAlbersUsa"
+        style={{ width: '100%', height: 'auto' }}
       >
-        {Object.entries(US_STATES).map(([code, { name, path }]) => {
-          const data = stateData[code];
-          return (
-            <path
-              key={code}
-              d={path}
-              fill={getStateColor(code)}
-              stroke="#333"
-              strokeWidth="1"
-              className="cursor-pointer transition-all duration-200 hover:brightness-125"
-              onClick={() => router.push(`/state/${code.toLowerCase()}`)}
-              onMouseEnter={() => setHoveredState(code)}
-              onMouseLeave={() => setHoveredState(null)}
-            />
-          );
-        })}
-      </svg>
+        <Geographies geography={geoUrl}>
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              const fips = geo.id;
+              const stateCode = FIPS_TO_ABBR[fips] || '';
+
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill={getStateColor(stateCode)}
+                  stroke="#333"
+                  strokeWidth={0.5}
+                  style={{
+                    default: { outline: 'none' },
+                    hover: { outline: 'none', fill: '#3b82f6' },
+                    pressed: { outline: 'none' },
+                  }}
+                  onClick={() => {
+                    if (stateCode) {
+                      router.push(`/state/${stateCode.toLowerCase()}`);
+                    }
+                  }}
+                  onMouseEnter={() => setHoveredState(stateCode)}
+                  onMouseLeave={() => setHoveredState(null)}
+                />
+              );
+            })
+          }
+        </Geographies>
+      </ComposableMap>
 
       {/* Tooltip */}
-      {hoveredState && stateData[hoveredState] && (
+      {hoveredState && (
         <div className="absolute top-4 right-4 bg-black border border-gray-700 p-4 text-sm">
-          <p className="font-bold">{US_STATES[hoveredState]?.name}</p>
-          <p className="text-gray-400">{stateData[hoveredState].count} providers</p>
+          <p className="font-bold">{STATE_NAMES[hoveredState] || hoveredState}</p>
+          <p className="text-gray-400">
+            {stateData[hoveredState]?.count || 0} providers
+          </p>
           <p className="text-green-500 font-mono">
-            {formatMoney(stateData[hoveredState].funding)} tracked
+            {formatMoney(stateData[hoveredState]?.funding || 0)} tracked
           </p>
         </div>
       )}
