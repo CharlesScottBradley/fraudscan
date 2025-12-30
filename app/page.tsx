@@ -21,12 +21,14 @@ interface EntityStats {
   funding?: number;
   amount?: number;
   flagged?: number;
+  fraudProne?: number;
 }
 
 interface StateEntityStats {
   childcare: EntityStats;
   nursing_home: EntityStats;
-  ppp: EntityStats & { amount: number; flagged: number };
+  ppp: EntityStats & { amount: number; flagged: number; fraudProne: number };
+  sba: EntityStats & { amount: number; fraudProne: number };
   fraud_cases: { count: number; amount: number };
   total_count: number;
   total_funding: number;
@@ -34,16 +36,17 @@ interface StateEntityStats {
 
 async function getMapStats(): Promise<{
   states: Record<string, StateEntityStats>;
-  totals: { childcare: number; nursing_homes: number; ppp_loans: number; ppp_amount: number };
+  totals: { childcare: number; nursing_homes: number; ppp_loans: number; ppp_amount: number; sba_loans: number; sba_amount: number };
 }> {
   const states: Record<string, StateEntityStats> = {};
-  const totals = { childcare: 0, nursing_homes: 0, ppp_loans: 0, ppp_amount: 0 };
+  const totals = { childcare: 0, nursing_homes: 0, ppp_loans: 0, ppp_amount: 0, sba_loans: 0, sba_amount: 0 };
 
   Object.keys(STATE_INFO).forEach(code => {
     states[code] = {
       childcare: { count: 0, geocoded: 0, funding: 0 },
       nursing_home: { count: 0, geocoded: 0 },
-      ppp: { count: 0, geocoded: 0, amount: 0, flagged: 0 },
+      ppp: { count: 0, geocoded: 0, amount: 0, flagged: 0, fraudProne: 0 },
+      sba: { count: 0, amount: 0, fraudProne: 0 },
       fraud_cases: { count: 0, amount: 0 },
       total_count: 0,
       total_funding: 0,
@@ -63,6 +66,10 @@ async function getMapStats(): Promise<{
       ppp_count?: number;
       ppp_total_amount?: number;
       ppp_flagged_count?: number;
+      ppp_fraud_prone_count?: number;
+      sba_count?: number;
+      sba_total_amount?: number;
+      sba_fraud_prone_count?: number;
       fraud_case_count?: number;
       fraud_total_amount?: number;
     }) => {
@@ -71,16 +78,19 @@ async function getMapStats(): Promise<{
       states[row.state] = {
         childcare: { count: row.childcare_count || 0, geocoded: row.childcare_geocoded || 0, funding: row.childcare_funding || 0 },
         nursing_home: { count: row.nursing_home_count || 0, geocoded: row.nursing_home_geocoded || 0 },
-        ppp: { count: row.ppp_count || 0, geocoded: row.ppp_count || 0, amount: row.ppp_total_amount || 0, flagged: row.ppp_flagged_count || 0 },
+        ppp: { count: row.ppp_count || 0, geocoded: row.ppp_count || 0, amount: row.ppp_total_amount || 0, flagged: row.ppp_flagged_count || 0, fraudProne: row.ppp_fraud_prone_count || 0 },
+        sba: { count: row.sba_count || 0, amount: row.sba_total_amount || 0, fraudProne: row.sba_fraud_prone_count || 0 },
         fraud_cases: { count: row.fraud_case_count || 0, amount: row.fraud_total_amount || 0 },
-        total_count: (row.childcare_count || 0) + (row.nursing_home_count || 0) + (row.ppp_count || 0),
-        total_funding: (row.childcare_funding || 0) + (row.ppp_total_amount || 0),
+        total_count: (row.childcare_count || 0) + (row.nursing_home_count || 0) + (row.ppp_count || 0) + (row.sba_count || 0),
+        total_funding: (row.childcare_funding || 0) + (row.ppp_total_amount || 0) + (row.sba_total_amount || 0),
       };
 
       totals.childcare += row.childcare_count || 0;
       totals.nursing_homes += row.nursing_home_count || 0;
       totals.ppp_loans += row.ppp_count || 0;
       totals.ppp_amount += row.ppp_total_amount || 0;
+      totals.sba_loans += row.sba_count || 0;
+      totals.sba_amount += row.sba_total_amount || 0;
     });
   }
 
@@ -103,15 +113,16 @@ export default async function Home() {
     getFraudTotal(),
   ]);
 
-  const totalOrganizations = totals.childcare + totals.nursing_homes + totals.ppp_loans;
+  const totalOrganizations = totals.childcare + totals.nursing_homes + totals.ppp_loans + totals.sba_loans;
 
   return (
-    <HomePageClient 
-      stateStats={states} 
+    <HomePageClient
+      stateStats={states}
       entityCounts={{
         childcare: totals.childcare,
         nursing_home: totals.nursing_homes,
         ppp: totals.ppp_loans,
+        sba: totals.sba_loans,
       }}
       totalFraud={totalFraud}
       totalOrganizations={totalOrganizations}

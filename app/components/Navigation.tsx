@@ -17,8 +17,10 @@ const navItems: NavItem[] = [
     label: 'Database',
     children: [
       { label: 'Childcare Providers', href: '/database' },
+      { label: 'HCBS Providers', href: '/hcbs' },
       { label: 'PPP Loans', href: '/ppp' },
       { label: 'Nursing Homes', href: '/nursing-homes' },
+      { label: 'Improper Payments', href: '/improper-payments' },
     ],
   },
   {
@@ -32,8 +34,9 @@ const navItems: NavItem[] = [
   },
   { label: 'News', href: '/news' },
   {
-    label: 'About',
+    label: 'Resources',
     children: [
+      { label: 'FOIA Request Generator', href: '/foia' },
       { label: 'About', href: '/about' },
       { label: 'API Docs', href: '/api/docs' },
     ],

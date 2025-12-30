@@ -10,6 +10,7 @@ interface HomePageClientProps {
     childcare: number;
     nursing_home: number;
     ppp: number;
+    sba: number;
   };
   totalFraud: number;
   totalOrganizations: number;
@@ -20,6 +21,7 @@ const FILTERS: { id: EntityType; label: string }[] = [
   { id: 'childcare', label: 'Childcare' },
   { id: 'nursing_home', label: 'Nursing Homes' },
   { id: 'ppp', label: 'PPP Loans' },
+  { id: 'sba', label: 'SBA Loans' },
 ];
 
 function formatMoney(amount: number): string {

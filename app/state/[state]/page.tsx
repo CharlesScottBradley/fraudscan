@@ -3,6 +3,16 @@ import Link from 'next/link';
 import StateMap from '../../components/StateMap';
 import StateDataTable from './StateDataTable';
 
+interface StateProgramData {
+  programName: string;
+  agency: string;
+  fiscalYear: number;
+  improperPaymentRate: number;
+  improperPaymentAmount: number;
+  isHighPriority: boolean;
+  relevanceReason: string;
+}
+
 // All US states with map centers
 const STATE_INFO: Record<string, { name: string; center: [number, number]; zoom: number }> = {
   al: { name: 'Alabama', center: [-86.9023, 32.3182], zoom: 6 },
@@ -154,6 +164,89 @@ async function getPPPStats(stateCode: string) {
   };
 }
 
+async function getRelevantPrograms(stateCode: string): Promise<StateProgramData[]> {
+  const stateUpper = stateCode.toUpperCase();
+
+  // Check if state has childcare providers
+  const { count: providerCount } = await supabase
+    .from('providers')
+    .select('*', { count: 'exact', head: true })
+    .eq('state', stateUpper);
+
+  const hasProviders = (providerCount || 0) > 0;
+
+  // Get latest improper payment data for relevant programs
+  const { data: allPrograms } = await supabase
+    .from('improper_payments')
+    .select('program_name, agency, fiscal_year, improper_payment_rate, improper_payment_amount, is_high_priority')
+    .gte('fiscal_year', 2023)
+    .order('fiscal_year', { ascending: false });
+
+  if (!allPrograms) {
+    return [];
+  }
+
+  // Group by program name and take the most recent fiscal year
+  const programMap = new Map<string, any>();
+  for (const program of allPrograms) {
+    if (!programMap.has(program.program_name) ||
+        program.fiscal_year > programMap.get(program.program_name).fiscal_year) {
+      programMap.set(program.program_name, program);
+    }
+  }
+
+  const relevantPrograms: StateProgramData[] = [];
+
+  programMap.forEach((program) => {
+    const name = program.program_name.toLowerCase();
+    let relevanceReason = '';
+    let isRelevant = false;
+
+    // Medicare, Medicaid - all states
+    if (name.includes('medicare') || name.includes('medicaid')) {
+      isRelevant = true;
+      relevanceReason = 'Healthcare program operating in all states';
+    }
+    // Unemployment - all states
+    else if (name.includes('unemployment') && !name.includes('pandemic')) {
+      isRelevant = true;
+      relevanceReason = 'Labor program operating in all states';
+    }
+    // SNAP - all states
+    else if (name.includes('snap')) {
+      isRelevant = true;
+      relevanceReason = 'Nutrition assistance program operating in all states';
+    }
+    // Child Care programs - only if state has providers
+    else if (name.includes('child care') && hasProviders) {
+      isRelevant = true;
+      relevanceReason = `${providerCount} childcare providers in this state`;
+    }
+    // CACFP - only if state has providers
+    else if (name.includes('cacfp') && hasProviders) {
+      isRelevant = true;
+      relevanceReason = `${providerCount} childcare providers in this state`;
+    }
+
+    if (isRelevant && program.improper_payment_rate !== null && program.improper_payment_amount !== null) {
+      relevantPrograms.push({
+        programName: program.program_name,
+        agency: program.agency,
+        fiscalYear: program.fiscal_year,
+        improperPaymentRate: parseFloat(program.improper_payment_rate),
+        improperPaymentAmount: parseFloat(program.improper_payment_amount),
+        isHighPriority: program.is_high_priority || false,
+        relevanceReason,
+      });
+    }
+  });
+
+  // Sort by improper payment amount (descending) - show biggest programs first
+  relevantPrograms.sort((a, b) => b.improperPaymentAmount - a.improperPaymentAmount);
+
+  return relevantPrograms;
+}
+
 export const revalidate = 60;
 
 function formatMoney(amount: number): string {
@@ -181,10 +274,11 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, pppStats] = await Promise.all([
+  const [providers, stats, pppStats, programs] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
     getPPPStats(state),
+    getRelevantPrograms(state),
   ]);
 
   return (
@@ -226,6 +320,62 @@ export default async function StatePage({ params }: PageProps) {
           <p className="text-gray-500 text-sm">Provider Funding</p>
         </div>
       </div>
+
+      {/* Federal Program Fraud Rates */}
+      {programs.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-xl font-bold">Federal Program Fraud Rates</h2>
+            <Link
+              href="/improper-payments"
+              className="text-sm text-gray-400 hover:text-white"
+            >
+              View all programs →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {programs.slice(0, 6).map((program, idx) => (
+              <div
+                key={idx}
+                className="border border-gray-800 p-4 hover:border-gray-700 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-mono text-sm font-semibold text-white">
+                    {program.programName.replace(/^.*\(([A-Z]+)\)\s*-\s*/, '')}
+                  </h3>
+                  {program.isHighPriority && (
+                    <span className="text-xs text-red-400 border border-red-800 px-2 py-1 rounded">
+                      High Priority
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mb-3">{program.agency}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-red-500 font-mono text-xl font-bold">
+                      {program.improperPaymentRate.toFixed(2)}%
+                    </p>
+                    <p className="text-gray-500 text-xs">Improper Payment Rate</p>
+                  </div>
+                  <div>
+                    <p className="text-red-500 font-mono text-xl font-bold">
+                      {formatMoney(program.improperPaymentAmount)}
+                    </p>
+                    <p className="text-gray-500 text-xs">Annual Loss (FY{program.fiscalYear})</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 mt-3 italic">
+                  {program.relevanceReason}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-600 mt-4">
+            National improper payment rates for federal programs operating in {stateInfo.name}.
+            These represent fraud, waste, and abuse at the federal level.
+          </p>
+        </div>
+      )}
 
       {/* Map - only show if there are geocoded providers */}
       {stats.withCoordinates > 0 && (
