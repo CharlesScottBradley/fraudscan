@@ -55,11 +55,12 @@ export async function GET(request: Request) {
   const naicsCode = searchParams.get('naics');
   const loanStatus = searchParams.get('status');
   const businessType = searchParams.get('businessType');
-  const sortBy = searchParams.get('sortBy') || 'fraud_score';
+  // Default to initial_approval_amount which has a proper index
+  const sortBy = searchParams.get('sortBy') || 'initial_approval_amount';
   const sortDir = searchParams.get('sortDir') || 'desc';
 
   try {
-    // Build query
+    // Build query - use count: 'estimated' for large tables to avoid timeout
     let query = supabase
       .from('ppp_loans')
       .select(`
@@ -81,7 +82,7 @@ export async function GET(request: Request) {
         fraud_score,
         is_flagged,
         flags
-      `, { count: 'exact' });
+      `, { count: 'estimated' });
 
     // Apply filters
     if (search) {
@@ -122,9 +123,10 @@ export async function GET(request: Request) {
       query = query.ilike('business_type', `%${businessType}%`);
     }
 
-    // Sorting
-    const validSortColumns = ['fraud_score', 'initial_approval_amount', 'jobs_reported', 'date_approved', 'borrower_name'];
-    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'fraud_score';
+    // Sorting - use indexed columns for better performance
+    const validSortColumns = ['initial_approval_amount', 'jobs_reported', 'date_approved', 'borrower_name'];
+    // fraud_score sort only works well when filtering to flagged loans (which have scores > 0)
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'initial_approval_amount';
     query = query.order(sortColumn, { ascending: sortDir === 'asc' });
 
     // Pagination
@@ -145,48 +147,16 @@ export async function GET(request: Request) {
         : null
     }));
 
-    // Get aggregate stats for the filtered results
-    let statsQuery = supabase
-      .from('ppp_loans')
-      .select('initial_approval_amount, is_flagged, loan_status');
-
-    // Apply same filters for stats
-    if (search) {
-      statsQuery = statsQuery.or(`borrower_name.ilike.%${search}%,borrower_address.ilike.%${search}%,loan_number.ilike.%${search}%`);
-    }
-    if (state) {
-      statsQuery = statsQuery.eq('borrower_state', state.toUpperCase());
-    }
-    if (minAmount) {
-      statsQuery = statsQuery.gte('initial_approval_amount', parseFloat(minAmount));
-    }
-    if (maxAmount) {
-      statsQuery = statsQuery.lte('initial_approval_amount', parseFloat(maxAmount));
-    }
-    if (flagged === 'true') {
-      statsQuery = statsQuery.eq('is_flagged', true);
-    }
-    if (minScore) {
-      statsQuery = statsQuery.gte('fraud_score', parseInt(minScore));
-    }
-
-    // Limit stats calculation to a reasonable sample if too many results
-    const statsLimit = 10000;
-    statsQuery = statsQuery.limit(statsLimit);
-
-    const { data: statsData } = await statsQuery;
-    
+    // Calculate stats from current page results only (avoid slow aggregate query)
     let totalAmount = 0;
     let flaggedCount = 0;
     let chargedOffCount = 0;
-    
-    if (statsData) {
-      statsData.forEach((loan: { initial_approval_amount: number; is_flagged: boolean; loan_status: string }) => {
-        totalAmount += loan.initial_approval_amount || 0;
-        if (loan.is_flagged) flaggedCount++;
-        if (loan.loan_status === 'Charged Off') chargedOffCount++;
-      });
-    }
+
+    loansWithCalc.forEach((loan) => {
+      totalAmount += loan.initial_approval_amount || 0;
+      if (loan.is_flagged) flaggedCount++;
+      if (loan.loan_status === 'Charged Off') chargedOffCount++;
+    });
 
     const response: PPPSearchResponse = {
       loans: loansWithCalc,
@@ -196,7 +166,7 @@ export async function GET(request: Request) {
       totalPages: Math.ceil((count || 0) / pageSize),
       stats: {
         totalAmount,
-        avgLoan: statsData?.length ? totalAmount / statsData.length : 0,
+        avgLoan: loansWithCalc.length ? totalAmount / loansWithCalc.length : 0,
         flaggedCount,
         chargedOffCount
       }
