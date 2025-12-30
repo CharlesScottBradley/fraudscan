@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brighten text grays for better readability on black */
+  --color-gray-400: #b8bfc9;  /* was #9ca3af - secondary text */
+  --color-gray-500: #9ca3af;  /* was #6b7280 - muted text */
+  --color-gray-600: #7b8494;  /* was #4b5563 - very muted */
+}
+
 :root {
   --background: #000000;
   --foreground: #ffffff;
