@@ -12,10 +12,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Map', href: '/' },
-  { label: 'Cases', href: '/cases' },
   {
     label: 'Investigations',
     children: [
+      { label: 'Cases', href: '/cases' },
       { label: 'MN/OH/WA Analysis', href: '/investigation/mn-oh-wa' },
     ],
   },
@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
     children: [
       { label: 'FOIA Request Generator', href: '/foia' },
       { label: 'District Court Complaint', href: '/lawsuit' },
+      { label: 'Submit a Tip', href: '/tip' },
       { label: 'About', href: '/about' },
       { label: 'API Docs', href: '/api/docs' },
     ],
@@ -181,11 +182,11 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
           })}
 
           <Link
-            href="/tip"
+            href="/support"
             onClick={onClose}
-            className="mt-4 py-2 text-green-500 hover:text-green-400"
+            className="mt-4 py-2 px-4 border border-orange-500 text-orange-500 hover:bg-orange-500/10 rounded text-center"
           >
-            Submit Tip
+            Support Us
           </Link>
         </nav>
       </div>
@@ -225,8 +226,11 @@ export default function Navigation() {
 
           return <NavDropdown key={item.label} item={item} isActive={isActive} />;
         })}
-        <Link href="/tip" className="text-green-500 hover:text-green-400">
-          Submit Tip
+        <Link 
+          href="/support" 
+          className="px-4 py-1.5 border border-orange-500 text-orange-500 hover:bg-orange-500/10 rounded text-sm"
+        >
+          Support Us
         </Link>
       </nav>
 
