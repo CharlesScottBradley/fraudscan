@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
-type DataType = 'all' | 'providers' | 'ppp_loans';
+type DataType = 'all' | 'providers' | 'ppp_loans' | 'sba_loans';
 
 const US_STATES: Record<string, string> = {
   AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
@@ -21,7 +21,7 @@ const US_STATES: Record<string, string> = {
 
 interface DataItem {
   id: string;
-  type: 'provider' | 'ppp_loan';
+  type: 'provider' | 'ppp_loan' | 'sba_loan';
   name: string;
   city: string | null;
   state: string | null;
@@ -34,6 +34,7 @@ interface DataItem {
 interface Props {
   initialProviderCount: number;
   initialPPPCount: number;
+  initialSBACount: number;
 }
 
 function formatMoney(amount: number | null): string {
@@ -47,7 +48,7 @@ function formatMoney(amount: number | null): string {
   return `$${amount.toLocaleString()}`;
 }
 
-export default function DatabaseTable({ initialProviderCount, initialPPPCount }: Props) {
+export default function DatabaseTable({ initialProviderCount, initialPPPCount, initialSBACount }: Props) {
   const [dataType, setDataType] = useState<DataType>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedState, setSelectedState] = useState('');
@@ -62,6 +63,7 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
   const [totalCount, setTotalCount] = useState(0);
   const [providerCount, setProviderCount] = useState(initialProviderCount);
   const [pppCount, setPPPCount] = useState(initialPPPCount);
+  const [sbaCount, setSBACount] = useState(initialSBACount);
   const [loading, setLoading] = useState(true);
 
   // Debounce search
@@ -97,6 +99,7 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
       setTotalCount(result.totalCount);
       setProviderCount(result.providerCount);
       setPPPCount(result.pppCount);
+      setSBACount(result.sbaCount);
     } catch (err) {
       console.error('Failed to fetch data:', err);
     } finally {
@@ -142,7 +145,7 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
   return (
     <div>
       {/* Data type toggle */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => handleTypeChange('all')}
           className={`px-4 py-2 text-sm rounded ${
@@ -151,7 +154,7 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
               : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
           }`}
         >
-          All ({(providerCount + pppCount).toLocaleString()})
+          All ({(providerCount + pppCount + sbaCount).toLocaleString()})
         </button>
         <button
           onClick={() => handleTypeChange('providers')}
@@ -172,6 +175,16 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
           }`}
         >
           PPP Loans ({pppCount.toLocaleString()})
+        </button>
+        <button
+          onClick={() => handleTypeChange('sba_loans')}
+          className={`px-4 py-2 text-sm rounded ${
+            dataType === 'sba_loans'
+              ? 'bg-amber-600 text-white'
+              : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+          }`}
+        >
+          SBA Loans ({sbaCount.toLocaleString()})
         </button>
       </div>
 
@@ -288,9 +301,11 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
                     <span className={`px-2 py-0.5 rounded text-xs ${
                       item.type === 'provider'
                         ? 'bg-blue-900/40 text-blue-400'
-                        : 'bg-purple-900/40 text-purple-400'
+                        : item.type === 'ppp_loan'
+                        ? 'bg-purple-900/40 text-purple-400'
+                        : 'bg-amber-900/40 text-amber-400'
                     }`}>
-                      {item.type === 'provider' ? 'Provider' : 'PPP'}
+                      {item.type === 'provider' ? 'Provider' : item.type === 'ppp_loan' ? 'PPP' : 'SBA'}
                     </span>
                   </td>
                   <td className="p-3 font-medium">{item.name}</td>
@@ -309,6 +324,10 @@ export default function DatabaseTable({ initialProviderCount, initialPPPCount }:
                         View →
                       </Link>
                     ) : item.type === 'ppp_loan' ? (
+                      <span className="text-gray-500 text-xs">
+                        {item.jobs_reported ? `${item.jobs_reported} jobs` : '-'}
+                      </span>
+                    ) : item.type === 'sba_loan' ? (
                       <span className="text-gray-500 text-xs">
                         {item.jobs_reported ? `${item.jobs_reported} jobs` : '-'}
                       </span>

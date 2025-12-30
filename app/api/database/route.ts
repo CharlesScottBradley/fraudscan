@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const results: {
     data: Array<{
       id: string;
-      type: 'provider' | 'ppp_loan';
+      type: 'provider' | 'ppp_loan' | 'sba_loan';
       name: string;
       city: string | null;
       state: string | null;
@@ -30,11 +30,13 @@ export async function GET(request: NextRequest) {
     totalCount: number;
     providerCount: number;
     pppCount: number;
+    sbaCount: number;
   } = {
     data: [],
     totalCount: 0,
     providerCount: 0,
     pppCount: 0,
+    sbaCount: 0,
   };
 
   // Get provider count
@@ -76,6 +78,30 @@ export async function GET(request: NextRequest) {
     const { count, error } = await countQuery;
     if (error) console.error('PPP count error:', error);
     results.pppCount = count || 0;
+  }
+
+  // Get SBA count
+  if (dataType === 'all' || dataType === 'sba_loans') {
+    let countQuery = supabase
+      .from('sba_loans')
+      .select('*', { count: 'exact', head: true });
+
+    if (search) {
+      countQuery = countQuery.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
+    }
+    if (state) {
+      countQuery = countQuery.eq('borrower_state', state);
+    }
+    if (minAmount > 0) {
+      countQuery = countQuery.gte('gross_approval', minAmount);
+    }
+    if (maxAmount !== null) {
+      countQuery = countQuery.lte('gross_approval', maxAmount);
+    }
+
+    const { count, error } = await countQuery;
+    if (error) console.error('SBA count error:', error);
+    results.sbaCount = count || 0;
   }
 
   // Fetch data based on type
@@ -180,11 +206,66 @@ export async function GET(request: NextRequest) {
 
     results.totalCount = results.pppCount;
 
-  } else {
-    // 'all' type - show PPP loans first (by amount), then providers
-    results.totalCount = results.providerCount + results.pppCount;
+  } else if (dataType === 'sba_loans') {
+    let query = supabase
+      .from('sba_loans')
+      .select(`
+        id,
+        sba_loan_number,
+        borrower_name,
+        borrower_city,
+        borrower_state,
+        loan_program,
+        gross_approval,
+        jobs_supported
+      `);
 
-    if (offset < results.pppCount) {
+    if (search) {
+      query = query.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
+    }
+    if (state) {
+      query = query.eq('borrower_state', state);
+    }
+    if (minAmount > 0) {
+      query = query.gte('gross_approval', minAmount);
+    }
+    if (maxAmount !== null) {
+      query = query.lte('gross_approval', maxAmount);
+    }
+
+    if (sortBy === 'amount') {
+      query = query.order('gross_approval', { ascending: sortDir === 'asc' });
+    } else {
+      query = query.order('borrower_name', { ascending: sortDir === 'asc' });
+    }
+
+    query = query.range(offset, offset + pageSize - 1);
+
+    const { data: loans, error } = await query;
+    if (error) console.error('SBA query error:', error);
+
+    results.data = (loans || []).map(l => ({
+      id: l.id,
+      type: 'sba_loan' as const,
+      name: l.borrower_name,
+      city: l.borrower_city,
+      state: l.borrower_state,
+      category: l.loan_program,
+      amount: l.gross_approval || 0,
+      jobs_reported: l.jobs_supported,
+    }));
+
+    results.totalCount = results.sbaCount;
+
+  } else {
+    // 'all' type - show PPP loans first (by amount), then SBA, then providers
+    results.totalCount = results.providerCount + results.pppCount + results.sbaCount;
+
+    // Determine which section we're in based on offset
+    const pppEnd = results.pppCount;
+    const sbaEnd = pppEnd + results.sbaCount;
+
+    if (offset < pppEnd) {
       // Still in PPP section
       const pppToFetch = Math.min(pageSize, results.pppCount - offset);
 
@@ -231,9 +312,151 @@ export async function GET(request: NextRequest) {
         jobs_reported: l.jobs_reported,
       }));
 
+      // Fill remaining with SBA loans if needed
+      if (pppToFetch < pageSize && results.sbaCount > 0) {
+        const sbaToFetch = Math.min(pageSize - pppToFetch, results.sbaCount);
+
+        let sbaQuery = supabase
+          .from('sba_loans')
+          .select(`
+            id,
+            sba_loan_number,
+            borrower_name,
+            borrower_city,
+            borrower_state,
+            loan_program,
+            gross_approval,
+            jobs_supported
+          `);
+
+        if (search) {
+          sbaQuery = sbaQuery.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
+        }
+        if (state) {
+          sbaQuery = sbaQuery.eq('borrower_state', state);
+        }
+        if (minAmount > 0) {
+          sbaQuery = sbaQuery.gte('gross_approval', minAmount);
+        }
+        if (maxAmount !== null) {
+          sbaQuery = sbaQuery.lte('gross_approval', maxAmount);
+        }
+
+        sbaQuery = sbaQuery.order('gross_approval', { ascending: sortDir === 'asc' })
+          .range(0, sbaToFetch - 1);
+
+        const { data: sbaLoans } = await sbaQuery;
+
+        const sbaResults = (sbaLoans || []).map(l => ({
+          id: l.id,
+          type: 'sba_loan' as const,
+          name: l.borrower_name,
+          city: l.borrower_city,
+          state: l.borrower_state,
+          category: l.loan_program,
+          amount: l.gross_approval || 0,
+          jobs_reported: l.jobs_supported,
+        }));
+
+        results.data = [...results.data, ...sbaResults];
+
+        // Fill remaining with providers if still needed
+        const remaining = pageSize - results.data.length;
+        if (remaining > 0 && results.providerCount > 0) {
+          let provQuery = supabase
+            .from('providers')
+            .select(`id, license_number, name, city, state, license_type`);
+
+          if (search) {
+            provQuery = provQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
+          }
+          if (state) {
+            provQuery = provQuery.eq('state', state);
+          }
+
+          provQuery = provQuery.order('name', { ascending: true })
+            .range(0, remaining - 1);
+
+          const { data: providers } = await provQuery;
+
+          const providerIds = providers?.map(p => p.id) || [];
+          let fundingMap: Record<string, number> = {};
+
+          if (providerIds.length > 0) {
+            const { data: payments } = await supabase
+              .from('payments')
+              .select('provider_id, total_amount')
+              .in('provider_id', providerIds);
+
+            payments?.forEach(p => {
+              fundingMap[p.provider_id] = (fundingMap[p.provider_id] || 0) + p.total_amount;
+            });
+          }
+
+          const providerResults = (providers || []).map(p => ({
+            id: p.id,
+            type: 'provider' as const,
+            name: p.name,
+            city: p.city,
+            state: p.state,
+            category: p.license_type,
+            amount: fundingMap[p.id] || 0,
+            license_number: p.license_number,
+          }));
+
+          results.data = [...results.data, ...providerResults];
+        }
+      }
+    } else if (offset < sbaEnd) {
+      // In SBA section
+      const sbaOffset = offset - pppEnd;
+      const sbaToFetch = Math.min(pageSize, results.sbaCount - sbaOffset);
+
+      let query = supabase
+        .from('sba_loans')
+        .select(`
+          id,
+          sba_loan_number,
+          borrower_name,
+          borrower_city,
+          borrower_state,
+          loan_program,
+          gross_approval,
+          jobs_supported
+        `);
+
+      if (search) {
+        query = query.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
+      }
+      if (state) {
+        query = query.eq('borrower_state', state);
+      }
+      if (minAmount > 0) {
+        query = query.gte('gross_approval', minAmount);
+      }
+      if (maxAmount !== null) {
+        query = query.lte('gross_approval', maxAmount);
+      }
+
+      query = query.order('gross_approval', { ascending: sortDir === 'asc' })
+        .range(sbaOffset, sbaOffset + sbaToFetch - 1);
+
+      const { data: loans } = await query;
+
+      results.data = (loans || []).map(l => ({
+        id: l.id,
+        type: 'sba_loan' as const,
+        name: l.borrower_name,
+        city: l.borrower_city,
+        state: l.borrower_state,
+        category: l.loan_program,
+        amount: l.gross_approval || 0,
+        jobs_reported: l.jobs_supported,
+      }));
+
       // Fill remaining with providers if needed
-      if (pppToFetch < pageSize) {
-        const providersToFetch = pageSize - pppToFetch;
+      if (sbaToFetch < pageSize) {
+        const providersToFetch = pageSize - sbaToFetch;
 
         let provQuery = supabase
           .from('providers')
@@ -279,8 +502,8 @@ export async function GET(request: NextRequest) {
         results.data = [...results.data, ...providerResults];
       }
     } else {
-      // Past PPP, into providers
-      const providerOffset = offset - results.pppCount;
+      // Past PPP and SBA, into providers
+      const providerOffset = offset - sbaEnd;
 
       let query = supabase
         .from('providers')

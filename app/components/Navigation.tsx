@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
       { label: 'Childcare Providers', href: '/database' },
       { label: 'HCBS Providers', href: '/hcbs' },
       { label: 'PPP Loans', href: '/ppp' },
+      { label: 'SBA Loans', href: '/sba' },
       { label: 'Nursing Homes', href: '/nursing-homes' },
       { label: 'Improper Payments', href: '/improper-payments' },
     ],
@@ -37,6 +38,7 @@ const navItems: NavItem[] = [
     label: 'Resources',
     children: [
       { label: 'FOIA Request Generator', href: '/foia' },
+      { label: 'District Court Complaint', href: '/lawsuit' },
       { label: 'About', href: '/about' },
       { label: 'API Docs', href: '/api/docs' },
     ],
