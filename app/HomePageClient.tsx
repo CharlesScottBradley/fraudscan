@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import USMap, { StateEntityStats } from './components/USMap';
 import { EntityType, ENTITY_COLORS } from './components/EntityTypeFilter';
+import EmailSignup from './components/EmailSignup';
 
 interface HomePageClientProps {
   stateStats: Record<string, StateEntityStats>;
@@ -48,7 +49,7 @@ export default function HomePageClient({
   return (
     <div className="h-full flex flex-col">
       {/* Stats row */}
-      <div className="flex gap-16 mb-8">
+      <div className="flex flex-wrap gap-x-16 gap-y-6 mb-8">
         <div>
           <p className="text-green-500 font-mono text-4xl font-bold">
             {formatMoney(totalFraud)}
@@ -60,6 +61,13 @@ export default function HomePageClient({
             {totalOrganizations.toLocaleString()}
           </p>
           <p className="text-gray-500 mt-1 text-sm">Organizations tracked</p>
+        </div>
+        <div className="ml-auto">
+          <EmailSignup 
+            source="homepage" 
+            variant="terminal" 
+            label="Get notified when new fraud cases are published"
+          />
         </div>
       </div>
 

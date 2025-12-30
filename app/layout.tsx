@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Navigation from "./components/Navigation";
+import EmailSignup from "./components/EmailSignup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,6 +72,14 @@ export default function RootLayout({
               <p className="text-gray-400 mb-4">
                 Have information about fraud? <Link href="/tip" className="text-green-500 hover:underline">Submit a tip</Link> or email admin@somaliscan.com
               </p>
+
+              {/* Email Signup */}
+              <div className="mb-4">
+                <EmailSignup source="footer" variant="inline" />
+                <p className="text-gray-600 text-xs mt-2">
+                  or follow on <a href="https://beaverdata.substack.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-400">Substack</a>
+                </p>
+              </div>
               
               {/* Attribution */}
               <p className="text-gray-600">

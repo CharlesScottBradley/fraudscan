@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import StateMap from '../../components/StateMap';
 import StateDataTable from './StateDataTable';
+import EmailSignup from '../../components/EmailSignup';
 
 interface StateProgramData {
   programName: string;
@@ -410,6 +411,18 @@ export default async function StatePage({ params }: PageProps) {
         initialProviderCount={stats.providerCount}
         initialPPPCount={pppStats.count}
       />
+
+      {/* Email Signup - state-specific */}
+      <div className="mt-12 border-t border-gray-800 pt-8">
+        <EmailSignup 
+          source={`state:${state.toUpperCase()}`} 
+          variant="block" 
+          label={`${stateInfo.name} Alerts`}
+        />
+        <p className="text-gray-600 text-sm mt-2">
+          Get notified of new fraud investigations in {stateInfo.name}.
+        </p>
+      </div>
     </div>
   );
 }

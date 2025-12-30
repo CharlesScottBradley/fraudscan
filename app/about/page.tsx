@@ -1,3 +1,5 @@
+import EmailSignup from '../components/EmailSignup';
+
 export const metadata = {
   title: 'About | SomaliScan',
   description: 'Why I built this government spending tracker',
@@ -64,6 +66,21 @@ export default function AboutPage() {
           <a href="mailto:admin@somaliscan.com" className="text-green-500 hover:underline">
             admin@somaliscan.com
           </a>
+        </p>
+        <p className="text-gray-400 mt-2">
+          Follow updates on{' '}
+          <a href="https://beaverdata.substack.com" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline">
+            Substack
+          </a>
+        </p>
+
+        <EmailSignup 
+          source="about" 
+          variant="block" 
+          label="Stay Informed"
+        />
+        <p className="text-gray-600 text-sm mt-2">
+          Get notified when new data is added or major fraud cases are published.
         </p>
       </div>
     </div>
