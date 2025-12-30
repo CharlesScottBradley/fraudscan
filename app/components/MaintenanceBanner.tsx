@@ -33,7 +33,7 @@ export default function MaintenanceBanner() {
           {/* Time */}
           <div className="bg-black/50 rounded-xl py-4 px-6 mb-6 inline-block">
             <p className="text-2xl md:text-3xl font-mono font-bold text-white">
-              11:00 AM - 12:30 PM EST
+              Scheduled service end: 3:00 PM EST
             </p>
           </div>
 
