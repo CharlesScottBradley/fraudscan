@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cinzel } from "next/font/google";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["700", "900"],
+});
+
 export const metadata: Metadata = {
   title: "SomaliScan",
   description: "Child Care Subsidy Fraud Tracker",
@@ -27,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased bg-black text-white`}>
         <div className="min-h-screen flex flex-col">
           <header className="py-6 px-6 flex items-center justify-between max-w-6xl mx-auto w-full">
             <Link href="/" className="text-xl font-bold tracking-tight">
