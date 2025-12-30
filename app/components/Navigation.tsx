@@ -14,6 +14,12 @@ const navItems: NavItem[] = [
   { label: 'Map', href: '/' },
   { label: 'Cases', href: '/cases' },
   {
+    label: 'Investigations',
+    children: [
+      { label: 'MN/OH/WA Analysis', href: '/investigation/mn-oh-wa' },
+    ],
+  },
+  {
     label: 'Database',
     children: [
       { label: 'Childcare Providers', href: '/database' },
