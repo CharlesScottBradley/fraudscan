@@ -224,9 +224,21 @@ ${today}`;
       </Link>
 
       <h1 className="text-2xl font-bold mb-2">Public Records Request Generator</h1>
-      <p className="text-gray-400 mb-8">
+      <p className="text-gray-400 mb-6">
         Generate state-specific public records requests for government data. Select your state and request type below.
       </p>
+
+      {/* Disclaimer */}
+      <div className="border border-yellow-900/50 bg-yellow-950/20 rounded p-4 mb-8">
+        <p className="text-yellow-200/80 text-sm font-medium mb-2">Important Disclaimer</p>
+        <p className="text-yellow-200/60 text-xs leading-relaxed">
+          This tool generates <strong>templates only</strong> and does not constitute legal advice. Agency contact information, 
+          response deadlines, and legal citations may be outdated or incorrect. <strong>You are responsible for verifying</strong> all 
+          information before submitting any request. Laws and procedures change frequently. We recommend consulting your 
+          state&apos;s official FOIA resources or an attorney for guidance. FraudWatch assumes no liability for the accuracy 
+          of this information or the outcome of any records request.
+        </p>
+      </div>
 
       {/* State Selector */}
       <div className="mb-8">
