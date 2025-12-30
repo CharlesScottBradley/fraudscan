@@ -48,14 +48,35 @@ export default function RootLayout({
             </div>
           </main>
 
-          <footer className="py-8 px-6 text-center text-gray-500 text-sm">
-            <p>Data sourced from state licensing databases and court records</p>
-            <p className="mt-4 text-gray-400">
-              Have information about fraud? <Link href="/tip" className="text-green-500 hover:underline">Submit a tip</Link> or email admin@somaliscan.com
-            </p>
-            <p className="mt-6 text-gray-600">
-              Powered by <a href="https://fruitdatalabs.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">fruitdatalabs.xyz</a>
-            </p>
+          <footer className="py-8 px-6 text-center text-sm border-t border-gray-900">
+            <div className="max-w-4xl mx-auto">
+              {/* Disclaimer */}
+              <p className="text-gray-500 text-xs leading-relaxed mb-4">
+                Data sourced from public records and may contain errors or omissions. This site does not accuse any individual 
+                or entity of wrongdoing. Information is provided for research and educational purposes only and should be 
+                independently verified before taking any action. Nothing on this site constitutes legal, financial, or 
+                professional advice.
+              </p>
+              
+              {/* Links */}
+              <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mb-4">
+                <Link href="/terms" className="hover:text-gray-400">Terms of Use</Link>
+                <span className="text-gray-800">•</span>
+                <Link href="/privacy" className="hover:text-gray-400">Privacy Policy</Link>
+                <span className="text-gray-800">•</span>
+                <Link href="/corrections" className="hover:text-gray-400">Request Correction</Link>
+              </div>
+
+              {/* Tip Line */}
+              <p className="text-gray-400 mb-4">
+                Have information about fraud? <Link href="/tip" className="text-green-500 hover:underline">Submit a tip</Link> or email admin@somaliscan.com
+              </p>
+              
+              {/* Attribution */}
+              <p className="text-gray-600">
+                Powered by <a href="https://fruitdatalabs.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">fruitdatalabs.xyz</a>
+              </p>
+            </div>
           </footer>
         </div>
         <Analytics />
