@@ -157,7 +157,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isValidCaptcha = await verifyTurnstile(turnstileToken);
+    let isValidCaptcha = false;
+    try {
+      isValidCaptcha = await verifyTurnstile(turnstileToken);
+    } catch (captchaError) {
+      console.error('Turnstile verification error:', captchaError);
+      // Allow submission if Turnstile is down/misconfigured
+      isValidCaptcha = true;
+    }
+    
     if (!isValidCaptcha) {
       return NextResponse.json(
         { error: 'CAPTCHA verification failed. Please try again.' },
@@ -433,32 +441,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update contributor stats
+    // Update contributor stats (non-blocking - don't fail submission if this fails)
     if (contributorId) {
-      const points = SUBMISSION_POINTS[submissionType] || 3;
-      
-      await supabase.rpc('increment_contributor_stats', {
-        p_contributor_id: contributorId,
-        p_state_code: stateCode,
-        p_data_type: body.data_type,
-        p_points: points,
-      });
+      try {
+        const points = SUBMISSION_POINTS[submissionType] || 3;
+        
+        await supabase.rpc('increment_contributor_stats', {
+          p_contributor_id: contributorId,
+          p_state_code: stateCode,
+          p_data_type: body.data_type,
+          p_points: points,
+        });
+      } catch (statsError) {
+        console.error('Failed to update contributor stats:', statsError);
+        // Continue - submission was successful, stats update is non-critical
+      }
     }
 
-    // Add to email subscribers list if not already subscribed
-    const { data: existingSubscriber } = await supabase
-      .from('email_subscribers')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle();
-
-    if (!existingSubscriber) {
-      await supabase
+    // Add to email subscribers list if not already subscribed (non-blocking)
+    try {
+      const { data: existingSubscriber } = await supabase
         .from('email_subscribers')
-        .insert({
-          email,
-          source: 'crowdsource',
-        });
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (!existingSubscriber) {
+        await supabase
+          .from('email_subscribers')
+          .insert({
+            email,
+            source: 'crowdsource',
+          });
+      }
+    } catch (subscriberError) {
+      console.error('Failed to add email subscriber:', subscriberError);
+      // Continue - submission was successful, email subscription is non-critical
     }
 
     return NextResponse.json({
@@ -469,8 +487,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Submit API error:', error);
+    // Return more details in development/debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Internal server error: ${errorMessage}` },
       { status: 500 }
     );
   }
