@@ -393,8 +393,8 @@ export async function POST(request: NextRequest) {
       is_public: true,
     };
 
-    // Add file-specific fields
-    if (file) {
+    // Add file-specific fields (from FormData upload OR pre-uploaded to Storage)
+    if (filePath) {
       submissionData.file_path = filePath;
       submissionData.file_name = fileName;
       submissionData.file_size = fileSize;
