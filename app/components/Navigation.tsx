@@ -4,10 +4,16 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-interface NavItem {
+interface NavChild {
   label: string;
   href?: string;
   children?: { label: string; href: string }[];
+}
+
+interface NavItem {
+  label: string;
+  href?: string;
+  children?: NavChild[];
 }
 
 const navItems: NavItem[] = [
@@ -15,18 +21,27 @@ const navItems: NavItem[] = [
   {
     label: 'Investigations',
     children: [
+      { label: 'Overview', href: '/investigation' },
       { label: 'Cases', href: '/cases' },
       { label: 'MN/OH/WA Analysis', href: '/investigation/mn-oh-wa' },
+      { label: 'Address Clusters', href: '/investigation/address-clusters' },
+      { label: 'Double Dippers', href: '/investigation/double-dippers' },
     ],
   },
   {
     label: 'Database',
     children: [
-      { label: 'Childcare Providers', href: '/database' },
-      { label: 'HCBS Providers', href: '/hcbs' },
+      {
+        label: 'Organizations',
+        href: '/organizations',
+        children: [
+          { label: 'Childcare Providers', href: '/database' },
+          { label: 'HCBS Providers', href: '/hcbs' },
+          { label: 'Nursing Homes', href: '/nursing-homes' },
+        ],
+      },
       { label: 'PPP Loans', href: '/ppp' },
       { label: 'SBA Loans', href: '/sba' },
-      { label: 'Nursing Homes', href: '/nursing-homes' },
       { label: 'Improper Payments', href: '/improper-payments' },
     ],
   },
@@ -62,12 +77,14 @@ const navItems: NavItem[] = [
 
 function NavDropdown({ item, isActive }: { item: NavItem; isActive: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedChild, setExpandedChild] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setExpandedChild(null);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -91,17 +108,78 @@ function NavDropdown({ item, isActive }: { item: NavItem; isActive: boolean }) {
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 py-2 bg-gray-900 border border-gray-800 rounded min-w-[180px] z-50">
-          {item.children?.map((child) => (
-            <Link
-              key={child.href}
-              href={child.href}
-              onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800"
-            >
-              {child.label}
-            </Link>
-          ))}
+        <div className="absolute top-full left-0 mt-2 py-1 bg-black border border-gray-800 min-w-[200px] z-50 font-mono">
+          {item.children?.map((child) => {
+            const hasChildren = child.children && child.children.length > 0;
+            const isExpanded = expandedChild === child.label;
+
+            if (hasChildren) {
+              return (
+                <div key={child.label}>
+                  <div className="flex items-center px-3 py-1.5 text-gray-400 hover:text-green-400 hover:bg-gray-900/50 text-sm">
+                    {child.href ? (
+                      <Link
+                        href={child.href}
+                        onClick={() => setIsOpen(false)}
+                        className="flex-1"
+                      >
+                        <span className="text-gray-600 mr-2">-</span>
+                        {child.label}
+                      </Link>
+                    ) : (
+                      <span className="flex-1">
+                        <span className="text-gray-600 mr-2">-</span>
+                        {child.label}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => setExpandedChild(isExpanded ? null : child.label)}
+                      className="p-1 hover:text-green-400"
+                    >
+                      <svg
+                        className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
+                  {isExpanded && (
+                    <div className="border-l border-gray-800 ml-4">
+                      {child.children?.map((subChild) => (
+                        <Link
+                          key={subChild.href}
+                          href={subChild.href}
+                          onClick={() => {
+                            setIsOpen(false);
+                            setExpandedChild(null);
+                          }}
+                          className="block px-3 py-1.5 text-gray-400 hover:text-green-400 hover:bg-gray-900/50 text-sm"
+                        >
+                          <span className="text-gray-600 mr-2">-</span>
+                          {subChild.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={child.href || child.label}
+                href={child.href || '#'}
+                onClick={() => setIsOpen(false)}
+                className="block px-3 py-1.5 text-gray-400 hover:text-green-400 hover:bg-gray-900/50 text-sm"
+              >
+                <span className="text-gray-600 mr-2">-</span>
+                {child.label}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
@@ -124,9 +202,9 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/80" onClick={onClose} />
-      
+
       {/* Slide-out menu */}
-      <div className="fixed right-0 top-0 h-full w-64 bg-black border-l border-gray-800 p-6">
+      <div className="fixed right-0 top-0 h-full w-64 bg-black border-l border-gray-800 p-6 overflow-y-auto">
         <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-white">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -150,7 +228,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             }
 
             const isExpanded = expandedItems.includes(item.label);
-            const hasActiveChild = item.children?.some((c) => pathname === c.href || pathname.startsWith(c.href + '/'));
+            const hasActiveChild = item.children?.some((c) =>
+              (c.href && (pathname === c.href || pathname.startsWith(c.href + '/'))) ||
+              c.children?.some((sc) => pathname === sc.href || pathname.startsWith(sc.href + '/'))
+            );
 
             return (
               <div key={item.label}>
@@ -171,11 +252,67 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 {isExpanded && (
                   <div className="ml-4 flex flex-col gap-1 border-l border-gray-800 pl-4">
                     {item.children?.map((child) => {
-                      const isChildActive = pathname === child.href || pathname.startsWith(child.href + '/');
+                      const hasSubChildren = child.children && child.children.length > 0;
+                      const isSubExpanded = expandedItems.includes(`${item.label}-${child.label}`);
+                      const isChildActive = (child.href && (pathname === child.href || pathname.startsWith(child.href + '/'))) ||
+                        child.children?.some((sc) => pathname === sc.href || pathname.startsWith(sc.href + '/'));
+
+                      if (hasSubChildren) {
+                        return (
+                          <div key={child.label}>
+                            <div className="flex items-center gap-2">
+                              {child.href ? (
+                                <Link
+                                  href={child.href}
+                                  onClick={onClose}
+                                  className={`py-1.5 text-sm ${isChildActive ? 'text-white' : 'text-gray-500'} hover:text-white`}
+                                >
+                                  {child.label}
+                                </Link>
+                              ) : (
+                                <span className={`py-1.5 text-sm ${isChildActive ? 'text-white' : 'text-gray-500'}`}>
+                                  {child.label}
+                                </span>
+                              )}
+                              <button
+                                onClick={() => toggleExpand(`${item.label}-${child.label}`)}
+                                className="text-gray-500 hover:text-white"
+                              >
+                                <svg
+                                  className={`w-3 h-3 transition-transform ${isSubExpanded ? 'rotate-180' : ''}`}
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+                            </div>
+                            {isSubExpanded && (
+                              <div className="ml-4 flex flex-col gap-1 border-l border-gray-700 pl-4">
+                                {child.children?.map((subChild) => {
+                                  const isSubChildActive = pathname === subChild.href || pathname.startsWith(subChild.href + '/');
+                                  return (
+                                    <Link
+                                      key={subChild.href}
+                                      href={subChild.href}
+                                      onClick={onClose}
+                                      className={`py-1.5 text-xs ${isSubChildActive ? 'text-white' : 'text-gray-600'} hover:text-white`}
+                                    >
+                                      {subChild.label}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
                       return (
                         <Link
-                          key={child.href}
-                          href={child.href}
+                          key={child.href || child.label}
+                          href={child.href || '#'}
                           onClick={onClose}
                           className={`py-1.5 text-sm ${isChildActive ? 'text-white' : 'text-gray-500'} hover:text-white`}
                         >
@@ -210,7 +347,10 @@ export default function Navigation() {
     if (item.href) {
       return pathname === item.href;
     }
-    return item.children?.some((c) => pathname === c.href || pathname.startsWith(c.href + '/')) ?? false;
+    return item.children?.some((c) =>
+      (c.href && (pathname === c.href || pathname.startsWith(c.href + '/'))) ||
+      c.children?.some((sc) => pathname === sc.href || pathname.startsWith(sc.href + '/'))
+    ) ?? false;
   };
 
   return (
