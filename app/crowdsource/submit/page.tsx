@@ -287,10 +287,18 @@ function SubmitFormContent() {
         throw new Error('Upload failed due to size limits. Please try again or contact us.');
       }
 
-      const result = await response.json();
+      // Try to parse JSON, with better error handling
+      let result;
+      try {
+        const text = await response.text();
+        result = JSON.parse(text);
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        throw new Error(`Server error (${response.status}). Please try again.`);
+      }
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit');
+        throw new Error(result.error || `Failed to submit (${response.status})`);
       }
 
       setSuccess(true);
