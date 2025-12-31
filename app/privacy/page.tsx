@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const lastUpdated = 'December 30, 2024';
+  const lastUpdated = 'December 30, 2025';
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -36,6 +36,7 @@ export default function PrivacyPage() {
           <ul className="list-disc list-inside text-gray-400 space-y-1 mb-4 ml-4">
             <li><strong>Tips and Reports:</strong> If you submit a tip or report, we collect the information you provide, which may include your name and contact information if you choose to provide it.</li>
             <li><strong>Correction Requests:</strong> If you request a correction, we collect your contact information and any documentation you submit.</li>
+            <li><strong>Crowdsource Submissions:</strong> If you contribute data through our crowdsourcing feature, we collect your email address (required) and optional username. Your email is kept private and never displayed publicly or sold. If you choose a username, it may be displayed on the contributor leaderboard.</li>
             <li><strong>Template Generators:</strong> Information entered into our FOIA or lawsuit template generators is processed locally in your browser and is not transmitted to or stored on our servers.</li>
           </ul>
 
