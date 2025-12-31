@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Route segment config for large file uploads
+export const runtime = 'nodejs';
+export const maxDuration = 60; // 60 seconds for large uploads
+
 // Turnstile verification
 async function verifyTurnstile(token: string): Promise<boolean> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
@@ -55,8 +59,8 @@ const DATA_TYPES = [
 // Valid tip categories
 const TIP_CATEGORIES = ['fraud_report', 'data_source', 'connection', 'pattern', 'document', 'other'];
 
-// Max file size: 100MB
-const MAX_FILE_SIZE = 100 * 1024 * 1024;
+// Max file size: 50MB (Vercel/platform limit)
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 // Max tip content: 50,000 characters
 const MAX_TIP_LENGTH = 50000;
@@ -235,7 +239,7 @@ export async function POST(request: NextRequest) {
 
       if (file.size > MAX_FILE_SIZE) {
         return NextResponse.json(
-          { error: 'File exceeds maximum size of 100MB' },
+          { error: 'File exceeds maximum size of 50MB. For larger files, please contact us.' },
           { status: 400 }
         );
       }

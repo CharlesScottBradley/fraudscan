@@ -153,9 +153,9 @@ function SubmitFormContent() {
   };
 
   const handleFileSelect = (selectedFile: File) => {
-    // Validate file size (100MB)
-    if (selectedFile.size > 100 * 1024 * 1024) {
-      setError('File exceeds maximum size of 100MB');
+    // Validate file size (50MB - Vercel/platform limits)
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError('File exceeds maximum size of 50MB. For larger files, please contact us.');
       return;
     }
     
@@ -249,6 +249,11 @@ function SubmitFormContent() {
             'cf-turnstile-response': turnstileToken,
           }),
         });
+      }
+
+      // Handle 413 specifically before trying to parse JSON
+      if (response.status === 413) {
+        throw new Error('File is too large. Please reduce file size to under 50MB or contact us for large uploads.');
       }
 
       const result = await response.json();
@@ -490,7 +495,7 @@ function SubmitFormContent() {
                     Browse
                   </button>
                   <p className="text-gray-600 text-xs mt-3">
-                    Max 100MB. CSV, Excel, PDF, ZIP, JSON accepted.
+                    Max 50MB. CSV, Excel, PDF, ZIP, JSON accepted.
                   </p>
                 </div>
               )}
