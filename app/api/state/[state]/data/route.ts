@@ -41,40 +41,14 @@ export async function GET(
     pppCount: 0,
   };
 
-  // Get counts first
-  if (dataType === 'all' || dataType === 'providers') {
-    let countQuery = supabase
-      .from('providers')
-      .select('*', { count: 'exact', head: true })
-      .eq('state', stateUpper);
+  // Always get all counts (for tab display) - these are TOTALS for this state, not filtered
+  const [providerCountResult, pppCountResult] = await Promise.all([
+    supabase.from('providers').select('*', { count: 'exact', head: true }).eq('state', stateUpper),
+    supabase.from('ppp_loans').select('*', { count: 'exact', head: true }).eq('borrower_state', stateUpper),
+  ]);
 
-    if (search) {
-      countQuery = countQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
-    }
-
-    const { count } = await countQuery;
-    results.providerCount = count || 0;
-  }
-
-  if (dataType === 'all' || dataType === 'ppp_loans') {
-    let countQuery = supabase
-      .from('ppp_loans')
-      .select('*', { count: 'exact', head: true })
-      .eq('borrower_state', stateUpper);
-
-    if (search) {
-      countQuery = countQuery.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
-    }
-    if (minAmount > 0) {
-      countQuery = countQuery.gte('current_approval_amount', minAmount);
-    }
-    if (maxAmount !== null) {
-      countQuery = countQuery.lte('current_approval_amount', maxAmount);
-    }
-
-    const { count } = await countQuery;
-    results.pppCount = count || 0;
-  }
+  results.providerCount = providerCountResult.count || 0;
+  results.pppCount = pppCountResult.count || 0;
 
   // For 'all' type, we need to merge and sort - this is complex
   // For simplicity, when type is 'all', we'll fetch separately and merge

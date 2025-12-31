@@ -39,70 +39,16 @@ export async function GET(request: NextRequest) {
     sbaCount: 0,
   };
 
-  // Get provider count
-  if (dataType === 'all' || dataType === 'providers') {
-    let countQuery = supabase
-      .from('providers')
-      .select('*', { count: 'exact', head: true });
+  // Always get all counts (for tab display) - these are TOTALS, not filtered
+  const [providerCountResult, pppCountResult, sbaCountResult] = await Promise.all([
+    supabase.from('providers').select('*', { count: 'exact', head: true }),
+    supabase.from('ppp_loans').select('*', { count: 'exact', head: true }),
+    supabase.from('sba_loans').select('*', { count: 'exact', head: true }),
+  ]);
 
-    if (search) {
-      countQuery = countQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
-    }
-    if (state) {
-      countQuery = countQuery.eq('state', state);
-    }
-
-    const { count } = await countQuery;
-    results.providerCount = count || 0;
-  }
-
-  // Get PPP count
-  if (dataType === 'all' || dataType === 'ppp_loans') {
-    let countQuery = supabase
-      .from('ppp_loans')
-      .select('*', { count: 'exact', head: true });
-
-    if (search) {
-      countQuery = countQuery.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
-    }
-    if (state) {
-      countQuery = countQuery.eq('borrower_state', state);
-    }
-    if (minAmount > 0) {
-      countQuery = countQuery.gte('current_approval_amount', minAmount);
-    }
-    if (maxAmount !== null) {
-      countQuery = countQuery.lte('current_approval_amount', maxAmount);
-    }
-
-    const { count, error } = await countQuery;
-    if (error) console.error('PPP count error:', error);
-    results.pppCount = count || 0;
-  }
-
-  // Get SBA count
-  if (dataType === 'all' || dataType === 'sba_loans') {
-    let countQuery = supabase
-      .from('sba_loans')
-      .select('*', { count: 'exact', head: true });
-
-    if (search) {
-      countQuery = countQuery.or(`borrower_name.ilike.%${search}%,borrower_city.ilike.%${search}%`);
-    }
-    if (state) {
-      countQuery = countQuery.eq('borrower_state', state);
-    }
-    if (minAmount > 0) {
-      countQuery = countQuery.gte('gross_approval', minAmount);
-    }
-    if (maxAmount !== null) {
-      countQuery = countQuery.lte('gross_approval', maxAmount);
-    }
-
-    const { count, error } = await countQuery;
-    if (error) console.error('SBA count error:', error);
-    results.sbaCount = count || 0;
-  }
+  results.providerCount = providerCountResult.count || 0;
+  results.pppCount = pppCountResult.count || 0;
+  results.sbaCount = sbaCountResult.count || 0;
 
   // Fetch data based on type
   if (dataType === 'providers') {
