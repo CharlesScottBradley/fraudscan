@@ -4,6 +4,14 @@ import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import Link from 'next/link';
+import { createClient } from '@supabase/supabase-js';
+
+// Client-side Supabase for direct storage uploads (bypasses Vercel 4.5MB limit)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseClient = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // Declare turnstile on window
 declare global {
@@ -153,9 +161,9 @@ function SubmitFormContent() {
   };
 
   const handleFileSelect = (selectedFile: File) => {
-    // Validate file size (50MB - Vercel/platform limits)
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      setError('File exceeds maximum size of 50MB. For larger files, please contact us.');
+    // Validate file size (100MB - direct upload to Supabase bypasses Vercel)
+    if (selectedFile.size > 100 * 1024 * 1024) {
+      setError('File exceeds maximum size of 100MB');
       return;
     }
     
@@ -206,25 +214,48 @@ function SubmitFormContent() {
       let response;
 
       if (submissionType === 'file_upload' && file) {
-        // File upload - use FormData
-        const formPayload = new FormData();
-        formPayload.append('file', file);
-        formPayload.append('state_code', formData.state_code);
-        formPayload.append('data_type', formData.data_type);
-        formPayload.append('submission_type', submissionType);
-        formPayload.append('title', formData.title);
-        formPayload.append('description', formData.description);
-        formPayload.append('source_url', formData.source_url);
-        formPayload.append('submitter_email', formData.submitter_email);
-        formPayload.append('username', formData.username);
-        formPayload.append('gap_ids', JSON.stringify(formData.gap_ids));
-        if (turnstileToken) {
-          formPayload.append('cf-turnstile-response', turnstileToken);
+        // Direct upload to Supabase Storage (bypasses Vercel 4.5MB limit)
+        if (!supabaseClient) {
+          throw new Error('Storage not configured. Please try again later.');
         }
 
+        const submissionId = crypto.randomUUID();
+        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const filePath = `submissions/${submissionId}/original/${sanitizedFileName}`;
+
+        // Upload file directly to Supabase Storage
+        const { error: uploadError } = await supabaseClient.storage
+          .from('crowdsource')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error('Storage upload error:', uploadError);
+          throw new Error('Failed to upload file. Please try again.');
+        }
+
+        // Send metadata only to API (no file in body)
         response = await fetch('/api/crowdsource/submit', {
           method: 'POST',
-          body: formPayload,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            state_code: formData.state_code,
+            data_type: formData.data_type,
+            submission_type: submissionType,
+            title: formData.title,
+            description: formData.description,
+            source_url: formData.source_url,
+            submitter_email: formData.submitter_email,
+            username: formData.username,
+            gap_ids: formData.gap_ids,
+            // Pre-uploaded file metadata
+            file_path: filePath,
+            file_name: file.name,
+            file_size: file.size,
+            file_type: file.type,
+            'cf-turnstile-response': turnstileToken,
+          }),
         });
       } else {
         // Text submission - use JSON
@@ -253,7 +284,7 @@ function SubmitFormContent() {
 
       // Handle 413 specifically before trying to parse JSON
       if (response.status === 413) {
-        throw new Error('File is too large. Please reduce file size to under 50MB or contact us for large uploads.');
+        throw new Error('Upload failed due to size limits. Please try again or contact us.');
       }
 
       const result = await response.json();
@@ -495,7 +526,7 @@ function SubmitFormContent() {
                     Browse
                   </button>
                   <p className="text-gray-600 text-xs mt-3">
-                    Max 50MB. CSV, Excel, PDF, ZIP, JSON accepted.
+                    Max 100MB. CSV, Excel, PDF, ZIP, JSON accepted.
                   </p>
                 </div>
               )}

@@ -59,8 +59,8 @@ const DATA_TYPES = [
 // Valid tip categories
 const TIP_CATEGORIES = ['fraud_report', 'data_source', 'connection', 'pattern', 'document', 'other'];
 
-// Max file size: 50MB (Vercel/platform limit)
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+// Max file size: 100MB (direct upload to Supabase bypasses Vercel limit)
+const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
 // Max tip content: 50,000 characters
 const MAX_TIP_LENGTH = 50000;
@@ -91,6 +91,11 @@ interface SubmitRequest {
   source_description?: string;
   submitter_email: string;
   username?: string;
+  // Pre-uploaded file metadata (client uploads directly to Supabase Storage)
+  file_path?: string;
+  file_name?: string;
+  file_size?: number;
+  file_type?: string;
 }
 
 // Points for different submission types (pending review)
@@ -229,15 +234,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file for file_upload/document types
+    // Files can be uploaded via FormData OR pre-uploaded to Supabase Storage
+    const hasPreUploadedFile = body.file_path && body.file_name && body.file_size;
+    
     if (['file_upload', 'document'].includes(submissionType)) {
-      if (!file) {
+      if (!file && !hasPreUploadedFile) {
         return NextResponse.json(
           { error: 'File is required for file uploads and documents' },
           { status: 400 }
         );
       }
 
-      if (file.size > MAX_FILE_SIZE) {
+      // Validate file size (either from File object or pre-upload metadata)
+      const fileSize = file?.size || body.file_size || 0;
+      if (fileSize > MAX_FILE_SIZE) {
         return NextResponse.json(
           { error: 'File exceeds maximum size of 50MB. For larger files, please contact us.' },
           { status: 400 }
@@ -245,14 +255,15 @@ export async function POST(request: NextRequest) {
       }
 
       // Check file type
-      const fileType = file.type || 'application/octet-stream';
+      const fileName = file?.name || body.file_name || '';
+      const fileType = file?.type || body.file_type || 'application/octet-stream';
       const isAcceptedType = ACCEPTED_FILE_TYPES.some(t => fileType.includes(t)) ||
-        file.name.endsWith('.csv') ||
-        file.name.endsWith('.xlsx') ||
-        file.name.endsWith('.xls') ||
-        file.name.endsWith('.pdf') ||
-        file.name.endsWith('.zip') ||
-        file.name.endsWith('.json');
+        fileName.endsWith('.csv') ||
+        fileName.endsWith('.xlsx') ||
+        fileName.endsWith('.xls') ||
+        fileName.endsWith('.pdf') ||
+        fileName.endsWith('.zip') ||
+        fileName.endsWith('.json');
 
       if (!isAcceptedType) {
         return NextResponse.json(
@@ -326,13 +337,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Upload file to Supabase Storage if present
+    // Handle file - either upload from FormData or use pre-uploaded path
     let filePath: string | null = null;
     let fileName: string | null = null;
     let fileSize: number | null = null;
     let fileType: string | null = null;
 
-    if (file) {
+    if (hasPreUploadedFile) {
+      // File was pre-uploaded directly to Supabase Storage by client
+      // This bypasses Vercel's 4.5MB serverless function limit
+      filePath = body.file_path!;
+      fileName = body.file_name!;
+      fileSize = body.file_size!;
+      fileType = body.file_type || 'application/octet-stream';
+    } else if (file) {
+      // File uploaded via FormData (legacy/fallback for small files)
       const submissionId = crypto.randomUUID();
       const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       filePath = `submissions/${submissionId}/original/${sanitizedFileName}`;
@@ -400,9 +419,13 @@ export async function POST(request: NextRequest) {
 
     if (submitError) {
       console.error('Error creating submission:', submitError);
-      // Clean up uploaded file if submission failed
+      // Clean up uploaded file if submission failed (both pre-uploaded and FormData)
       if (filePath) {
-        await supabase.storage.from('crowdsource').remove([filePath]);
+        try {
+          await supabase.storage.from('crowdsource').remove([filePath]);
+        } catch (cleanupError) {
+          console.error('Failed to clean up file:', cleanupError);
+        }
       }
       return NextResponse.json(
         { error: 'Failed to submit data' },
