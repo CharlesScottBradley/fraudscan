@@ -42,7 +42,7 @@ const navItems: NavItem[] = [
   {
     label: 'Crowdsourcing',
     children: [
-      { label: 'Help Wanted', href: '/crowdsource' },
+      { label: 'Data Requests', href: '/crowdsource' },
       { label: 'Contributor Leaderboard', href: '/crowdsource/leaderboard' },
       { label: 'Submit Data', href: '/crowdsource/submit' },
     ],
