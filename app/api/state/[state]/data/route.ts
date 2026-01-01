@@ -23,32 +23,38 @@ export async function GET(
   const results: {
     data: Array<{
       id: string;
-      type: 'provider' | 'ppp_loan';
+      type: 'provider' | 'ppp_loan' | 'state_grant';
       name: string;
       city: string | null;
       category: string | null;
       amount: number;
       license_number?: string;
       jobs_reported?: number | null;
+      fiscal_year?: number | null;
+      agency?: string | null;
     }>;
     totalCount: number;
     providerCount: number;
     pppCount: number;
+    grantCount: number;
   } = {
     data: [],
     totalCount: 0,
     providerCount: 0,
     pppCount: 0,
+    grantCount: 0,
   };
 
   // Always get all counts (for tab display) - these are TOTALS for this state, not filtered
-  const [providerCountResult, pppCountResult] = await Promise.all([
+  const [providerCountResult, pppCountResult, grantCountResult] = await Promise.all([
     supabase.from('providers').select('*', { count: 'exact', head: true }).eq('state', stateUpper),
     supabase.from('ppp_loans').select('*', { count: 'exact', head: true }).eq('borrower_state', stateUpper),
+    supabase.from('state_grants').select('*', { count: 'exact', head: true }).eq('source_state', stateUpper),
   ]);
 
   results.providerCount = providerCountResult.count || 0;
   results.pppCount = pppCountResult.count || 0;
+  results.grantCount = grantCountResult.count || 0;
 
   // For 'all' type, we need to merge and sort - this is complex
   // For simplicity, when type is 'all', we'll fetch separately and merge
@@ -152,6 +158,54 @@ export async function GET(
     }));
 
     results.totalCount = results.pppCount;
+
+  } else if (dataType === 'state_grants') {
+    let query = supabase
+      .from('state_grants')
+      .select(`
+        id,
+        recipient_name,
+        recipient_state,
+        payment_amount,
+        fiscal_year,
+        agency,
+        program_name
+      `)
+      .eq('source_state', stateUpper);
+
+    if (search) {
+      query = query.or(`recipient_name.ilike.%${search}%,agency.ilike.%${search}%`);
+    }
+    if (minAmount > 0) {
+      query = query.gte('payment_amount', minAmount);
+    }
+    if (maxAmount !== null) {
+      query = query.lte('payment_amount', maxAmount);
+    }
+
+    // Sort
+    if (sortBy === 'amount') {
+      query = query.order('payment_amount', { ascending: sortDir === 'asc', nullsFirst: false });
+    } else {
+      query = query.order('recipient_name', { ascending: sortDir === 'asc' });
+    }
+
+    query = query.range(offset, offset + pageSize - 1);
+
+    const { data: grants } = await query;
+
+    results.data = (grants || []).map(g => ({
+      id: g.id,
+      type: 'state_grant' as const,
+      name: g.recipient_name,
+      city: null,
+      category: g.program_name,
+      amount: g.payment_amount || 0,
+      fiscal_year: g.fiscal_year,
+      agency: g.agency,
+    }));
+
+    results.totalCount = results.grantCount;
 
   } else {
     // 'all' type - more complex, need to interleave

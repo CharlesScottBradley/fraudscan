@@ -3,17 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
-type DataType = 'all' | 'providers' | 'ppp_loans';
+type DataType = 'all' | 'providers' | 'ppp_loans' | 'state_grants';
 
 interface DataItem {
   id: string;
-  type: 'provider' | 'ppp_loan';
+  type: 'provider' | 'ppp_loan' | 'state_grant';
   name: string;
   city: string | null;
   category: string | null;
   amount: number;
   license_number?: string;
   jobs_reported?: number | null;
+  fiscal_year?: number | null;
+  agency?: string | null;
 }
 
 interface Props {
@@ -21,6 +23,7 @@ interface Props {
   stateName: string;
   initialProviderCount: number;
   initialPPPCount: number;
+  initialGrantCount?: number;
 }
 
 function formatMoney(amount: number | null): string {
@@ -34,7 +37,7 @@ function formatMoney(amount: number | null): string {
   return `$${amount.toLocaleString()}`;
 }
 
-export default function StateDataTable({ stateCode, stateName, initialProviderCount, initialPPPCount }: Props) {
+export default function StateDataTable({ stateCode, stateName, initialProviderCount, initialPPPCount, initialGrantCount = 0 }: Props) {
   const [dataType, setDataType] = useState<DataType>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [minAmount, setMinAmount] = useState('');
@@ -48,6 +51,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
   const [totalCount, setTotalCount] = useState(0);
   const [providerCount, setProviderCount] = useState(initialProviderCount);
   const [pppCount, setPPPCount] = useState(initialPPPCount);
+  const [grantCount, setGrantCount] = useState(initialGrantCount);
   const [loading, setLoading] = useState(true);
 
   // Debounce search
@@ -82,6 +86,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
       setTotalCount(result.totalCount);
       setProviderCount(result.providerCount);
       setPPPCount(result.pppCount);
+      setGrantCount(result.grantCount || 0);
     } catch (err) {
       console.error('Failed to fetch data:', err);
     } finally {
@@ -126,7 +131,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-4">
         {/* Data type filter */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleTypeChange('all')}
             className={`px-3 py-1.5 text-sm rounded ${
@@ -135,7 +140,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
             }`}
           >
-            All ({(providerCount + pppCount).toLocaleString()})
+            All ({(providerCount + pppCount + grantCount).toLocaleString()})
           </button>
           <button
             onClick={() => handleTypeChange('providers')}
@@ -157,6 +162,18 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
           >
             PPP Loans ({pppCount.toLocaleString()})
           </button>
+          {grantCount > 0 && (
+            <button
+              onClick={() => handleTypeChange('state_grants')}
+              className={`px-3 py-1.5 text-sm rounded ${
+                dataType === 'state_grants'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              State Grants ({grantCount.toLocaleString()})
+            </button>
+          )}
         </div>
 
         {/* Search */}
@@ -236,13 +253,15 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                     <span className={`px-2 py-0.5 rounded text-xs ${
                       item.type === 'provider'
                         ? 'bg-blue-900/40 text-blue-400'
-                        : 'bg-purple-900/40 text-purple-400'
+                        : item.type === 'ppp_loan'
+                        ? 'bg-purple-900/40 text-purple-400'
+                        : 'bg-orange-900/40 text-orange-400'
                     }`}>
-                      {item.type === 'provider' ? 'Provider' : 'PPP'}
+                      {item.type === 'provider' ? 'Provider' : item.type === 'ppp_loan' ? 'PPP' : 'Grant'}
                     </span>
                   </td>
                   <td className="p-3 font-medium">{item.name}</td>
-                  <td className="p-3 text-gray-400">{item.city || '-'}</td>
+                  <td className="p-3 text-gray-400">{item.city || (item.agency ? item.agency : '-')}</td>
                   <td className="p-3 text-gray-400 text-xs">{item.category || '-'}</td>
                   <td className="p-3 text-right font-mono text-green-500">
                     {formatMoney(item.amount)}
@@ -258,6 +277,10 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                     ) : item.type === 'ppp_loan' ? (
                       <span className="text-gray-500 text-xs">
                         {item.jobs_reported ? `${item.jobs_reported} jobs` : '-'}
+                      </span>
+                    ) : item.type === 'state_grant' ? (
+                      <span className="text-gray-500 text-xs">
+                        {item.fiscal_year ? `FY${item.fiscal_year}` : '-'}
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">-</span>

@@ -165,6 +165,27 @@ async function getPPPStats(stateCode: string) {
   };
 }
 
+async function getGrantStats(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { count } = await supabase
+    .from('state_grants')
+    .select('*', { count: 'exact', head: true })
+    .eq('source_state', stateUpper);
+
+  const { data: sumData } = await supabase
+    .from('state_grants')
+    .select('payment_amount')
+    .eq('source_state', stateUpper);
+
+  const totalAmount = sumData?.reduce((sum, g) => sum + (g.payment_amount || 0), 0) || 0;
+
+  return {
+    count: count || 0,
+    totalAmount,
+  };
+}
+
 async function getRelevantPrograms(stateCode: string): Promise<StateProgramData[]> {
   const stateUpper = stateCode.toUpperCase();
 
@@ -275,10 +296,11 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, pppStats, programs] = await Promise.all([
+  const [providers, stats, pppStats, grantStats, programs] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
     getPPPStats(state),
+    getGrantStats(state),
     getRelevantPrograms(state),
   ]);
 
@@ -295,7 +317,7 @@ export default async function StatePage({ params }: PageProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">
             {formatMoney(pppStats.totalAmount)}
@@ -308,6 +330,14 @@ export default async function StatePage({ params }: PageProps) {
           </p>
           <p className="text-gray-500 text-sm">PPP Recipients</p>
         </div>
+        {grantStats.count > 0 && (
+          <div className="border border-gray-800 p-4">
+            <p className="text-orange-500 font-mono text-xl font-bold">
+              {formatMoney(grantStats.totalAmount)}
+            </p>
+            <p className="text-gray-500 text-sm">State Grants ({grantStats.count.toLocaleString()})</p>
+          </div>
+        )}
         <div className="border border-gray-800 p-4">
           <p className="text-white font-mono text-xl font-bold">
             {stats.providerCount.toLocaleString()}
@@ -410,6 +440,7 @@ export default async function StatePage({ params }: PageProps) {
         stateName={stateInfo.name}
         initialProviderCount={stats.providerCount}
         initialPPPCount={pppStats.count}
+        initialGrantCount={grantStats.count}
       />
 
       {/* Email Signup - state-specific */}
