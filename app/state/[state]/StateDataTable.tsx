@@ -16,6 +16,7 @@ interface DataItem {
   jobs_reported?: number | null;
   fiscal_year?: number | null;
   agency?: string | null;
+  industry?: string | null;
 }
 
 interface Props {
@@ -42,6 +43,8 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
   const [searchTerm, setSearchTerm] = useState('');
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState<'amount' | 'name'>('amount');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [page, setPage] = useState(1);
@@ -52,6 +55,8 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
   const [providerCount, setProviderCount] = useState(initialProviderCount);
   const [pppCount, setPPPCount] = useState(initialPPPCount);
   const [grantCount, setGrantCount] = useState(initialGrantCount);
+  const [industries, setIndustries] = useState<string[]>([]);
+  const [agencyCategories, setAgencyCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Debounce search
@@ -78,6 +83,8 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
 
       if (minAmount) params.set('minAmount', minAmount);
       if (maxAmount) params.set('maxAmount', maxAmount);
+      if (industry) params.set('industry', industry);
+      if (category) params.set('category', category);
 
       const res = await fetch(`/api/state/${stateCode}/data?${params}`);
       const result = await res.json();
@@ -87,12 +94,14 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
       setProviderCount(result.providerCount);
       setPPPCount(result.pppCount);
       setGrantCount(result.grantCount || 0);
+      if (result.industries) setIndustries(result.industries);
+      if (result.agencyCategories) setAgencyCategories(result.agencyCategories);
     } catch (err) {
       console.error('Failed to fetch data:', err);
     } finally {
       setLoading(false);
     }
-  }, [stateCode, page, pageSize, dataType, debouncedSearch, minAmount, maxAmount, sortBy, sortDir]);
+  }, [stateCode, page, pageSize, dataType, debouncedSearch, minAmount, maxAmount, industry, category, sortBy, sortDir]);
 
   useEffect(() => {
     fetchData();
@@ -113,6 +122,9 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
   const handleTypeChange = (type: DataType) => {
     setDataType(type);
     setPage(1);
+    // Reset filters when changing type
+    setIndustry('');
+    setCategory('');
   };
 
   const handleAmountChange = (field: 'min' | 'max', value: string) => {
@@ -121,6 +133,16 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
     } else {
       setMaxAmount(value);
     }
+    setPage(1);
+  };
+
+  const handleIndustryChange = (value: string) => {
+    setIndustry(value);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
     setPage(1);
   };
 
@@ -203,6 +225,34 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
             className="px-3 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm w-24 focus:outline-none focus:border-gray-500"
           />
         </div>
+
+        {/* Industry filter - only show for PPP loans */}
+        {(dataType === 'ppp_loans' || dataType === 'all') && industries.length > 0 && (
+          <select
+            value={industry}
+            onChange={(e) => handleIndustryChange(e.target.value)}
+            className="px-3 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm focus:outline-none focus:border-gray-500"
+          >
+            <option value="">All Industries</option>
+            {industries.map((ind) => (
+              <option key={ind} value={ind}>{ind}</option>
+            ))}
+          </select>
+        )}
+
+        {/* Category filter - only show for state grants */}
+        {dataType === 'state_grants' && agencyCategories.length > 0 && (
+          <select
+            value={category}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+            className="px-3 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm focus:outline-none focus:border-gray-500"
+          >
+            <option value="">All Categories</option>
+            {agencyCategories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Results count */}
@@ -262,7 +312,13 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                   </td>
                   <td className="p-3 font-medium">{item.name}</td>
                   <td className="p-3 text-gray-400">{item.city || (item.agency ? item.agency : '-')}</td>
-                  <td className="p-3 text-gray-400 text-xs">{item.category || '-'}</td>
+                  <td className="p-3 text-gray-400 text-xs">
+                    {item.type === 'ppp_loan' && item.industry ? (
+                      <span className="text-blue-400">{item.industry}</span>
+                    ) : (
+                      item.category || '-'
+                    )}
+                  </td>
                   <td className="p-3 text-right font-mono text-green-500">
                     {formatMoney(item.amount)}
                   </td>
