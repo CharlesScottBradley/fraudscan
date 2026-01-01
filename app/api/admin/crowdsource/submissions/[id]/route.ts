@@ -178,68 +178,47 @@ export async function PATCH(
       throw updateError;
     }
 
-    // Handle approval - award points
+    // Handle approval - award points and badges
     if (newStatus === 'approved' && previousStatus !== 'approved' && submission.contributor_id) {
       const basePoints = APPROVAL_POINTS[submission.submission_type] || 20;
-      let totalPoints = basePoints;
+      let bonusPoints = 0;
 
       // Check for additional achievements
       if (submission.gap_ids && submission.gap_ids.length > 0) {
-        // Check if any gaps are critical
+        // Check if any gaps are critical or require FOIA
         const { data: gaps } = await supabase
           .from('state_data_gaps')
           .select('id, priority, requires_foia')
           .in('id', submission.gap_ids);
 
         if (gaps?.some(g => g.priority === 'critical')) {
-          totalPoints += ACHIEVEMENT_POINTS.CRITICAL_GAP;
+          bonusPoints += ACHIEVEMENT_POINTS.CRITICAL_GAP;
         }
         if (gaps?.some(g => g.requires_foia)) {
-          totalPoints += ACHIEVEMENT_POINTS.FOIA_DATA;
+          bonusPoints += ACHIEVEMENT_POINTS.FOIA_DATA;
         }
       }
 
-      // Check if first submission for this state
+      // Check if first submission for this state by this contributor
       const { count: stateSubmissions } = await supabase
         .from('crowdsource_submissions')
         .select('*', { count: 'exact', head: true })
         .eq('contributor_id', submission.contributor_id)
         .eq('state_code', submission.state_code)
-        .eq('status', 'approved');
+        .eq('status', 'approved')
+        .neq('id', id); // Exclude current submission
 
-      if (stateSubmissions === 0) {
-        totalPoints += ACHIEVEMENT_POINTS.FIRST_STATE_SUBMISSION;
-      }
+      const isFirstState = (stateSubmissions || 0) === 0;
 
-      // Update contributor
-      await supabase
-        .from('crowdsource_contributors')
-        .update({
-          approved_count: supabase.rpc('increment', { x: 1 }),
-          points: supabase.rpc('increment', { x: totalPoints }),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', submission.contributor_id);
+      // Use database function to handle points, rank, and badges atomically
+      await supabase.rpc('update_contributor_on_approval', {
+        p_contributor_id: submission.contributor_id,
+        p_base_points: basePoints,
+        p_bonus_points: bonusPoints,
+        p_is_first_state: isFirstState,
+      });
 
-      // Actually need to do it this way since Supabase JS doesn't support increment like that
-      const { data: contributor } = await supabase
-        .from('crowdsource_contributors')
-        .select('approved_count, points')
-        .eq('id', submission.contributor_id)
-        .single();
-
-      if (contributor) {
-        await supabase
-          .from('crowdsource_contributors')
-          .update({
-            approved_count: (contributor.approved_count || 0) + 1,
-            points: (contributor.points || 0) + totalPoints,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', submission.contributor_id);
-      }
-
-      // Update gap submission count
+      // Update gap submission counts
       if (submission.gap_ids && submission.gap_ids.length > 0) {
         for (const gapId of submission.gap_ids) {
           const { data: gap } = await supabase

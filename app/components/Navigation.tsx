@@ -71,6 +71,7 @@ const navItems: NavItem[] = [
       { label: 'Submit a Tip', href: '/tip' },
       { label: 'About', href: '/about' },
       { label: 'API Docs', href: '/api/docs' },
+      { label: "🎰 Toshi's Slots", href: '/daycareslots' },
     ],
   },
 ];
