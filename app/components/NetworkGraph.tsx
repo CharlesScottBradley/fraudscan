@@ -6,7 +6,7 @@ import { Network, DataSet } from 'vis-network/standalone';
 export interface NetworkNode {
   id: string;
   label: string;
-  type: 'person' | 'company' | 'politician' | 'committee' | 'provider';
+  type: 'person' | 'company' | 'politician' | 'committee' | 'provider' | 'organization' | 'vendor' | 'fraud_case';
   group?: string;
   metadata?: Record<string, unknown>;
 }
@@ -16,7 +16,7 @@ export interface NetworkEdge {
   from: string;
   to: string;
   label?: string;
-  type: 'donation' | 'employment' | 'ppp_loan' | 'ownership' | 'other';
+  type: 'donation' | 'employment' | 'ppp_loan' | 'eidl_loan' | 'state_grant' | 'defendant' | 'ownership' | 'other';
   amount?: number;
   metadata?: Record<string, unknown>;
 }
@@ -31,19 +31,25 @@ interface NetworkGraphProps {
 }
 
 const NODE_COLORS: Record<NetworkNode['type'], { background: string; border: string }> = {
-  person: { background: '#3b82f6', border: '#1d4ed8' },      // Blue
-  company: { background: '#f59e0b', border: '#d97706' },     // Yellow/Orange
-  politician: { background: '#ef4444', border: '#dc2626' },  // Red
-  committee: { background: '#8b5cf6', border: '#7c3aed' },   // Purple
-  provider: { background: '#10b981', border: '#059669' },    // Green
+  person: { background: '#3b82f6', border: '#1d4ed8' },        // Blue
+  company: { background: '#f59e0b', border: '#d97706' },       // Yellow/Orange
+  politician: { background: '#ef4444', border: '#dc2626' },    // Red
+  committee: { background: '#8b5cf6', border: '#7c3aed' },     // Purple
+  provider: { background: '#10b981', border: '#059669' },      // Green
+  organization: { background: '#06b6d4', border: '#0891b2' },  // Cyan - unified orgs
+  vendor: { background: '#84cc16', border: '#65a30d' },        // Lime - state vendors
+  fraud_case: { background: '#dc2626', border: '#991b1b' },    // Dark Red - fraud cases
 };
 
 const EDGE_COLORS: Record<NetworkEdge['type'], string> = {
-  donation: '#ef4444',    // Red - money to politicians
-  employment: '#3b82f6',  // Blue - works for
-  ppp_loan: '#f59e0b',    // Yellow - govt money
-  ownership: '#8b5cf6',   // Purple - owns/controls
-  other: '#6b7280',       // Gray
+  donation: '#ef4444',      // Red - money to politicians
+  employment: '#3b82f6',    // Blue - works for
+  ppp_loan: '#f59e0b',      // Yellow - PPP money
+  eidl_loan: '#f97316',     // Orange - EIDL money
+  state_grant: '#84cc16',   // Lime - state grants
+  defendant: '#dc2626',     // Dark Red - defendant link
+  ownership: '#8b5cf6',     // Purple - owns/controls
+  other: '#6b7280',         // Gray
 };
 
 function formatMoney(amount: number): string {

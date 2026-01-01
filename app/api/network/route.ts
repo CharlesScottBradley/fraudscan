@@ -9,7 +9,7 @@ const supabase = createClient(
 interface NetworkNode {
   id: string;
   label: string;
-  type: 'person' | 'company' | 'politician' | 'committee' | 'provider';
+  type: 'person' | 'company' | 'politician' | 'committee' | 'provider' | 'organization' | 'vendor' | 'fraud_case';
   group?: string;
   metadata?: Record<string, unknown>;
 }
@@ -19,7 +19,7 @@ interface NetworkEdge {
   from: string;
   to: string;
   label?: string;
-  type: 'donation' | 'employment' | 'ppp_loan' | 'ownership' | 'other';
+  type: 'donation' | 'employment' | 'ppp_loan' | 'eidl_loan' | 'state_grant' | 'defendant' | 'ownership' | 'other';
   amount?: number;
   metadata?: Record<string, unknown>;
 }
@@ -170,6 +170,119 @@ async function searchEntities(query: string, type: string | null) {
             ppp_amount: p.current_approval_amount,
             forgiven: p.forgiveness_amount,
             jobs: p.jobs_reported,
+          },
+        });
+      }
+    });
+  }
+
+  // Search EIDL loan recipients
+  if (!type || type === 'eidl') {
+    const { data: eidlLoans } = await supabase
+      .from('eidl_loans')
+      .select('borrower_name, loan_amount, borrower_state, borrower_city')
+      .ilike('borrower_name', `%${query}%`)
+      .limit(10);
+
+    eidlLoans?.forEach(e => {
+      const id = `eidl:${e.borrower_name}`;
+      if (!seen.has(id)) {
+        seen.add(id);
+        nodes.push({
+          id,
+          label: e.borrower_name,
+          type: 'company',
+          group: 'eidl',
+          metadata: {
+            eidl_amount: e.loan_amount,
+            state: e.borrower_state,
+            city: e.borrower_city,
+          },
+        });
+      }
+    });
+  }
+
+  // Search state grant vendors
+  if (!type || type === 'vendor') {
+    const { data: vendors } = await supabase
+      .from('state_grants')
+      .select('recipient_name, payment_amount, source_state, agency, fiscal_year')
+      .ilike('recipient_name', `%${query}%`)
+      .order('payment_amount', { ascending: false })
+      .limit(10);
+
+    vendors?.forEach(v => {
+      const id = `vendor:${v.recipient_name}`;
+      if (!seen.has(id)) {
+        seen.add(id);
+        nodes.push({
+          id,
+          label: v.recipient_name,
+          type: 'vendor',
+          metadata: {
+            state: v.source_state,
+            agency: v.agency,
+            sample_amount: v.payment_amount,
+          },
+        });
+      }
+    });
+  }
+
+  // Search organizations (unified entity registry)
+  if (!type || type === 'org') {
+    const { data: orgs } = await supabase
+      .from('organizations')
+      .select('id, legal_name, dba_name, state, city, total_government_funding, is_fraud_prone_industry, fraud_score')
+      .or(`legal_name.ilike.%${query}%,dba_name.ilike.%${query}%`)
+      .order('total_government_funding', { ascending: false })
+      .limit(10);
+
+    orgs?.forEach(o => {
+      const id = `org:${o.id}`;
+      if (!seen.has(id)) {
+        seen.add(id);
+        nodes.push({
+          id,
+          label: o.dba_name || o.legal_name,
+          type: 'organization',
+          group: o.is_fraud_prone_industry ? 'fraud_prone' : undefined,
+          metadata: {
+            legal_name: o.legal_name,
+            state: o.state,
+            city: o.city,
+            total_funding: o.total_government_funding,
+            fraud_score: o.fraud_score,
+          },
+        });
+      }
+    });
+  }
+
+  // Search fraud cases
+  if (!type || type === 'case') {
+    const { data: cases } = await supabase
+      .from('cases')
+      .select('id, case_name, case_number, state, fraud_type, total_fraud_amount, status, summary')
+      .or(`case_name.ilike.%${query}%,summary.ilike.%${query}%`)
+      .order('total_fraud_amount', { ascending: false })
+      .limit(10);
+
+    cases?.forEach(c => {
+      const id = `case:${c.id}`;
+      if (!seen.has(id)) {
+        seen.add(id);
+        nodes.push({
+          id,
+          label: c.case_name,
+          type: 'fraud_case',
+          metadata: {
+            case_number: c.case_number,
+            state: c.state,
+            fraud_type: c.fraud_type,
+            amount: c.total_fraud_amount,
+            status: c.status,
           },
         });
       }
@@ -393,6 +506,320 @@ async function getConnections(entityId: string) {
           type: 'ppp_loan',
           amount: pppData.current_approval_amount,
         });
+      }
+    }
+  }
+
+  if (entityType === 'eidl') {
+    // EIDL loan - find related PPP loans and company connections
+    const { data: eidlData } = await supabase
+      .from('eidl_loans')
+      .select('*, ppp_loan_id')
+      .eq('borrower_name', entityName)
+      .limit(1)
+      .single();
+
+    if (eidlData) {
+      // Link to company
+      const companyId = `company:${entityName}`;
+      if (!seen.has(companyId)) {
+        seen.add(companyId);
+        nodes.push({
+          id: companyId,
+          label: entityName,
+          type: 'company',
+        });
+        edges.push({
+          id: `eidl:link:${entityName}`,
+          from: entityId,
+          to: companyId,
+          type: 'eidl_loan',
+          amount: eidlData.loan_amount,
+        });
+      }
+
+      // If linked to PPP loan, show that connection
+      if (eidlData.ppp_loan_id) {
+        const { data: linkedPpp } = await supabase
+          .from('ppp_loans')
+          .select('borrower_name, current_approval_amount')
+          .eq('id', eidlData.ppp_loan_id)
+          .single();
+
+        if (linkedPpp) {
+          const pppId = `ppp:${linkedPpp.borrower_name}`;
+          if (!seen.has(pppId)) {
+            seen.add(pppId);
+            nodes.push({
+              id: pppId,
+              label: `PPP: ${linkedPpp.borrower_name}`,
+              type: 'company',
+              group: 'ppp',
+              metadata: { amount: linkedPpp.current_approval_amount },
+            });
+          }
+          edges.push({
+            id: `double-dip:${entityName}`,
+            from: entityId,
+            to: pppId,
+            type: 'other',
+            label: 'Double Dip',
+          });
+        }
+      }
+    }
+  }
+
+  if (entityType === 'vendor') {
+    // State grant vendor - find all grants and connect to agencies
+    const { data: grants } = await supabase
+      .from('state_grants')
+      .select('id, payment_amount, agency, fiscal_year, source_state')
+      .eq('recipient_name', entityName)
+      .order('payment_amount', { ascending: false })
+      .limit(30);
+
+    // Group by agency
+    const agencyTotals = new Map<string, { amount: number; count: number; state: string }>();
+    grants?.forEach(g => {
+      if (g.agency) {
+        const existing = agencyTotals.get(g.agency) || { amount: 0, count: 0, state: g.source_state };
+        existing.amount += g.payment_amount || 0;
+        existing.count++;
+        agencyTotals.set(g.agency, existing);
+      }
+    });
+
+    // Create agency nodes and edges
+    agencyTotals.forEach((data, agency) => {
+      const agencyId = `agency:${agency}`;
+      if (!seen.has(agencyId)) {
+        seen.add(agencyId);
+        nodes.push({
+          id: agencyId,
+          label: agency,
+          type: 'committee', // Using committee style for agencies
+          metadata: { state: data.state },
+        });
+      }
+      edges.push({
+        id: `grant:${entityName}:${agency}`,
+        from: agencyId,
+        to: entityId,
+        type: 'state_grant',
+        amount: data.amount,
+        label: `${data.count} payments`,
+      });
+    });
+
+    // Check if vendor has PPP loans
+    const { data: pppLoans } = await supabase
+      .from('ppp_loans')
+      .select('loan_number, borrower_name, current_approval_amount')
+      .ilike('borrower_name', `%${entityName.split(' ')[0]}%`)
+      .limit(3);
+
+    pppLoans?.forEach(p => {
+      const pppId = `ppp:${p.loan_number}`;
+      if (!seen.has(pppId)) {
+        seen.add(pppId);
+        nodes.push({
+          id: pppId,
+          label: `PPP: ${p.borrower_name}`,
+          type: 'company',
+          group: 'ppp',
+          metadata: { amount: p.current_approval_amount },
+        });
+      }
+      edges.push({
+        id: `ppp:${p.loan_number}:${entityName}`,
+        from: pppId,
+        to: entityId,
+        type: 'ppp_loan',
+        amount: p.current_approval_amount,
+      });
+    });
+  }
+
+  if (entityType === 'org') {
+    // Organization from unified registry - find all linked funding
+    const orgId = entityName; // This is the UUID
+
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('id', orgId)
+      .single();
+
+    if (org) {
+      // Find PPP loans linked to this org
+      const { data: pppLoans } = await supabase
+        .from('ppp_loans')
+        .select('id, loan_number, borrower_name, current_approval_amount, forgiveness_amount')
+        .eq('organization_id', orgId)
+        .limit(10);
+
+      pppLoans?.forEach(p => {
+        const pppNodeId = `ppp:${p.loan_number}`;
+        if (!seen.has(pppNodeId)) {
+          seen.add(pppNodeId);
+          nodes.push({
+            id: pppNodeId,
+            label: `PPP: $${(p.current_approval_amount / 1000).toFixed(0)}K`,
+            type: 'company',
+            group: 'ppp',
+            metadata: { amount: p.current_approval_amount, forgiven: p.forgiveness_amount },
+          });
+        }
+        edges.push({
+          id: `ppp:org:${p.loan_number}`,
+          from: pppNodeId,
+          to: entityId,
+          type: 'ppp_loan',
+          amount: p.current_approval_amount,
+        });
+      });
+
+      // Find EIDL loans linked to this org
+      const { data: eidlLoans } = await supabase
+        .from('eidl_loans')
+        .select('id, sba_loan_number, borrower_name, loan_amount')
+        .eq('organization_id', orgId)
+        .limit(10);
+
+      eidlLoans?.forEach(e => {
+        const eidlNodeId = `eidl:${e.sba_loan_number}`;
+        if (!seen.has(eidlNodeId)) {
+          seen.add(eidlNodeId);
+          nodes.push({
+            id: eidlNodeId,
+            label: `EIDL: $${(e.loan_amount / 1000).toFixed(0)}K`,
+            type: 'company',
+            group: 'eidl',
+            metadata: { amount: e.loan_amount },
+          });
+        }
+        edges.push({
+          id: `eidl:org:${e.sba_loan_number}`,
+          from: eidlNodeId,
+          to: entityId,
+          type: 'eidl_loan',
+          amount: e.loan_amount,
+        });
+      });
+
+      // Find state grants matching org name
+      const { data: grants } = await supabase
+        .from('state_grants')
+        .select('id, recipient_name, payment_amount, agency, source_state')
+        .ilike('recipient_name', `%${org.legal_name}%`)
+        .order('payment_amount', { ascending: false })
+        .limit(10);
+
+      if (grants && grants.length > 0) {
+        const totalGrants = grants.reduce((sum, g) => sum + (g.payment_amount || 0), 0);
+        const grantNodeId = `grants:${orgId}`;
+        if (!seen.has(grantNodeId)) {
+          seen.add(grantNodeId);
+          nodes.push({
+            id: grantNodeId,
+            label: `State Grants: $${(totalGrants / 1000000).toFixed(1)}M`,
+            type: 'vendor',
+            metadata: { count: grants.length, total: totalGrants },
+          });
+        }
+        edges.push({
+          id: `grants:org:${orgId}`,
+          from: grantNodeId,
+          to: entityId,
+          type: 'state_grant',
+          amount: totalGrants,
+        });
+      }
+    }
+  }
+
+  if (entityType === 'case') {
+    // Fraud case - find defendants and linked entities
+    const caseId = entityName; // UUID
+
+    const { data: caseData } = await supabase
+      .from('cases')
+      .select('*')
+      .eq('id', caseId)
+      .single();
+
+    if (caseData) {
+      // Get defendants for this case
+      const { data: defendants } = await supabase
+        .from('defendants')
+        .select('id, name, role, sentence, restitution_amount, person_id')
+        .eq('case_id', caseId);
+
+      defendants?.forEach(d => {
+        const defId = `defendant:${d.id}`;
+        if (!seen.has(defId)) {
+          seen.add(defId);
+          nodes.push({
+            id: defId,
+            label: d.name,
+            type: 'person',
+            metadata: {
+              role: d.role,
+              sentence: d.sentence,
+              restitution: d.restitution_amount,
+            },
+          });
+        }
+        edges.push({
+          id: `defendant:${d.id}:${caseId}`,
+          from: defId,
+          to: entityId,
+          type: 'defendant',
+          label: d.role || 'defendant',
+        });
+
+        // If defendant has person_id, link to that person's other data
+        if (d.person_id) {
+          const personId = `person:${d.person_id}`;
+          if (!seen.has(personId)) {
+            // Could fetch more person data here
+          }
+        }
+      });
+
+      // Search for related PPP loans by case fraud amount threshold
+      if (caseData.total_fraud_amount && caseData.total_fraud_amount > 100000) {
+        // Try to find PPP loans that might be related by searching defendant names
+        for (const d of defendants || []) {
+          const { data: pppMatches } = await supabase
+            .from('ppp_loans')
+            .select('loan_number, borrower_name, current_approval_amount')
+            .ilike('borrower_name', `%${d.name.split(' ')[0]}%`)
+            .limit(2);
+
+          pppMatches?.forEach(p => {
+            const pppId = `ppp:${p.loan_number}`;
+            if (!seen.has(pppId)) {
+              seen.add(pppId);
+              nodes.push({
+                id: pppId,
+                label: p.borrower_name,
+                type: 'company',
+                group: 'ppp',
+                metadata: { amount: p.current_approval_amount },
+              });
+            }
+            edges.push({
+              id: `case-ppp:${p.loan_number}`,
+              from: `defendant:${d.id}`,
+              to: pppId,
+              type: 'ppp_loan',
+              amount: p.current_approval_amount,
+              label: 'potential link',
+            });
+          });
+        }
       }
     }
   }

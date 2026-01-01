@@ -17,7 +17,7 @@ const NetworkGraph = dynamic(() => import('@/app/components/NetworkGraph'), {
 interface NetworkNode {
   id: string;
   label: string;
-  type: 'person' | 'company' | 'politician' | 'committee' | 'provider';
+  type: 'person' | 'company' | 'politician' | 'committee' | 'provider' | 'organization' | 'vendor' | 'fraud_case';
   group?: string;
   metadata?: Record<string, unknown>;
 }
@@ -27,7 +27,7 @@ interface NetworkEdge {
   from: string;
   to: string;
   label?: string;
-  type: 'donation' | 'employment' | 'ppp_loan' | 'ownership' | 'other';
+  type: 'donation' | 'employment' | 'ppp_loan' | 'eidl_loan' | 'state_grant' | 'defendant' | 'ownership' | 'other';
   amount?: number;
   metadata?: Record<string, unknown>;
 }
@@ -39,12 +39,14 @@ interface SearchResult {
 
 // Preset examples to explore
 const PRESETS = [
-  { label: 'New Horizon Academy', query: 'New Horizon', type: null },
-  { label: 'Kids Quest', query: 'Kids Quest', type: null },
-  { label: 'Blooming Kids', query: 'Blooming Kids', type: null },
+  { label: 'Feeding Our Future', query: 'Feeding Our Future', type: 'case' },
+  { label: 'PPP Fraud Cases', query: 'PPP', type: 'case' },
+  { label: 'State of Minnesota', query: 'Minnesota State', type: 'vendor' },
+  { label: 'Healthcare Orgs', query: 'health', type: 'org' },
   { label: 'Tim Walz', query: 'Walz', type: 'recipient' },
-  { label: 'HRCC (GOP)', query: 'HRCC', type: 'recipient' },
   { label: 'DFL House Caucus', query: 'DFL House', type: 'recipient' },
+  { label: 'New Horizon Academy', query: 'New Horizon', type: 'provider' },
+  { label: 'EIDL Recipients', query: 'consulting', type: 'eidl' },
 ];
 
 export default function NetworkExplorerPage() {
@@ -268,21 +270,48 @@ export default function NetworkExplorerPage() {
         </div>
       )}
 
+      {/* Legend */}
+      <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+        <div className="p-4 bg-gray-900 border border-gray-800">
+          <h3 className="font-medium mb-2">Node Types</h3>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span> Person</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-yellow-500"></span> Company</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500"></span> Politician</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-purple-500"></span> Committee</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-green-500"></span> Provider</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-cyan-500"></span> Organization</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-lime-500"></span> Vendor</div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-700"></span> Fraud Case</div>
+          </div>
+        </div>
+        <div className="p-4 bg-gray-900 border border-gray-800">
+          <h3 className="font-medium mb-2">Connection Types</h3>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-2"><span className="w-6 h-0.5 bg-red-500"></span> Donation</div>
+            <div className="flex items-center gap-2"><span className="w-6 h-0.5 bg-blue-500"></span> Employment</div>
+            <div className="flex items-center gap-2"><span className="w-6 h-0.5 bg-yellow-500"></span> PPP Loan</div>
+            <div className="flex items-center gap-2"><span className="w-6 h-0.5 bg-orange-500"></span> EIDL Loan</div>
+            <div className="flex items-center gap-2"><span className="w-6 h-0.5 bg-lime-500"></span> State Grant</div>
+            <div className="flex items-center gap-2"><span className="w-6 h-0.5 bg-red-700"></span> Defendant</div>
+          </div>
+        </div>
+      </div>
+
       {/* Instructions */}
-      <div className="mt-6 p-4 bg-gray-900 border border-gray-800 text-sm">
+      <div className="mt-4 p-4 bg-gray-900 border border-gray-800 text-sm">
         <h3 className="font-medium mb-2">How to use</h3>
         <ul className="text-gray-400 space-y-1 list-disc list-inside">
-          <li>Search for any person, company, politician, or organization</li>
+          <li>Search for entities: companies, people, fraud cases, state vendors, organizations</li>
           <li>Click a result to add it to the graph</li>
           <li>Double-click any node to expand and see its connections</li>
           <li>Drag nodes to rearrange, scroll to zoom</li>
-          <li>Red lines = donations, Yellow = PPP loans, Blue = employment</li>
         </ul>
       </div>
 
       {/* Data sources */}
-      <div className="mt-6 text-xs text-gray-600">
-        Data: Minnesota Campaign Finance Board, SBA PPP Loan Data, MN DHS Licensing
+      <div className="mt-4 text-xs text-gray-600">
+        Data: MN Campaign Finance, SBA PPP/EIDL Loans, OpenTheBooks State Checkbooks, DOJ Fraud Cases, MN DHS Licensing
       </div>
     </div>
   );
