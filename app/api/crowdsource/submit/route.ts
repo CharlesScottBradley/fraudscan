@@ -92,6 +92,7 @@ interface SubmitRequest {
   submitter_email: string;
   username?: string;
   crypto_wallet?: string;
+  wallet_chain?: string;
   // Pre-uploaded file metadata (client uploads directly to Supabase Storage)
   file_path?: string;
   file_name?: string;
@@ -399,6 +400,7 @@ export async function POST(request: NextRequest) {
       submitter_ip: submitterIp,
       contributor_id: contributorId,
       crypto_wallet: body.crypto_wallet?.substring(0, 100) || null,
+      wallet_chain: body.wallet_chain && ['SOL', 'ETH', 'BTC'].includes(body.wallet_chain) ? body.wallet_chain : null,
       status: 'pending',
       is_public: true,
     };

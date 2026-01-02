@@ -88,6 +88,7 @@ function SubmitFormContent() {
     submitter_email: '',
     username: '',
     crypto_wallet: '',
+    wallet_chain: '',
     gap_ids: preselectedGap ? [preselectedGap] : [] as string[],
     related_entities: [] as Array<{ type: string; name: string; role: string }>,
   });
@@ -250,6 +251,7 @@ function SubmitFormContent() {
             submitter_email: formData.submitter_email,
             username: formData.username,
             crypto_wallet: formData.crypto_wallet,
+            wallet_chain: formData.wallet_chain,
             gap_ids: formData.gap_ids,
             // Pre-uploaded file metadata
             file_path: filePath,
@@ -278,6 +280,7 @@ function SubmitFormContent() {
             submitter_email: formData.submitter_email,
             username: formData.username,
             crypto_wallet: formData.crypto_wallet,
+            wallet_chain: formData.wallet_chain,
             gap_ids: formData.gap_ids,
             related_entities: formData.related_entities,
             'cf-turnstile-response': turnstileToken,
@@ -364,6 +367,7 @@ function SubmitFormContent() {
                   gap_ids: [],
                   related_entities: [],
                   crypto_wallet: '',
+                  wallet_chain: '',
                 }));
                 resetTurnstile();
               }}
@@ -684,15 +688,27 @@ function SubmitFormContent() {
         {/* Crypto Wallet for Bounty Payments */}
         <div>
           <label className="block text-sm text-gray-400 mb-2">
-            Crypto Wallet Address <span className="text-gray-600">(for bounty payments)</span>
+            Crypto Wallet <span className="text-gray-600">(for bounty payments)</span>
           </label>
-          <input
-            type="text"
-            value={formData.crypto_wallet}
-            onChange={(e) => setFormData(prev => ({ ...prev, crypto_wallet: e.target.value }))}
-            placeholder="SOL, ETH, or BTC address"
-            className="w-full bg-black border border-gray-700 rounded p-2.5 text-white focus:border-gray-500 focus:outline-none font-mono text-sm"
-          />
+          <div className="flex gap-2">
+            <select
+              value={formData.wallet_chain}
+              onChange={(e) => setFormData(prev => ({ ...prev, wallet_chain: e.target.value }))}
+              className="bg-black border border-gray-700 rounded p-2.5 text-white focus:border-gray-500 focus:outline-none"
+            >
+              <option value="">Chain</option>
+              <option value="SOL">SOL</option>
+              <option value="ETH">ETH</option>
+              <option value="BTC">BTC</option>
+            </select>
+            <input
+              type="text"
+              value={formData.crypto_wallet}
+              onChange={(e) => setFormData(prev => ({ ...prev, crypto_wallet: e.target.value }))}
+              placeholder="Wallet address"
+              className="flex-1 bg-black border border-gray-700 rounded p-2.5 text-white focus:border-gray-500 focus:outline-none font-mono text-sm"
+            />
+          </div>
           <p className="text-gray-600 text-xs mt-1">
             Optional. Required if submitting for a <Link href="/crowdsource/bounties" className="text-gray-400 hover:text-white">bounty</Link>.
           </p>
