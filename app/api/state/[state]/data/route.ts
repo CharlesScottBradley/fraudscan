@@ -128,71 +128,123 @@ export async function GET(
   };
 
   // Always get all counts (for tab display) - these are TOTALS for this state, not filtered
-  const [providerCountResult, pppCountResult, grantCountResult] = await Promise.all([
+  // Check both providers table AND organizations with is_childcare=true
+  const [providerCountResult, childcareOrgCountResult, pppCountResult, grantCountResult] = await Promise.all([
     supabase.from('providers').select('*', { count: 'exact', head: true }).eq('state', stateUpper),
+    supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('state', stateUpper).eq('is_childcare', true),
     supabase.from('ppp_loans').select('*', { count: 'exact', head: true }).eq('borrower_state', stateUpper),
     supabase.from('state_grants').select('*', { count: 'exact', head: true }).eq('source_state', stateUpper),
   ]);
 
-  results.providerCount = providerCountResult.count || 0;
+  // Use providers table if it has data, otherwise use childcare organizations
+  const providersTableCount = providerCountResult.count || 0;
+  const childcareOrgCount = childcareOrgCountResult.count || 0;
+  results.providerCount = providersTableCount > 0 ? providersTableCount : childcareOrgCount;
   results.pppCount = pppCountResult.count || 0;
   results.grantCount = grantCountResult.count || 0;
+
+  // Track which source to use for providers
+  const useOrganizationsTable = providersTableCount === 0 && childcareOrgCount > 0;
 
   // For 'all' type, we need to merge and sort - this is complex
   // For simplicity, when type is 'all', we'll fetch separately and merge
   if (dataType === 'providers') {
-    let query = supabase
-      .from('providers')
-      .select(`
-        id,
-        license_number,
-        name,
-        city,
-        license_type
-      `)
-      .eq('state', stateUpper);
+    if (useOrganizationsTable) {
+      // Query from organizations table for childcare
+      let query = supabase
+        .from('organizations')
+        .select(`
+          id,
+          license_number,
+          legal_name,
+          city,
+          license_type,
+          total_government_funding
+        `)
+        .eq('state', stateUpper)
+        .eq('is_childcare', true);
 
-    if (search) {
-      query = query.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
-    }
+      if (search) {
+        query = query.or(`legal_name.ilike.%${search}%,city.ilike.%${search}%`);
+      }
 
-    // Sort - providers don't have amount in this query, sort by name
-    if (sortBy === 'name') {
-      query = query.order('name', { ascending: sortDir === 'asc' });
+      // Sort
+      if (sortBy === 'amount') {
+        query = query.order('total_government_funding', { ascending: sortDir === 'asc', nullsFirst: false });
+      } else {
+        query = query.order('legal_name', { ascending: sortDir === 'asc' });
+      }
+
+      query = query.range(offset, offset + pageSize - 1);
+
+      const { data: orgs } = await query;
+
+      results.data = (orgs || []).map(o => ({
+        id: o.id,
+        type: 'provider' as const,
+        name: o.legal_name,
+        city: o.city,
+        category: o.license_type,
+        amount: o.total_government_funding || 0,
+        license_number: o.license_number,
+      }));
+
+      results.totalCount = results.providerCount;
     } else {
-      query = query.order('name', { ascending: true });
+      // Original providers table query
+      let query = supabase
+        .from('providers')
+        .select(`
+          id,
+          license_number,
+          name,
+          city,
+          license_type
+        `)
+        .eq('state', stateUpper);
+
+      if (search) {
+        query = query.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
+      }
+
+      // Sort - providers don't have amount in this query, sort by name
+      if (sortBy === 'name') {
+        query = query.order('name', { ascending: sortDir === 'asc' });
+      } else {
+        query = query.order('name', { ascending: true });
+      }
+
+      query = query.range(offset, offset + pageSize - 1);
+
+      const { data: providers } = await query;
+
+      // Get funding for these providers
+      const providerIds = providers?.map(p => p.id) || [];
+      let fundingMap: Record<string, number> = {};
+
+      if (providerIds.length > 0) {
+        const { data: payments } = await supabase
+          .from('payments')
+          .select('provider_id, total_amount')
+          .in('provider_id', providerIds);
+
+        payments?.forEach(p => {
+          fundingMap[p.provider_id] = (fundingMap[p.provider_id] || 0) + p.total_amount;
+        });
+      }
+
+      results.data = (providers || []).map(p => ({
+        id: p.id,
+        type: 'provider' as const,
+        name: p.name,
+        city: p.city,
+        category: p.license_type,
+        amount: fundingMap[p.id] || 0,
+        license_number: p.license_number,
+      }));
+
+      results.totalCount = results.providerCount;
     }
-
-    query = query.range(offset, offset + pageSize - 1);
-
-    const { data: providers } = await query;
-
-    // Get funding for these providers
-    const providerIds = providers?.map(p => p.id) || [];
-    let fundingMap: Record<string, number> = {};
-
-    if (providerIds.length > 0) {
-      const { data: payments } = await supabase
-        .from('payments')
-        .select('provider_id, total_amount')
-        .in('provider_id', providerIds);
-
-      payments?.forEach(p => {
-        fundingMap[p.provider_id] = (fundingMap[p.provider_id] || 0) + p.total_amount;
-      });
-    }
-
-    results.data = (providers || []).map(p => ({
-      id: p.id,
-      type: 'provider' as const,
-      name: p.name,
-      city: p.city,
-      category: p.license_type,
-      amount: fundingMap[p.id] || 0,
-      license_number: p.license_number,
-    }));
-
-    results.totalCount = results.providerCount;
 
   } else if (dataType === 'ppp_loans') {
     let query = supabase
@@ -374,19 +426,121 @@ export async function GET(
       if (pppToFetch < pageSize) {
         const providersToFetch = pageSize - pppToFetch;
 
-        let provQuery = supabase
+        if (useOrganizationsTable) {
+          // Query from organizations for childcare
+          let provQuery = supabase
+            .from('organizations')
+            .select(`id, license_number, legal_name, city, license_type, total_government_funding`)
+            .eq('state', stateUpper)
+            .eq('is_childcare', true);
+
+          if (search) {
+            provQuery = provQuery.or(`legal_name.ilike.%${search}%,city.ilike.%${search}%`);
+          }
+
+          provQuery = provQuery.order('legal_name', { ascending: true })
+            .range(0, providersToFetch - 1);
+
+          const { data: orgs } = await provQuery;
+
+          const providerResults = (orgs || []).map(o => ({
+            id: o.id,
+            type: 'provider' as const,
+            name: o.legal_name,
+            city: o.city,
+            category: o.license_type,
+            amount: o.total_government_funding || 0,
+            license_number: o.license_number,
+          }));
+
+          results.data = [...results.data, ...providerResults];
+        } else {
+          let provQuery = supabase
+            .from('providers')
+            .select(`id, license_number, name, city, license_type`)
+            .eq('state', stateUpper);
+
+          if (search) {
+            provQuery = provQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
+          }
+
+          provQuery = provQuery.order('name', { ascending: true })
+            .range(0, providersToFetch - 1);
+
+          const { data: providers } = await provQuery;
+
+          // Get funding
+          const providerIds = providers?.map(p => p.id) || [];
+          let fundingMap: Record<string, number> = {};
+
+          if (providerIds.length > 0) {
+            const { data: payments } = await supabase
+              .from('payments')
+              .select('provider_id, total_amount')
+              .in('provider_id', providerIds);
+
+            payments?.forEach(p => {
+              fundingMap[p.provider_id] = (fundingMap[p.provider_id] || 0) + p.total_amount;
+            });
+          }
+
+          const providerResults = (providers || []).map(p => ({
+            id: p.id,
+            type: 'provider' as const,
+            name: p.name,
+            city: p.city,
+            category: p.license_type,
+            amount: fundingMap[p.id] || 0,
+            license_number: p.license_number,
+          }));
+
+          results.data = [...results.data, ...providerResults];
+        }
+      }
+    } else {
+      // Past PPP loans, into providers
+      const providerOffset = offset - results.pppCount;
+
+      if (useOrganizationsTable) {
+        // Query from organizations for childcare
+        let query = supabase
+          .from('organizations')
+          .select(`id, license_number, legal_name, city, license_type, total_government_funding`)
+          .eq('state', stateUpper)
+          .eq('is_childcare', true);
+
+        if (search) {
+          query = query.or(`legal_name.ilike.%${search}%,city.ilike.%${search}%`);
+        }
+
+        query = query.order('legal_name', { ascending: true })
+          .range(providerOffset, providerOffset + pageSize - 1);
+
+        const { data: orgs } = await query;
+
+        results.data = (orgs || []).map(o => ({
+          id: o.id,
+          type: 'provider' as const,
+          name: o.legal_name,
+          city: o.city,
+          category: o.license_type,
+          amount: o.total_government_funding || 0,
+          license_number: o.license_number,
+        }));
+      } else {
+        let query = supabase
           .from('providers')
           .select(`id, license_number, name, city, license_type`)
           .eq('state', stateUpper);
 
         if (search) {
-          provQuery = provQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
+          query = query.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
         }
 
-        provQuery = provQuery.order('name', { ascending: true })
-          .range(0, providersToFetch - 1);
+        query = query.order('name', { ascending: true })
+          .range(providerOffset, providerOffset + pageSize - 1);
 
-        const { data: providers } = await provQuery;
+        const { data: providers } = await query;
 
         // Get funding
         const providerIds = providers?.map(p => p.id) || [];
@@ -403,7 +557,7 @@ export async function GET(
           });
         }
 
-        const providerResults = (providers || []).map(p => ({
+        results.data = (providers || []).map(p => ({
           id: p.id,
           type: 'provider' as const,
           name: p.name,
@@ -412,51 +566,7 @@ export async function GET(
           amount: fundingMap[p.id] || 0,
           license_number: p.license_number,
         }));
-
-        results.data = [...results.data, ...providerResults];
       }
-    } else {
-      // Past PPP loans, into providers
-      const providerOffset = offset - results.pppCount;
-
-      let query = supabase
-        .from('providers')
-        .select(`id, license_number, name, city, license_type`)
-        .eq('state', stateUpper);
-
-      if (search) {
-        query = query.or(`name.ilike.%${search}%,city.ilike.%${search}%`);
-      }
-
-      query = query.order('name', { ascending: true })
-        .range(providerOffset, providerOffset + pageSize - 1);
-
-      const { data: providers } = await query;
-
-      // Get funding
-      const providerIds = providers?.map(p => p.id) || [];
-      let fundingMap: Record<string, number> = {};
-
-      if (providerIds.length > 0) {
-        const { data: payments } = await supabase
-          .from('payments')
-          .select('provider_id, total_amount')
-          .in('provider_id', providerIds);
-
-        payments?.forEach(p => {
-          fundingMap[p.provider_id] = (fundingMap[p.provider_id] || 0) + p.total_amount;
-        });
-      }
-
-      results.data = (providers || []).map(p => ({
-        id: p.id,
-        type: 'provider' as const,
-        name: p.name,
-        city: p.city,
-        category: p.license_type,
-        amount: fundingMap[p.id] || 0,
-        license_number: p.license_number,
-      }));
     }
   }
 
