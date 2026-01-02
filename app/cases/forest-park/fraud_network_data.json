@@ -1,0 +1,355 @@
+{
+  "network_metadata": {
+    "title": "Healthcare Fraud Network Analysis",
+    "date_created": "2026-01-02",
+    "total_entities": 19,
+    "total_connections": 50,
+    "excluded_individuals": 15,
+    "business_entities": 4,
+    "primary_case": "Forest Park Medical Center Fraud Network",
+    "data_sources": [
+      "HHS-OIG LEIE Database (accessed January 2, 2026)",
+      "U.S. Department of Justice Press Releases",
+      "Federal Court Documents (Northern District of Texas, Fifth Circuit)"
+    ]
+  },
+  "entities": [
+    {
+      "entity_name": "Forest Park Medical Center",
+      "entity_type": "Hospital",
+      "enforcement_record_source": "OIG LEIE Database (Exclusion Date: 20210920, Type: 1128a3); DOJ Press Release March 19 2021",
+      "connected_entities": [
+        "Wilton McPherson Burt",
+        "Alan Andrew Beauchamp",
+        "Wade Neal Barker",
+        "Richard Ferdinand Toussaint Jr",
+        "Shawn Mark Henry",
+        "Hospital Business Concepts",
+        "Jackson Jacob shell companies"
+      ],
+      "connection_types": [
+        "Shared Principals/Officers",
+        "Documented Business Transactions"
+      ],
+      "source_citation": "U.S. Department of Justice, U.S. Attorney's Office, Northern District of Texas, 'Forest Park Healthcare Fraud' (March 19, 2021); OIG LEIE Database accessed January 2, 2026",
+      "location": "11990 North Central Expressway, Dallas, Texas",
+      "case_number": "3:16-CR-516, Northern District of Texas"
+    },
+    {
+      "entity_name": "Wilton McPherson Burt",
+      "entity_type": "Individual - Business Owner/Executive",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20210920, Type: 1128a3, Location: Butner NC); DOJ conviction April 2019, sentenced 150 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Alan Andrew Beauchamp",
+        "Jackson Jacob",
+        "Hospital Business Concepts"
+      ],
+      "connection_types": [
+        "Shared Entity (FPMC Managing Partner)",
+        "Documented Business Transactions (paid kickbacks through shell companies)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "role": "Managing Partner of Forest Park Medical Center",
+      "sentence": "150 months (12.5 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Alan Andrew Beauchamp",
+      "entity_type": "Individual - Business Owner/Executive",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20210920, Type: 1128a3, Location: El Reno OK); DOJ guilty plea August 2018, sentenced 63 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Wilton McPherson Burt",
+        "Jackson Jacob"
+      ],
+      "connection_types": [
+        "Shared Entity (FPMC Hospital Manager)",
+        "Documented Business Transactions (facilitated kickback payments)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "role": "Hospital Manager of Forest Park Medical Center",
+      "sentence": "63 months (5.25 years)",
+      "plea_date": "August 2018"
+    },
+    {
+      "entity_name": "Wade Neal Barker",
+      "entity_type": "Individual - Physician",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1144270992, Exclusion Date: 20210920, Type: 1128a3, Location: Texarkana TX); DOJ guilty plea October 2018, sentenced 60 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Richard Ferdinand Toussaint Jr"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (FPMC Co-founder 2008)",
+        "Shared Principals/Officers"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "specialty": "Bariatric Surgery",
+      "role": "Co-founder of Forest Park Medical Center (2008)",
+      "sentence": "60 months (5 years)",
+      "plea_date": "October 2018"
+    },
+    {
+      "entity_name": "Richard Ferdinand Toussaint Jr",
+      "entity_type": "Individual - Physician",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1790734754, Exclusion Date: 20200520 and 20201220, Type: 1128a3, Location: Grand Prairie TX and Seagoville TX); DOJ guilty plea March 2017, sentenced 60 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Wade Neal Barker"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (FPMC Co-founder 2008)",
+        "Shared Principals/Officers"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "specialty": "Anesthesiology",
+      "role": "Co-founder of Forest Park Medical Center (2008)",
+      "sentence": "60 months (5 years)",
+      "plea_date": "March 2017"
+    },
+    {
+      "entity_name": "Shawn Mark Henry",
+      "entity_type": "Individual - Physician",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1518901222, Exclusion Date: 20210920, Type: 1128a3, Location: Pollock LA); DOJ conviction April 2019, sentenced 90 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Wilton McPherson Burt",
+        "Alan Andrew Beauchamp"
+      ],
+      "connection_types": [
+        "Shared Entity (FPMC Investor)",
+        "Documented Business Transactions (received kickbacks)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas; Fifth Circuit Case No. 21-10292",
+      "specialty": "Spinal Surgery",
+      "role": "Investor in Forest Park Medical Center",
+      "sentence": "90 months (7.5 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Douglas Sung Won",
+      "entity_type": "Individual - Physician",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1194765552, Exclusion Date: 20210920, Type: 1128a3, Location: Dallas TX); DOJ conviction April 2019, sentenced 60 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Michael Bassem Rimlawi"
+      ],
+      "connection_types": [
+        "Shared Business Partnership (spinal surgery partners)",
+        "Documented Business Transactions (both received kickbacks from FPMC)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas; Fifth Circuit Case No. 21-10292",
+      "specialty": "Spinal Surgery",
+      "sentence": "60 months (5 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Michael Bassem Rimlawi",
+      "entity_type": "Individual - Physician",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1851367692, Exclusion Date: 20210920, Type: 1128a3, Location: Forrest City AR); DOJ conviction April 2019, sentenced 90 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Douglas Sung Won"
+      ],
+      "connection_types": [
+        "Shared Business Partnership (spinal surgery partners with Won)",
+        "Documented Business Transactions (received kickbacks from FPMC)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas; Fifth Circuit Case No. 21-10292",
+      "specialty": "Spinal Surgery",
+      "sentence": "90 months (7.5 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Mrugeshkumar Kumar Shah",
+      "entity_type": "Individual - Physician",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1639113012, Exclusion Date: 20210920, Type: 1128a3, Location: Butner NC); DOJ conviction April 2019, sentenced 42 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Wilton McPherson Burt",
+        "Alan Andrew Beauchamp"
+      ],
+      "connection_types": [
+        "Documented Business Transactions (received kickbacks from FPMC for patient referrals)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas; Fifth Circuit Case No. 21-10292; HHS DAB Decision CR6114 (2022)",
+      "specialty": "Pain Management",
+      "sentence": "42 months (3.5 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Jackson Jacob",
+      "entity_type": "Individual - Business Owner",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20210920, Type: 1128a3, Location: Murphy TX); DOJ conviction April 2019, sentenced 96 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Wilton McPherson Burt",
+        "Alan Andrew Beauchamp",
+        "Multiple Shell Companies"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (owned shell companies)",
+        "Documented Business Transactions (routed bribes through shell companies)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas; Fifth Circuit Case No. 21-10292",
+      "role": "Owner of shell companies used to route bribes",
+      "sentence": "96 months (8 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Hospital Business Concepts",
+      "entity_type": "Business Entity - Surgeon Brokerage",
+      "enforcement_record_source": "DOJ court documents Case No. 3:16-CR-516; Co-owners excluded by OIG",
+      "connected_entities": [
+        "Andrew Jonathan Hillman",
+        "Semyon Narosov",
+        "Forest Park Medical Center"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Hillman and Narosov co-owners)",
+        "Documented Business Transactions (facilitated kickback payments between FPMC and surgeons)"
+      ],
+      "source_citation": "DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "function": "Surgeon brokerage facilitating kickback payments"
+    },
+    {
+      "entity_name": "Andrew Jonathan Hillman",
+      "entity_type": "Individual - Business Owner/Executive",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20200720, Type: 1128a1, Location: Texarkana TX); DOJ guilty plea October 2018, sentenced 60 months December 2019",
+      "connected_entities": [
+        "Hospital Business Concepts",
+        "Semyon Narosov",
+        "Forest Park Medical Center"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Hospital Business Concepts co-owner)",
+        "Documented Business Transactions (paid and received kickbacks)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "role": "Co-owner of Hospital Business Concepts",
+      "sentence": "60 months (5 years)",
+      "plea_date": "October 2018",
+      "sentence_date": "December 2019"
+    },
+    {
+      "entity_name": "Semyon Narosov",
+      "entity_type": "Individual - Business Owner/Executive",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1952418972, Exclusion Date: 20201020, Type: 1128a1, Location: Eden TX); DOJ guilty plea October 2018, sentenced 51 months July 2020",
+      "connected_entities": [
+        "Hospital Business Concepts",
+        "Andrew Jonathan Hillman",
+        "Forest Park Medical Center"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Hospital Business Concepts co-owner)",
+        "Documented Business Transactions (paid and received kickbacks)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "role": "Co-owner of Hospital Business Concepts",
+      "sentence": "51 months (4.25 years)",
+      "plea_date": "October 2018",
+      "sentence_date": "July 2020"
+    },
+    {
+      "entity_name": "Iris Kathleen Forrest",
+      "entity_type": "Individual - Licensed Healthcare Professional",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20210920, Type: 1128a3, Location: Fort Worth TX); DOJ conviction April 2019, sentenced 36 months",
+      "connected_entities": [
+        "Forest Park Medical Center",
+        "Israel Ortiz",
+        "Kortmed"
+      ],
+      "connection_types": [
+        "Documented Business Transactions (recruited and preauthorized worker's comp patients for FPMC)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas; Fifth Circuit Case No. 21-10292",
+      "role": "Nurse who recruited and preauthorized worker's compensation requests",
+      "sentence": "36 months (3 years)",
+      "conviction_date": "April 2019"
+    },
+    {
+      "entity_name": "Israel Ortiz",
+      "entity_type": "Individual - Business Owner/Executive",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20211118, Type: 1128a3, Location: El Reno OK); DOJ guilty plea February 2017, sentenced 12 months",
+      "connected_entities": [
+        "Kortmed",
+        "Forest Park Medical Center",
+        "Iris Kathleen Forrest"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Kortmed founder)",
+        "Documented Business Transactions (filled preauthorization forms for FPMC patients)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "role": "Founder of Kortmed",
+      "sentence": "12 months (1 year)",
+      "plea_date": "February 2017"
+    },
+    {
+      "entity_name": "Kortmed",
+      "entity_type": "Business Entity - Medical Services",
+      "enforcement_record_source": "DOJ court documents Case No. 3:16-CR-516; Owner excluded by OIG",
+      "connected_entities": [
+        "Israel Ortiz",
+        "Forest Park Medical Center",
+        "Iris Kathleen Forrest"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Ortiz founder)",
+        "Documented Business Transactions (preauthorization services for worker's comp patients)"
+      ],
+      "source_citation": "DOJ USAO-NDTX Press Release March 19, 2021; Case No. 3:16-CR-516, Northern District of Texas",
+      "function": "Filled out preauthorization forms for worker's compensation patients"
+    },
+    {
+      "entity_name": "Andrew Chmiel",
+      "entity_type": "Individual - Business Owner/Executive",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 0000000000, Exclusion Date: 20250520, Type: 1128a1, Location: Beaver WV); DOJ charged April 2019 Operation Brace Yourself",
+      "connected_entities": [
+        "10 DME Companies",
+        "2 Dropship Companies",
+        "2 Facilitating Companies"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (owned/had interest in 14 companies)",
+        "Documented Business Transactions (kickbacks for medically unnecessary DME)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ USAO-SC Press Release April 10, 2019; Case District of South Carolina",
+      "role": "Owner/had interest in 14 companies involved in $200 million DME fraud scheme",
+      "case": "Operation Brace Yourself (2019)",
+      "scheme_amount": "$200 million"
+    },
+    {
+      "entity_name": "Rita Anagho",
+      "entity_type": "Individual - Licensed Healthcare Professional",
+      "enforcement_record_source": "OIG LEIE Database (NPI: 1205150174, Exclusion Date: 20250420, Type: 1128b4, Location: Queen Creek AZ); DOJ charged June 2024, convicted",
+      "connected_entities": [
+        "Tusa Integrated Clinic LLC"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Tusa owner)",
+        "Documented Business Transactions (fraudulent claims to Arizona Medicaid)"
+      ],
+      "source_citation": "OIG LEIE Database accessed January 2, 2026; DOJ Criminal Division Case Summaries 2024 National Health Care Fraud Enforcement Action",
+      "role": "Owner of Tusa Integrated Clinic LLC",
+      "scheme_amount": "$69 million",
+      "case": "2024 National Health Care Fraud Enforcement Action"
+    },
+    {
+      "entity_name": "Tusa Integrated Clinic LLC",
+      "entity_type": "Business Entity - Outpatient Treatment Center",
+      "enforcement_record_source": "DOJ court documents 2024 National Health Care Fraud Enforcement Action; Owner excluded by OIG",
+      "connected_entities": [
+        "Rita Anagho",
+        "Arizona Medicaid"
+      ],
+      "connection_types": [
+        "Shared Entity Ownership (Anagho owner)",
+        "Documented Business Transactions (submitted $69 million fraudulent claims)"
+      ],
+      "source_citation": "DOJ Criminal Division Case Summaries 2024 National Health Care Fraud Enforcement Action",
+      "function": "Outpatient substance abuse treatment center that submitted fraudulent claims"
+    }
+  ]
+}
