@@ -1,0 +1,680 @@
+{
+  "federal": [
+    {
+      "name": "USASpending.gov",
+      "url": "https://www.usaspending.gov/",
+      "apiUrl": "https://api.usaspending.gov/",
+      "description": "Federal grants, contracts, and spending data",
+      "category": "grants",
+      "hasApi": true
+    },
+    {
+      "name": "SBA Data Store",
+      "url": "https://data.sba.gov/",
+      "description": "PPP, EIDL, 7(a), and 504 loan data (FOIA releases)",
+      "category": "loans",
+      "hasApi": true
+    },
+    {
+      "name": "Grants.gov",
+      "url": "https://www.grants.gov/",
+      "description": "Federal grant opportunities and awards",
+      "category": "grants",
+      "hasApi": true
+    },
+    {
+      "name": "SAM.gov",
+      "url": "https://sam.gov/",
+      "description": "Entity registration, exclusions, contract awards",
+      "category": "contracts",
+      "hasApi": true
+    },
+    {
+      "name": "FEC.gov",
+      "url": "https://www.fec.gov/data/",
+      "description": "Federal campaign finance and contributions",
+      "category": "political",
+      "hasApi": true
+    },
+    {
+      "name": "PaymentAccuracy.gov",
+      "url": "https://www.paymentaccuracy.gov/",
+      "description": "Improper payment rates by federal program",
+      "category": "oversight",
+      "hasApi": false
+    },
+    {
+      "name": "DOJ Press Releases",
+      "url": "https://www.justice.gov/news",
+      "description": "Fraud prosecution announcements",
+      "category": "enforcement",
+      "hasApi": false
+    },
+    {
+      "name": "HHS OIG Exclusions",
+      "url": "https://oig.hhs.gov/exclusions/",
+      "description": "Excluded healthcare providers (LEIE database)",
+      "category": "healthcare",
+      "hasApi": true
+    },
+    {
+      "name": "CMS Provider Data",
+      "url": "https://data.cms.gov/provider-data/",
+      "description": "Nursing homes, hospitals, healthcare facilities",
+      "category": "healthcare",
+      "hasApi": true
+    },
+    {
+      "name": "USDA FNS SNAP Retailers",
+      "url": "https://www.fns.usda.gov/snap/retailer-locator",
+      "description": "Authorized SNAP retailers",
+      "category": "welfare",
+      "hasApi": false
+    },
+    {
+      "name": "USDA FNS Disqualified Stores",
+      "url": "https://www.fns.usda.gov/snap/disqualifications/list",
+      "description": "SNAP-disqualified retailers",
+      "category": "enforcement",
+      "hasApi": false
+    },
+    {
+      "name": "HUD Data Portal",
+      "url": "https://data.hud.gov/",
+      "description": "Housing assistance, Section 8, public housing",
+      "category": "housing",
+      "hasApi": true
+    },
+    {
+      "name": "OpenTheBooks.com",
+      "url": "https://www.openthebooks.com/",
+      "description": "State and local government spending (FOIA aggregator)",
+      "category": "spending",
+      "hasApi": false
+    },
+    {
+      "name": "Oversight.gov",
+      "url": "https://www.oversight.gov/",
+      "description": "Inspector General reports across all agencies",
+      "category": "oversight",
+      "hasApi": false
+    },
+    {
+      "name": "Data.gov",
+      "url": "https://data.gov/",
+      "description": "Federal open data catalog",
+      "category": "data",
+      "hasApi": true
+    },
+    {
+      "name": "Treasury Data Lab",
+      "url": "https://fiscaldata.treasury.gov/",
+      "description": "Federal revenue, spending, debt data",
+      "category": "spending",
+      "hasApi": true
+    },
+    {
+      "name": "GAO Reports",
+      "url": "https://www.gao.gov/reports-testimonies",
+      "description": "Government Accountability Office audit reports",
+      "category": "oversight",
+      "hasApi": false
+    },
+    {
+      "name": "FPDS (Federal Contracts)",
+      "url": "https://www.fpds.gov/",
+      "description": "Federal procurement data system",
+      "category": "contracts",
+      "hasApi": true
+    }
+  ],
+  "states": {
+    "AL": {
+      "name": "Alabama",
+      "links": [
+        { "name": "Open Alabama", "url": "https://open.alabama.gov/", "category": "fiscal", "description": "State checkbook and spending" },
+        { "name": "Secretary of State", "url": "https://www.sos.alabama.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "DHR Childcare", "url": "https://dhr.alabama.gov/child-care/", "category": "childcare", "description": "Licensed childcare providers" },
+        { "name": "FOIA Portal", "url": "https://ago.alabama.gov/openrecords", "category": "foia", "description": "Public records requests" },
+        { "name": "Ethics Commission", "url": "https://ethics.alabama.gov/", "category": "political", "description": "Campaign finance and lobbying" }
+      ]
+    },
+    "AK": {
+      "name": "Alaska",
+      "links": [
+        { "name": "Checkbook Alaska", "url": "https://checkbook.alaska.gov/", "category": "fiscal", "description": "State spending transparency" },
+        { "name": "Corporations Database", "url": "https://www.commerce.alaska.gov/cbp/Main/", "category": "business", "description": "Business entity search" },
+        { "name": "Childcare Program Office", "url": "https://health.alaska.gov/dpa/Pages/ccare/default.aspx", "category": "childcare", "description": "Licensed childcare providers" },
+        { "name": "APOC (Elections)", "url": "https://aws.state.ak.us/ApocReports/", "category": "political", "description": "Campaign finance reports" }
+      ]
+    },
+    "AZ": {
+      "name": "Arizona",
+      "links": [
+        { "name": "OpenBooks Arizona", "url": "https://openbooks.az.gov/", "category": "fiscal", "description": "State spending and payroll" },
+        { "name": "AZ Corp Commission", "url": "https://ecorp.azcc.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "DES Childcare", "url": "https://des.az.gov/services/child-and-family/child-care", "category": "childcare", "description": "Childcare licensing and search" },
+        { "name": "Public Records", "url": "https://azag.gov/outreach/public-records", "category": "foia", "description": "Public records guidance" },
+        { "name": "Secretary of State - Elections", "url": "https://azsos.gov/elections/campaign-finance-disclosure-reporting", "category": "political", "description": "Campaign finance" }
+      ]
+    },
+    "AR": {
+      "name": "Arkansas",
+      "links": [
+        { "name": "Transparency Arkansas", "url": "https://www.ark.org/dfa/transparency/", "category": "fiscal", "description": "State spending data" },
+        { "name": "Secretary of State", "url": "https://www.sos.arkansas.gov/corps/search_all.php", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://humanservices.arkansas.gov/divisions-shared-services/division-of-child-care-early-childhood-education/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://www.arkansasethics.com/", "category": "political", "description": "Campaign finance and lobbying" }
+      ]
+    },
+    "CA": {
+      "name": "California",
+      "links": [
+        { "name": "Open FI$Cal", "url": "https://open.fiscal.ca.gov/", "category": "fiscal", "description": "State spending and contracts" },
+        { "name": "CA Open Data", "url": "https://data.ca.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://bizfileonline.sos.ca.gov/search/business", "category": "business", "description": "Business entity search" },
+        { "name": "Community Care Licensing", "url": "https://www.ccld.dss.ca.gov/carefacilitysearch/", "category": "childcare", "description": "Licensed care facilities search" },
+        { "name": "FPPC (Campaign Finance)", "url": "https://www.fppc.ca.gov/", "category": "political", "description": "Campaign finance and lobbying" },
+        { "name": "Public Records Act", "url": "https://oag.ca.gov/government/publicrecords", "category": "foia", "description": "Public records guidance" },
+        { "name": "DHCS Provider Data", "url": "https://data.chhs.ca.gov/", "category": "healthcare", "description": "Health and human services data" }
+      ]
+    },
+    "CO": {
+      "name": "Colorado",
+      "links": [
+        { "name": "Colorado Transparency", "url": "https://apps.colorado.gov/apps/oit/transparency/index.html", "category": "fiscal", "description": "State spending and payroll" },
+        { "name": "CO Data Portal", "url": "https://data.colorado.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do", "category": "business", "description": "Business entity search" },
+        { "name": "CDHS Childcare", "url": "https://cdhs.colorado.gov/our-services/child-and-family-services/child-care", "category": "childcare", "description": "Childcare licensing search" },
+        { "name": "TRACER (Campaign Finance)", "url": "https://tracer.sos.colorado.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "CORA Requests", "url": "https://coag.gov/open-records/", "category": "foia", "description": "Public records requests" }
+      ]
+    },
+    "CT": {
+      "name": "Connecticut",
+      "links": [
+        { "name": "Open Connecticut", "url": "https://openbudget.ct.gov/", "category": "fiscal", "description": "Budget and spending" },
+        { "name": "CT Data Portal", "url": "https://data.ct.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "CONCORD", "url": "https://business.ct.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "OEC Childcare", "url": "https://www.ctoec.org/", "category": "childcare", "description": "Office of Early Childhood" },
+        { "name": "SEEC (Campaign Finance)", "url": "https://seec.ct.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "FOI Commission", "url": "https://www.ct.gov/foi", "category": "foia", "description": "Freedom of Information" }
+      ]
+    },
+    "DE": {
+      "name": "Delaware",
+      "links": [
+        { "name": "Open Data Delaware", "url": "https://data.delaware.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Division of Corporations", "url": "https://icis.corp.delaware.gov/ecorp/entitysearch/namesearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DHSS Childcare", "url": "https://kids.delaware.gov/occl/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Campaign Finance", "url": "https://elections.delaware.gov/information/campaignfinance/index.shtml", "category": "political", "description": "Campaign finance reports" },
+        { "name": "FOIA Portal", "url": "https://attorneygeneral.delaware.gov/foia/", "category": "foia", "description": "Public records requests" }
+      ]
+    },
+    "FL": {
+      "name": "Florida",
+      "links": [
+        { "name": "Florida OpenGov", "url": "https://floridaopengov.net/", "category": "fiscal", "description": "State spending and payroll" },
+        { "name": "Florida Accountability", "url": "https://www.floridaaccountability.com/", "category": "fiscal", "description": "Budget and spending" },
+        { "name": "Sunbiz", "url": "https://search.sunbiz.org/", "category": "business", "description": "Business entity search" },
+        { "name": "DCF Childcare", "url": "https://www.myflfamilies.com/services/child-family/child-care", "category": "childcare", "description": "Childcare provider search" },
+        { "name": "Campaign Finance", "url": "https://dos.myflorida.com/elections/candidates-committees/campaign-finance/", "category": "political", "description": "Campaign finance database" },
+        { "name": "FL Data Portal", "url": "https://data.florida.gov/", "category": "data", "description": "State open data portal" }
+      ]
+    },
+    "GA": {
+      "name": "Georgia",
+      "links": [
+        { "name": "Open Georgia", "url": "https://openga.gov/", "category": "fiscal", "description": "State spending and vendors" },
+        { "name": "GA Corp Search", "url": "https://ecorp.sos.ga.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "DECAL Childcare", "url": "https://decal.ga.gov/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://ethics.ga.gov/", "category": "political", "description": "Campaign finance and lobbying" },
+        { "name": "Open Records", "url": "https://law.georgia.gov/key-issues/access-government/georgia-open-records-act", "category": "foia", "description": "Public records guidance" }
+      ]
+    },
+    "HI": {
+      "name": "Hawaii",
+      "links": [
+        { "name": "Hawaii Data Portal", "url": "https://data.hawaii.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "BREG Business Search", "url": "https://hbe.ehawaii.gov/documents/search.html", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://humanservices.hawaii.gov/bessd/childcare/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Campaign Spending", "url": "https://ags.hawaii.gov/campaign/", "category": "political", "description": "Campaign finance database" },
+        { "name": "OIP (FOIA)", "url": "https://oip.hawaii.gov/", "category": "foia", "description": "Office of Information Practices" }
+      ]
+    },
+    "ID": {
+      "name": "Idaho",
+      "links": [
+        { "name": "Transparent Idaho", "url": "https://transparent.idaho.gov/", "category": "fiscal", "description": "State spending and payroll" },
+        { "name": "Secretary of State", "url": "https://sosbiz.idaho.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "IDHW Childcare", "url": "https://healthandwelfare.idaho.gov/services-programs/children-families/child-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Sunshine Reports", "url": "https://sos.idaho.gov/elect/finance/index.html", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "IL": {
+      "name": "Illinois",
+      "links": [
+        { "name": "Illinois Comptroller", "url": "https://ledger.illinoiscomptroller.gov/", "category": "fiscal", "description": "State spending and vendors" },
+        { "name": "IL Data Portal", "url": "https://data.illinois.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.ilsos.gov/corporatellc/", "category": "business", "description": "Business entity search" },
+        { "name": "DCFS Childcare", "url": "https://www.dhs.state.il.us/page.aspx?item=30357", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "State Board of Elections", "url": "https://www.elections.il.gov/campaigndisclosure/", "category": "political", "description": "Campaign finance database" },
+        { "name": "FOIA", "url": "https://www.ilga.gov/commission/lrb/FOIA.pdf", "category": "foia", "description": "Freedom of Information Act" }
+      ]
+    },
+    "IN": {
+      "name": "Indiana",
+      "links": [
+        { "name": "Indiana Transparency", "url": "https://www.in.gov/itp/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "Gateway (Local Gov)", "url": "https://gateway.ifionline.org/", "category": "fiscal", "description": "Local government spending" },
+        { "name": "IN Data Portal", "url": "https://data.in.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "INBiz", "url": "https://inbiz.in.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "FSSA Childcare", "url": "https://www.in.gov/fssa/carefinder/", "category": "childcare", "description": "Childcare provider search" },
+        { "name": "Campaign Finance", "url": "https://campaignfinance.in.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "IA": {
+      "name": "Iowa",
+      "links": [
+        { "name": "Iowa Data Portal", "url": "https://data.iowa.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "IDOM (Budget)", "url": "https://dom.iowa.gov/", "category": "fiscal", "description": "Budget and transparency" },
+        { "name": "FAST Business Search", "url": "https://sos.iowa.gov/search/business/search.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://dhs.iowa.gov/child-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics & Campaign", "url": "https://ethics.iowa.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "KS": {
+      "name": "Kansas",
+      "links": [
+        { "name": "Kansas Open Gov", "url": "https://admin.ks.gov/offices/accounts-reports/open-records", "category": "fiscal", "description": "State spending data" },
+        { "name": "KS Data Portal", "url": "https://data.kansas.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.kansas.gov/bess/flow/main?execution=e1s1", "category": "business", "description": "Business entity search" },
+        { "name": "KDHE Childcare", "url": "https://www.kdhe.ks.gov/172/Child-Care-Licensing", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://ethics.kansas.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "KY": {
+      "name": "Kentucky",
+      "links": [
+        { "name": "OpenDoor Kentucky", "url": "https://opendoor.ky.gov/", "category": "fiscal", "description": "State spending and payroll" },
+        { "name": "KY Data Portal", "url": "https://data.ky.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://web.sos.ky.gov/bussearchnprofile/search", "category": "business", "description": "Business entity search" },
+        { "name": "CHFS Childcare", "url": "https://chfs.ky.gov/agencies/os/oig/drcc/Pages/default.aspx", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "KREF (Elections)", "url": "https://kref.ky.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "LA": {
+      "name": "Louisiana",
+      "links": [
+        { "name": "Louisiana Checkbook", "url": "https://checkbook.la.gov/", "category": "fiscal", "description": "State spending transparency" },
+        { "name": "LA Data Portal", "url": "https://data.louisiana.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "GEAUX BIZ", "url": "https://coraweb.sos.la.gov/commercialsearch/", "category": "business", "description": "Business entity search" },
+        { "name": "LDE Childcare", "url": "https://www.louisianabelieves.com/early-childhood", "category": "childcare", "description": "Early childhood programs" },
+        { "name": "Ethics Administration", "url": "https://ethics.la.gov/", "category": "political", "description": "Campaign finance and ethics" }
+      ]
+    },
+    "ME": {
+      "name": "Maine",
+      "links": [
+        { "name": "Maine Open Checkbook", "url": "https://www.maine.gov/budget/home", "category": "fiscal", "description": "Budget and spending" },
+        { "name": "ME Data Portal", "url": "https://data.maine.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "CEC (Business)", "url": "https://icrs.informe.org/nei-sos-icrs/ICRS?MainPage=x", "category": "business", "description": "Business entity search" },
+        { "name": "DHHS Childcare", "url": "https://www.maine.gov/dhhs/ocfs/provider-resources/child-care-provider", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://www.maine.gov/ethics/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "MD": {
+      "name": "Maryland",
+      "links": [
+        { "name": "Open Maryland", "url": "https://opendata.maryland.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "MD Spending", "url": "https://spending.dbm.maryland.gov/", "category": "fiscal", "description": "State spending data" },
+        { "name": "SDAT Business", "url": "https://egov.maryland.gov/BusinessExpress/EntitySearch", "category": "business", "description": "Business entity search" },
+        { "name": "MSDE Childcare", "url": "https://earlychildhood.marylandpublicschools.org/", "category": "childcare", "description": "Early childhood programs" },
+        { "name": "State Board of Elections", "url": "https://campaignfinance.maryland.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "MA": {
+      "name": "Massachusetts",
+      "links": [
+        { "name": "Open Checkbook", "url": "https://opencheckbook.mass.gov/", "category": "fiscal", "description": "State spending transparency" },
+        { "name": "MA Data Portal", "url": "https://data.mass.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Corporations Division", "url": "https://corp.sec.state.ma.us/corpweb/CorpSearch/CorpSearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "EEC Childcare", "url": "https://www.mass.gov/orgs/department-of-early-education-and-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "OCPF", "url": "https://www.ocpf.us/", "category": "political", "description": "Campaign finance database" },
+        { "name": "Public Records", "url": "https://www.sec.state.ma.us/divisions/public-records.htm", "category": "foia", "description": "Public records requests" }
+      ]
+    },
+    "MI": {
+      "name": "Michigan",
+      "links": [
+        { "name": "Open Budget", "url": "https://www.michigan.gov/budget/fiscal/open-budget", "category": "fiscal", "description": "Budget and spending" },
+        { "name": "MI Data Portal", "url": "https://data.michigan.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "LARA Business", "url": "https://cofs.lara.state.mi.us/SearchApi/Search/Search", "category": "business", "description": "Business entity search" },
+        { "name": "LARA Childcare", "url": "https://www.michigan.gov/lara/bureau-list/cclb", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Campaign Finance", "url": "https://miboecfr.nictusa.com/", "category": "political", "description": "Campaign finance database" },
+        { "name": "FOIA", "url": "https://www.michigan.gov/som/government/foia", "category": "foia", "description": "Freedom of Information" }
+      ]
+    },
+    "MN": {
+      "name": "Minnesota",
+      "links": [
+        { "name": "OpenTheBooks MN", "url": "https://www.openthebooks.com/minnesota-state-checkbook/", "category": "fiscal", "description": "State vendor payments (via FOIA)" },
+        { "name": "MN Data Portal", "url": "https://data.mn.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://mblsportal.sos.state.mn.us/Business/Search", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://licensinglookup.dhs.state.mn.us/", "category": "childcare", "description": "Licensed childcare provider search" },
+        { "name": "CFB (Campaign Finance)", "url": "https://cfb.mn.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "Data Practices", "url": "https://mn.gov/admin/data-practices/", "category": "foia", "description": "Public data requests" },
+        { "name": "Legislative Auditor", "url": "https://www.auditor.leg.state.mn.us/", "category": "oversight", "description": "State audit reports" }
+      ]
+    },
+    "MS": {
+      "name": "Mississippi",
+      "links": [
+        { "name": "MS Transparency", "url": "https://www.transparency.mississippi.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "Secretary of State", "url": "https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "MDHS Childcare", "url": "https://www.mdhs.ms.gov/early-childhood-care-development/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Elections", "url": "https://www.sos.ms.gov/elections-voting/campaign-finance", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "MO": {
+      "name": "Missouri",
+      "links": [
+        { "name": "MO Accountability", "url": "https://mapyourtaxes.mo.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "MO Data Portal", "url": "https://data.mo.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://bsd.sos.mo.gov/BusinessEntity/BESearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DHSS Childcare", "url": "https://health.mo.gov/safety/childcare/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://www.mec.mo.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "MT": {
+      "name": "Montana",
+      "links": [
+        { "name": "MT Transparency", "url": "https://transparent.mt.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "MT Data Portal", "url": "https://data.mt.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://sosmt.gov/business/search/", "category": "business", "description": "Business entity search" },
+        { "name": "DPHHS Childcare", "url": "https://dphhs.mt.gov/ecfsd/childcare", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "COPP", "url": "https://politicalpractices.mt.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "NE": {
+      "name": "Nebraska",
+      "links": [
+        { "name": "Open NE", "url": "https://stateaccounting.nebraska.gov/", "category": "fiscal", "description": "State spending data" },
+        { "name": "NE Data Portal", "url": "https://data.nebraska.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.nebraska.gov/sos/corp/corpsearch.cgi", "category": "business", "description": "Business entity search" },
+        { "name": "DHHS Childcare", "url": "https://dhhs.ne.gov/Pages/Child-Care-Licensing.aspx", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "NADC", "url": "https://nadc.nebraska.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "NV": {
+      "name": "Nevada",
+      "links": [
+        { "name": "NV OpenGov", "url": "https://www.nevadaopengov.org/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "NV Data Portal", "url": "https://data.nv.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "SilverFlume", "url": "https://esos.nv.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "Childcare Licensing", "url": "https://dpbh.nv.gov/Reg/ChildCare/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Elections", "url": "https://www.nvsos.gov/sos/elections", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "NH": {
+      "name": "New Hampshire",
+      "links": [
+        { "name": "NH Transparency", "url": "https://www.nh.gov/transparentnh/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "Corporation Division", "url": "https://quickstart.sos.nh.gov/online/BusinessInquire", "category": "business", "description": "Business entity search" },
+        { "name": "DHHS Childcare", "url": "https://www.dhhs.nh.gov/programs-services/family-assistance/child-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Elections", "url": "https://www.sos.nh.gov/elections", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "NJ": {
+      "name": "New Jersey",
+      "links": [
+        { "name": "NJ Data Portal", "url": "https://data.nj.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "NJ Transparency", "url": "https://www.nj.gov/transparency/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "NJBGS Business", "url": "https://www.njportal.com/DOR/BusinessNameSearch", "category": "business", "description": "Business entity search" },
+        { "name": "DCF Childcare", "url": "https://www.nj.gov/dcf/about/divisions/ol/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "ELEC", "url": "https://www.elec.nj.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "OPRA", "url": "https://www.nj.gov/grc/", "category": "foia", "description": "Public records requests" }
+      ]
+    },
+    "NM": {
+      "name": "New Mexico",
+      "links": [
+        { "name": "Sunshine Portal", "url": "https://www.sunshineportalnm.com/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "NM Data Portal", "url": "https://data.nm.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://portal.sos.state.nm.us/BFS/online/", "category": "business", "description": "Business entity search" },
+        { "name": "CYFD Childcare", "url": "https://cyfd.nm.gov/child-care-services/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Campaign Finance", "url": "https://login.cfis.sos.state.nm.us/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "NY": {
+      "name": "New York",
+      "links": [
+        { "name": "Open Budget NY", "url": "https://openbudget.ny.gov/", "category": "fiscal", "description": "State budget and spending" },
+        { "name": "NY Data Portal", "url": "https://data.ny.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "DOS Corporation Search", "url": "https://apps.dos.ny.gov/publicInquiry/", "category": "business", "description": "Business entity search" },
+        { "name": "OCFS Childcare", "url": "https://ocfs.ny.gov/programs/childcare/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "BOE Campaign Finance", "url": "https://www.elections.ny.gov/CampaignFinance.html", "category": "political", "description": "Campaign finance database" },
+        { "name": "FOIL", "url": "https://dos.ny.gov/freedom-information-law", "category": "foia", "description": "Freedom of Information Law" }
+      ]
+    },
+    "NC": {
+      "name": "North Carolina",
+      "links": [
+        { "name": "NC OpenGov", "url": "https://www.nc.gov/agencies/office-state-controller/transparency", "category": "fiscal", "description": "State spending portal" },
+        { "name": "NC Data Portal", "url": "https://data.nc.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.sosnc.gov/online_services/search/by_title/_Business_Registration", "category": "business", "description": "Business entity search" },
+        { "name": "DHHS Childcare", "url": "https://ncchildcare.ncdhhs.gov/", "category": "childcare", "description": "Childcare licensing search" },
+        { "name": "State Board of Elections", "url": "https://www.ncsbe.gov/campaign-finance", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "ND": {
+      "name": "North Dakota",
+      "links": [
+        { "name": "ND Checkbook", "url": "https://www.nd.gov/fiscal/checkbook", "category": "fiscal", "description": "State spending portal" },
+        { "name": "ND Data Portal", "url": "https://data.nd.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "First Stop Business", "url": "https://firststop.sos.nd.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://www.hhs.nd.gov/services/child-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Campaign", "url": "https://www.sos.nd.gov/campaign-finance", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "OH": {
+      "name": "Ohio",
+      "links": [
+        { "name": "Ohio Checkbook", "url": "https://checkbook.ohio.gov/", "category": "fiscal", "description": "State spending (aggregate)" },
+        { "name": "OpenTheBooks OH", "url": "https://www.openthebooks.com/ohio-state-checkbook/", "category": "fiscal", "description": "Vendor payments (via FOIA)" },
+        { "name": "OH Data Portal", "url": "https://data.ohio.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://businesssearch.ohiosos.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "ODJFS Childcare", "url": "https://childcaresearch.ohio.gov/", "category": "childcare", "description": "Childcare provider search" },
+        { "name": "Secretary of State - Campaign", "url": "https://www.ohiosos.gov/campaign-finance/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "OK": {
+      "name": "Oklahoma",
+      "links": [
+        { "name": "OK Open Books", "url": "https://openbooks.ok.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "OK Data Portal", "url": "https://data.ok.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.sos.ok.gov/corp/corpinquiryfind.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://oklahoma.gov/okdhs/services/cc.html", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://www.ok.gov/ethics/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "OR": {
+      "name": "Oregon",
+      "links": [
+        { "name": "Oregon Transparency", "url": "https://www.oregon.gov/transparency/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "OR Data Portal", "url": "https://data.oregon.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://sos.oregon.gov/business/Pages/find.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "ODHS Childcare", "url": "https://www.oregon.gov/odhs/child-care/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "ORESTAR", "url": "https://sos.oregon.gov/elections/Pages/ORESTAR.aspx", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "PA": {
+      "name": "Pennsylvania",
+      "links": [
+        { "name": "PA Treasury Transparency", "url": "https://www.patreasury.gov/transparency/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "PA Open Data", "url": "https://data.pa.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "DOS Business Search", "url": "https://www.corporations.pa.gov/search/corpsearch", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://www.dhs.pa.gov/Services/Children/Pages/Child-Care-Early-Learning.aspx", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "DOS Campaign Finance", "url": "https://www.dos.pa.gov/VotingElections/CandidatesCommittees/CampaignFinance/", "category": "political", "description": "Campaign finance database" },
+        { "name": "Right to Know", "url": "https://www.openrecords.pa.gov/", "category": "foia", "description": "Public records requests" }
+      ]
+    },
+    "RI": {
+      "name": "Rhode Island",
+      "links": [
+        { "name": "RI Transparency", "url": "https://www.ri.gov/data/", "category": "data", "description": "State open data portal" },
+        { "name": "Open Checkbook", "url": "https://www.ri.gov/openfinancials/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "Secretary of State", "url": "https://business.sos.ri.gov/CorpWeb/CorpSearch/CorpSearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DCYF Childcare", "url": "https://dcyf.ri.gov/programs-services/child-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Board of Elections", "url": "https://www.ri.gov/election/campaign_finance/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "SC": {
+      "name": "South Carolina",
+      "links": [
+        { "name": "SC Fiscal Transparency", "url": "https://cg.sc.gov/fiscal-transparency", "category": "fiscal", "description": "State spending portal" },
+        { "name": "SC Data Portal", "url": "https://data.sc.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://businessfilings.sc.gov/BusinessFiling/Entity/Search", "category": "business", "description": "Business entity search" },
+        { "name": "DSS Childcare", "url": "https://dss.sc.gov/child-care/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://ethics.sc.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "SD": {
+      "name": "South Dakota",
+      "links": [
+        { "name": "SD Open", "url": "https://open.sd.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "SD Data Portal", "url": "https://data.sd.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://sosenterprise.sd.gov/BusinessServices/Business/FilingSearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DSS Childcare", "url": "https://dss.sd.gov/childcare/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Campaign", "url": "https://sdsos.gov/elections-voting/campaign-finance/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "TN": {
+      "name": "Tennessee",
+      "links": [
+        { "name": "TN Open", "url": "https://www.tn.gov/transparenttn.html", "category": "fiscal", "description": "State spending portal" },
+        { "name": "TN Data Portal", "url": "https://data.tn.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://tnbear.tn.gov/ecommerce/FilingSearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DHS Childcare", "url": "https://www.tn.gov/humanservices/for-families/child-care-services.html", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Registry of Election Finance", "url": "https://apps.tn.gov/tncamp/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "TX": {
+      "name": "Texas",
+      "links": [
+        { "name": "TX Comptroller Transparency", "url": "https://comptroller.texas.gov/transparency/", "category": "fiscal", "description": "State spending and ESSER" },
+        { "name": "TX Open Data", "url": "https://data.texas.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://www.sos.state.tx.us/corp/sosda/index.shtml", "category": "business", "description": "Business entity search" },
+        { "name": "DFPS Childcare", "url": "https://www.dfps.texas.gov/Child_Care/Search_Texas_Child_Care/", "category": "childcare", "description": "Childcare licensing search" },
+        { "name": "TEC Campaign Finance", "url": "https://www.ethics.state.tx.us/", "category": "political", "description": "Campaign finance database" },
+        { "name": "Public Information Act", "url": "https://www.texasattorneygeneral.gov/open-government/governmental-bodies", "category": "foia", "description": "Public records requests" }
+      ]
+    },
+    "UT": {
+      "name": "Utah",
+      "links": [
+        { "name": "UT Transparent", "url": "https://transparent.utah.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "UT Data Portal", "url": "https://data.utah.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Commerce Division", "url": "https://secure.utah.gov/bes/", "category": "business", "description": "Business entity search" },
+        { "name": "DHHS Childcare", "url": "https://childcarelicensing.utah.gov/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Lt. Governor - Elections", "url": "https://disclosures.utah.gov/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "VT": {
+      "name": "Vermont",
+      "links": [
+        { "name": "VT Open Data", "url": "https://data.vermont.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://bizfilings.vermont.gov/online/BusinessInquire", "category": "business", "description": "Business entity search" },
+        { "name": "DCF Childcare", "url": "https://dcf.vermont.gov/cdd/providers", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Campaign", "url": "https://www.sec.state.vt.us/elections/campaign-finance.aspx", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "VA": {
+      "name": "Virginia",
+      "links": [
+        { "name": "VA Data Portal", "url": "https://data.virginia.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "VA Performs", "url": "https://vaperforms.virginia.gov/", "category": "fiscal", "description": "Budget and performance" },
+        { "name": "SCC Clerk", "url": "https://cis.scc.virginia.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "VDSS Childcare", "url": "https://www.dss.virginia.gov/family/cc/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "State Board of Elections", "url": "https://www.elections.virginia.gov/candidatepac-info/campaign-finance/", "category": "political", "description": "Campaign finance database" },
+        { "name": "FOIA Council", "url": "https://foiacouncil.dls.virginia.gov/", "category": "foia", "description": "Freedom of Information" }
+      ]
+    },
+    "WA": {
+      "name": "Washington",
+      "links": [
+        { "name": "Data.WA.gov", "url": "https://data.wa.gov/", "category": "data", "description": "State open data portal (Socrata)" },
+        { "name": "Fiscal WA", "url": "https://fiscal.wa.gov/", "category": "fiscal", "description": "State budget and spending" },
+        { "name": "OMWBE Contracts", "url": "https://omwbe.wa.gov/", "category": "contracts", "description": "State contracts and vendors" },
+        { "name": "Secretary of State", "url": "https://ccfs.sos.wa.gov/", "category": "business", "description": "Business entity search" },
+        { "name": "DCYF Childcare", "url": "https://www.dcyf.wa.gov/services/early-learning-childcare", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "PDC Campaign Finance", "url": "https://www.pdc.wa.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "Public Records Act", "url": "https://www.atg.wa.gov/public-records-act", "category": "foia", "description": "Public records guidance" }
+      ]
+    },
+    "WV": {
+      "name": "West Virginia",
+      "links": [
+        { "name": "WV Checkbook", "url": "https://www.wvcheckbook.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "WV Open Data", "url": "https://data.wv.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://apps.wv.gov/SOS/BusinessEntitySearch/", "category": "business", "description": "Business entity search" },
+        { "name": "DHHR Childcare", "url": "https://dhhr.wv.gov/bcf/ece/childcare/Pages/default.aspx", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Campaign", "url": "https://apps.sos.wv.gov/elections/cfreports/", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "WI": {
+      "name": "Wisconsin",
+      "links": [
+        { "name": "Open Book Wisconsin", "url": "https://openbook.wi.gov/", "category": "fiscal", "description": "State spending portal" },
+        { "name": "WI Data Portal", "url": "https://data.wi.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "DFI Business Search", "url": "https://www.wdfi.org/apps/CorpSearch/Search.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DCF Childcare", "url": "https://dcf.wisconsin.gov/childcare", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Ethics Commission", "url": "https://cfis.wi.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "Public Records", "url": "https://www.doj.state.wi.us/office-open-government/office-open-government", "category": "foia", "description": "Public records guidance" }
+      ]
+    },
+    "WY": {
+      "name": "Wyoming",
+      "links": [
+        { "name": "WY Open Data", "url": "https://data.wyo.gov/", "category": "data", "description": "State open data portal" },
+        { "name": "Secretary of State", "url": "https://wyobiz.wyo.gov/Business/FilingSearch.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "DFS Childcare", "url": "https://dfs.wyo.gov/assistance-programs/child-care/", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "Secretary of State - Campaign", "url": "https://www.soswy.state.wy.us/Elections/CampaignFinance/CampaignFinanceSearch.aspx", "category": "political", "description": "Campaign finance database" }
+      ]
+    },
+    "DC": {
+      "name": "District of Columbia",
+      "links": [
+        { "name": "DC Open Data", "url": "https://opendata.dc.gov/", "category": "data", "description": "Open data portal" },
+        { "name": "DLCP Business", "url": "https://corponline.dcra.dc.gov/BizEntity.aspx", "category": "business", "description": "Business entity search" },
+        { "name": "OSSE Childcare", "url": "https://osse.dc.gov/service/child-care-licensing", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "OCF Campaign Finance", "url": "https://ocf.dc.gov/", "category": "political", "description": "Campaign finance database" },
+        { "name": "FOIA", "url": "https://foia.dc.gov/", "category": "foia", "description": "Freedom of Information" }
+      ]
+    },
+    "PR": {
+      "name": "Puerto Rico",
+      "links": [
+        { "name": "State Department", "url": "https://www.estado.pr.gov/", "category": "business", "description": "Business registration" },
+        { "name": "ACUDEN Childcare", "url": "https://www.acuden.pr.gov/", "category": "childcare", "description": "Early childhood programs" },
+        { "name": "CEE (Elections)", "url": "https://ceepur.org/", "category": "political", "description": "Elections commission" }
+      ]
+    }
+  },
+  "categories": {
+    "fiscal": { "label": "Fiscal Transparency", "icon": "DollarSign", "color": "green" },
+    "data": { "label": "Open Data Portal", "icon": "Database", "color": "blue" },
+    "business": { "label": "Business Registry", "icon": "Building", "color": "purple" },
+    "childcare": { "label": "Childcare Licensing", "icon": "Baby", "color": "pink" },
+    "healthcare": { "label": "Healthcare", "icon": "Heart", "color": "red" },
+    "political": { "label": "Campaign Finance", "icon": "Vote", "color": "orange" },
+    "foia": { "label": "Public Records / FOIA", "icon": "FileText", "color": "gray" },
+    "grants": { "label": "Grants", "icon": "Gift", "color": "teal" },
+    "loans": { "label": "Loans", "icon": "CreditCard", "color": "indigo" },
+    "contracts": { "label": "Contracts", "icon": "FileSignature", "color": "amber" },
+    "enforcement": { "label": "Enforcement", "icon": "Shield", "color": "red" },
+    "oversight": { "label": "Oversight & Audits", "icon": "Eye", "color": "slate" },
+    "welfare": { "label": "Welfare Programs", "icon": "HandHeart", "color": "emerald" },
+    "housing": { "label": "Housing", "icon": "Home", "color": "cyan" }
+  }
+}
