@@ -53,14 +53,19 @@ export default function RootLayout({
 
           <footer className="py-8 px-6 text-center text-sm border-t border-gray-900">
             <div className="max-w-4xl mx-auto">
+              {/* Token */}
+              <p className="text-gray-300 text-sm mb-4">
+                CA: <a href="https://pump.fun/coin/9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump" target="_blank" rel="noopener noreferrer" className="font-mono hover:text-white">9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump</a>
+              </p>
+
               {/* Disclaimer */}
               <p className="text-gray-500 text-xs leading-relaxed mb-4">
-                Data sourced from public records and may contain errors or omissions. This site does not accuse any individual 
-                or entity of wrongdoing. Information is provided for research and educational purposes only and should be 
-                independently verified before taking any action. Nothing on this site constitutes legal, financial, or 
+                Data sourced from public records and may contain errors or omissions. This site does not accuse any individual
+                or entity of wrongdoing. Information is provided for research and educational purposes only and should be
+                independently verified before taking any action. Nothing on this site constitutes legal, financial, or
                 professional advice.
               </p>
-              
+
               {/* Links */}
               <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mb-4">
                 <Link href="/terms" className="hover:text-gray-400">Terms of Use</Link>
@@ -86,11 +91,6 @@ export default function RootLayout({
               {/* Attribution */}
               <p className="text-gray-600">
                 Powered by <a href="https://fruitdatalabs.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">fruitdatalabs.xyz</a>
-              </p>
-
-              {/* Token */}
-              <p className="text-gray-700 text-xs mt-4">
-                CA: <a href="https://pump.fun/coin/9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump" target="_blank" rel="noopener noreferrer" className="font-mono hover:text-gray-500">9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump</a>
               </p>
             </div>
           </footer>
