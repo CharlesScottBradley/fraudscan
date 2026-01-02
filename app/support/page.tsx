@@ -103,6 +103,46 @@ export default function SupportPage() {
         </div>
       </section>
 
+      {/* Community Token */}
+      <section className="mb-12">
+        <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
+          Community Token
+        </h2>
+
+        <div className="border border-purple-900/50 bg-purple-950/20 rounded-lg p-5 mb-4">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-2xl">🔍</span>
+            <div>
+              <p className="text-white font-medium">SomaliScan Community Token</p>
+              <p className="text-gray-500 text-xs">Solana • pump.fun</p>
+            </div>
+          </div>
+          <p className="text-gray-400 text-sm mb-4">
+            A portion of trading fees from this community token help fund site operations and accountability initiatives.
+          </p>
+          <a
+            href="https://pump.fun/coin/9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-purple-900/30 border border-purple-800 rounded text-purple-300 text-sm hover:bg-purple-900/50 transition-colors"
+          >
+            View Token
+          </a>
+        </div>
+
+        {/* Crypto Disclaimer */}
+        <div className="border border-red-900/30 bg-red-950/10 rounded p-4 text-xs text-red-200/70 space-y-2">
+          <p className="text-red-300 font-medium">Cryptocurrency Disclaimer</p>
+          <ul className="list-disc list-inside space-y-1 text-red-200/60">
+            <li>This is a <strong>meme token with no intrinsic value</strong>. Expect to lose 100% of any funds used to purchase.</li>
+            <li>This is <strong>not an investment</strong>. There is no expectation of profit. No promises are made about token value.</li>
+            <li>SomaliScan does not control the token price, liquidity, or trading activity.</li>
+            <li>Cryptocurrency is volatile, unregulated, and high-risk. Do your own research.</li>
+            <li>Nothing on this page constitutes financial advice or a solicitation to buy securities.</li>
+          </ul>
+        </div>
+      </section>
+
       {/* Cost Breakdown */}
       <section className="mb-12">
         <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
