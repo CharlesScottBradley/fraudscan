@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import StateMap from '../../components/StateMap';
+import OrganizationsMap from '../../components/OrganizationsMap';
 import StateDataTable from './StateDataTable';
 import EmailSignup from '../../components/EmailSignup';
 
@@ -38,7 +39,7 @@ const STATE_INFO: Record<string, { name: string; center: [number, number]; zoom:
   nj: { name: 'New Jersey', center: [-74.4057, 40.0583], zoom: 7 },
   nm: { name: 'New Mexico', center: [-105.8701, 34.5199], zoom: 6 },
   ny: { name: 'New York', center: [-75.4999, 43.0000], zoom: 6 },
-  nc: { name: 'North Carolina', center: [-79.0193, 35.7596], zoom: 6 },
+  nc: { name: 'North Carolina', center: [-80.8431, 35.2271], zoom: 7 },  // Centered on Charlotte
   nd: { name: 'North Dakota', center: [-101.0020, 47.5515], zoom: 6 },
   oh: { name: 'Ohio', center: [-82.9071, 40.4173], zoom: 6 },
   ok: { name: 'Oklahoma', center: [-97.0929, 35.0078], zoom: 6 },
@@ -176,6 +177,62 @@ async function getGrantStats(stateCode: string) {
   };
 }
 
+async function getOrganizationsWithCoords(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  // Get organizations with coordinates for mapping
+  const { data: orgs, count } = await supabase
+    .from('organizations')
+    .select(`
+      id,
+      legal_name,
+      city,
+      state,
+      latitude,
+      longitude,
+      total_government_funding,
+      is_fraud_prone_industry,
+      naics_code,
+      naics_description
+    `, { count: 'exact' })
+    .eq('state', stateUpper)
+    .not('latitude', 'is', null)
+    .order('total_government_funding', { ascending: false, nullsFirst: false })
+    .limit(5000);  // Limit for performance
+
+  return {
+    organizations: orgs || [],
+    totalWithCoords: count || 0,
+  };
+}
+
+async function getOrgStats(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { count: total } = await supabase
+    .from('organizations')
+    .select('*', { count: 'exact', head: true })
+    .eq('state', stateUpper);
+
+  const { count: withCoords } = await supabase
+    .from('organizations')
+    .select('*', { count: 'exact', head: true })
+    .eq('state', stateUpper)
+    .not('latitude', 'is', null);
+
+  const { count: fraudProne } = await supabase
+    .from('organizations')
+    .select('*', { count: 'exact', head: true })
+    .eq('state', stateUpper)
+    .eq('is_fraud_prone_industry', true);
+
+  return {
+    total: total || 0,
+    withCoords: withCoords || 0,
+    fraudProne: fraudProne || 0,
+  };
+}
+
 export const revalidate = 60;
 
 function formatMoney(amount: number): string {
@@ -203,11 +260,13 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, pppStats, grantStats] = await Promise.all([
+  const [providers, stats, pppStats, grantStats, orgData, orgStats] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
     getPPPStats(state),
     getGrantStats(state),
+    getOrganizationsWithCoords(state),
+    getOrgStats(state),
   ]);
 
   return (
@@ -223,7 +282,7 @@ export default async function StatePage({ params }: PageProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">
             {formatMoney(pppStats.totalAmount)}
@@ -245,22 +304,76 @@ export default async function StatePage({ params }: PageProps) {
           </div>
         )}
         <div className="border border-gray-800 p-4">
-          <p className="text-white font-mono text-xl font-bold">
-            {stats.providerCount.toLocaleString()}
+          <p className="text-blue-500 font-mono text-xl font-bold">
+            {orgStats.total.toLocaleString()}
           </p>
-          <p className="text-gray-500 text-sm">Providers</p>
+          <p className="text-gray-500 text-sm">Organizations</p>
         </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(stats.totalFunding)}
-          </p>
-          <p className="text-gray-500 text-sm">Provider Funding</p>
-        </div>
+        {orgStats.fraudProne > 0 && (
+          <div className="border border-gray-800 p-4">
+            <p className="text-amber-500 font-mono text-xl font-bold">
+              {orgStats.fraudProne.toLocaleString()}
+            </p>
+            <p className="text-gray-500 text-sm">Fraud-Prone Industry</p>
+          </div>
+        )}
+        {stats.providerCount > 0 && (
+          <div className="border border-gray-800 p-4">
+            <p className="text-white font-mono text-xl font-bold">
+              {stats.providerCount.toLocaleString()}
+            </p>
+            <p className="text-gray-500 text-sm">Childcare Providers</p>
+          </div>
+        )}
       </div>
 
-      {/* Map - only show if there are geocoded providers */}
+      {/* Organizations Map - show if there are geocoded organizations */}
+      {orgStats.withCoords > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            Organizations ({orgStats.withCoords.toLocaleString()} mapped)
+          </h2>
+          <OrganizationsMap
+            organizations={orgData.organizations.map(o => ({
+              id: o.id,
+              legal_name: o.legal_name,
+              city: o.city,
+              state: o.state,
+              latitude: o.latitude,
+              longitude: o.longitude,
+              total_government_funding: o.total_government_funding,
+              is_fraud_prone_industry: o.is_fraud_prone_industry,
+              naics_code: o.naics_code,
+              naics_description: o.naics_description,
+            }))}
+            center={stateInfo.center}
+            zoom={stateInfo.zoom}
+            title={`${stateInfo.name} Organizations`}
+          />
+          <p className="text-gray-500 text-xs mt-2">
+            Showing top {orgData.organizations.length.toLocaleString()} organizations by funding.
+            {orgStats.total > orgStats.withCoords && (
+              <span className="ml-1">
+                ({(orgStats.total - orgStats.withCoords).toLocaleString()} organizations pending geocoding)
+              </span>
+            )}
+          </p>
+        </div>
+      )}
+
+      {orgStats.withCoords === 0 && orgStats.total > 0 && (
+        <div className="mb-8 border border-gray-800 p-8 text-center">
+          <p className="text-gray-500">{orgStats.total.toLocaleString()} organizations in {stateInfo.name} - geocoding in progress.</p>
+          <p className="text-gray-600 text-sm mt-2">PPP loan and organization data is available in the table below.</p>
+        </div>
+      )}
+
+      {/* Provider Map - only show if there are geocoded providers */}
       {stats.withCoordinates > 0 && (
         <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">
+            Childcare Providers ({stats.withCoordinates.toLocaleString()} mapped)
+          </h2>
           <StateMap
             providers={providers.map(p => ({
               id: p.id,
@@ -274,13 +387,6 @@ export default async function StatePage({ params }: PageProps) {
             center={stateInfo.center}
             zoom={stateInfo.zoom}
           />
-        </div>
-      )}
-
-      {stats.withCoordinates === 0 && (
-        <div className="mb-8 border border-gray-800 p-8 text-center">
-          <p className="text-gray-500">No geocoded provider locations for {stateInfo.name} yet.</p>
-          <p className="text-gray-600 text-sm mt-2">PPP loan data is available in the table below.</p>
         </div>
       )}
 
