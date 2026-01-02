@@ -23,8 +23,8 @@ const BOUNTIES: Bounty[] = [
     id: 'corporate-ownership-map',
     title: 'Corporate Relationship Documentation Project',
     amount: 1000,
-    slots: 2,
-    claimed: 0,
+    slots: 3,
+    claimed: 1,
     status: 'open',
     difficulty: 'advanced',
     description: 'Document the corporate ownership structure and business relationships among 10 or more providers appearing in state or federal enforcement databases, using exclusively public records.',
@@ -156,6 +156,20 @@ export default function BountyBoardPage() {
           <p><span className="text-gray-600">├─</span> bounty_types <span className="text-white ml-4">{openBounties.length}</span></p>
           <p><span className="text-gray-600">├─</span> slots_available <span className="text-white ml-4">{totalSlots}</span></p>
           <p><span className="text-gray-600">└─</span> total_value <span className="text-green-500 ml-4">${totalValue.toLocaleString()}</span></p>
+        </div>
+      </div>
+
+      {/* Recently Awarded */}
+      <div className="border border-green-900/50 bg-green-950/20 rounded p-4 mb-8">
+        <p className="text-green-400 font-medium text-sm mb-3">Recently Awarded</p>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <div>
+              <span className="text-white">Corporate Relationship Documentation</span>
+              <span className="text-gray-500 ml-2">— Forest Park Medical Center fraud network (19 entities, 50 connections)</span>
+            </div>
+            <span className="text-green-500 font-mono">$1,000</span>
+          </div>
         </div>
       </div>
 
