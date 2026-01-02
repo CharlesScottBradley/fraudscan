@@ -338,11 +338,11 @@ export default function CompetitiveInjuryPage() {
       <section className="mb-10">
         <div className="border-2 border-green-900/50 bg-green-950/20 rounded-lg p-6">
           <h2 className="text-lg font-semibold text-green-400 mb-3">
-            Provider Accountability Grant — $10,000
+            Provider Accountability Grant — $20,000
           </h2>
           <div className="text-gray-300 text-sm space-y-4">
             <p>
-              A <strong className="text-white">$10,000 grant</strong> is available to help offset legal costs for
+              A <strong className="text-white">$20,000 grant</strong> is available to help offset legal costs for
               legitimate Minnesota service providers pursuing competitive injury claims against fraudulent operators.
             </p>
 
