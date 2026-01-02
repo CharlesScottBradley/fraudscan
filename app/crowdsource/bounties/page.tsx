@@ -163,6 +163,7 @@ export default function BountyBoardPage() {
       <div className="border border-yellow-900/50 bg-yellow-950/20 rounded p-4 mb-8 text-xs text-yellow-200/70">
         <p className="text-yellow-300 font-medium mb-2">Important Terms</p>
         <ul className="list-disc list-inside space-y-1">
+          <li><strong>U.S. residents only</strong> — Bounties are only available to individuals residing in the United States</li>
           <li>Submissions are independently verified before payment</li>
           <li>Site reserves the right to verify, modify, or decline publication</li>
           <li>Submission grants site perpetual license to use, modify, and publish</li>
