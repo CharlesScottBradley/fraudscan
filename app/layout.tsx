@@ -87,6 +87,11 @@ export default function RootLayout({
               <p className="text-gray-600">
                 Powered by <a href="https://fruitdatalabs.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400">fruitdatalabs.xyz</a>
               </p>
+
+              {/* Token */}
+              <p className="text-gray-700 text-xs mt-4">
+                CA: <a href="https://pump.fun/coin/9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump" target="_blank" rel="noopener noreferrer" className="font-mono hover:text-gray-500">9NrkmoqwF1rBjsfKZvn7ngCy6zqvb8A6A5RfTvR2pump</a>
+              </p>
             </div>
           </footer>
         </div>
