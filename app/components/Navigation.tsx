@@ -68,6 +68,7 @@ const navItems: NavItem[] = [
     children: [
       { label: 'FOIA Request Generator', href: '/foia' },
       { label: 'District Court Complaint', href: '/lawsuit' },
+      { label: 'Competitive Injury', href: '/competitive-injury' },
       { label: 'Submit a Tip', href: '/tip' },
       { label: 'About', href: '/about' },
       { label: 'API Docs', href: '/api/docs' },
