@@ -87,6 +87,7 @@ function SubmitFormContent() {
     tip_category: 'other',
     submitter_email: '',
     username: '',
+    crypto_wallet: '',
     gap_ids: preselectedGap ? [preselectedGap] : [] as string[],
     related_entities: [] as Array<{ type: string; name: string; role: string }>,
   });
@@ -248,6 +249,7 @@ function SubmitFormContent() {
             source_url: formData.source_url,
             submitter_email: formData.submitter_email,
             username: formData.username,
+            crypto_wallet: formData.crypto_wallet,
             gap_ids: formData.gap_ids,
             // Pre-uploaded file metadata
             file_path: filePath,
@@ -275,6 +277,7 @@ function SubmitFormContent() {
             source_url: formData.source_url,
             submitter_email: formData.submitter_email,
             username: formData.username,
+            crypto_wallet: formData.crypto_wallet,
             gap_ids: formData.gap_ids,
             related_entities: formData.related_entities,
             'cf-turnstile-response': turnstileToken,
@@ -360,6 +363,7 @@ function SubmitFormContent() {
                   source_url: '',
                   gap_ids: [],
                   related_entities: [],
+                  crypto_wallet: '',
                 }));
                 resetTurnstile();
               }}
@@ -675,6 +679,23 @@ function SubmitFormContent() {
             />
             <p className="text-gray-600 text-xs mt-1">Shown on leaderboard if you want credit.</p>
           </div>
+        </div>
+
+        {/* Crypto Wallet for Bounty Payments */}
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">
+            Crypto Wallet Address <span className="text-gray-600">(for bounty payments)</span>
+          </label>
+          <input
+            type="text"
+            value={formData.crypto_wallet}
+            onChange={(e) => setFormData(prev => ({ ...prev, crypto_wallet: e.target.value }))}
+            placeholder="SOL, ETH, or BTC address"
+            className="w-full bg-black border border-gray-700 rounded p-2.5 text-white focus:border-gray-500 focus:outline-none font-mono text-sm"
+          />
+          <p className="text-gray-600 text-xs mt-1">
+            Optional. Required if submitting for a <Link href="/crowdsource/bounties" className="text-gray-400 hover:text-white">bounty</Link>.
+          </p>
         </div>
 
         {/* Privacy Notice */}
