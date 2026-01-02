@@ -641,6 +641,125 @@ async function getConnections(entityId: string) {
     });
   }
 
+  if (entityType === 'provider') {
+    // Childcare provider - find political donations and PPP loans
+    const licenseNumber = entityName;
+
+    const { data: provider } = await supabase
+      .from('providers')
+      .select('*')
+      .eq('license_number', licenseNumber)
+      .single();
+
+    if (provider) {
+      const providerState = provider.state || 'MN';
+
+      // Search for donations from employees of this provider (filter by state)
+      const { data: employerDonations } = await supabase
+        .from('political_donations')
+        .select('id, contributor_name, recipient_name, recipient_type, amount')
+        .eq('state', providerState)
+        .ilike('contributor_employer', `%${provider.name}%`)
+        .order('amount', { ascending: false })
+        .limit(30);
+
+      if (employerDonations && employerDonations.length > 0) {
+        // Group donations by recipient
+        const recipientTotals = new Map<string, { amount: number; type: string; donors: Set<string> }>();
+        employerDonations.forEach(d => {
+          const existing = recipientTotals.get(d.recipient_name) || { amount: 0, type: d.recipient_type, donors: new Set() };
+          existing.amount += d.amount;
+          if (d.contributor_name) existing.donors.add(d.contributor_name);
+          recipientTotals.set(d.recipient_name, existing);
+        });
+
+        // Add politician/committee nodes and donation edges
+        recipientTotals.forEach((data, recipientName) => {
+          const recipientId = `recipient:${recipientName}`;
+          if (!seen.has(recipientId)) {
+            seen.add(recipientId);
+            nodes.push({
+              id: recipientId,
+              label: recipientName,
+              type: data.type === 'PCC' ? 'politician' : 'committee',
+              metadata: { donor_count: data.donors.size },
+            });
+          }
+          edges.push({
+            id: `provider-donation:${licenseNumber}:${recipientName}`,
+            from: entityId,
+            to: recipientId,
+            type: 'donation',
+            amount: data.amount,
+            label: `${data.donors.size} employees`,
+          });
+        });
+      }
+
+      // Check for PPP loans matching this provider
+      const { data: pppLoans } = await supabase
+        .from('ppp_loans')
+        .select('loan_number, borrower_name, current_approval_amount, forgiveness_amount, borrower_state')
+        .eq('borrower_state', providerState)
+        .ilike('borrower_name', `%${provider.name.split(' ')[0]}%`)
+        .limit(5);
+
+      pppLoans?.forEach(p => {
+        // Only include if name is a close match
+        if (p.borrower_name.toLowerCase().includes(provider.name.toLowerCase().split(' ')[0])) {
+          const pppId = `ppp:${p.loan_number}`;
+          if (!seen.has(pppId)) {
+            seen.add(pppId);
+            nodes.push({
+              id: pppId,
+              label: `PPP: ${p.borrower_name}`,
+              type: 'company',
+              group: 'ppp',
+              metadata: { amount: p.current_approval_amount, forgiven: p.forgiveness_amount },
+            });
+          }
+          edges.push({
+            id: `provider-ppp:${p.loan_number}`,
+            from: pppId,
+            to: entityId,
+            type: 'ppp_loan',
+            amount: p.current_approval_amount,
+          });
+        }
+      });
+
+      // Check for state grants
+      const { data: grants } = await supabase
+        .from('state_grants')
+        .select('id, payment_amount, agency, source_state')
+        .eq('source_state', providerState)
+        .ilike('recipient_name', `%${provider.name}%`)
+        .order('payment_amount', { ascending: false })
+        .limit(10);
+
+      if (grants && grants.length > 0) {
+        const totalGrants = grants.reduce((sum, g) => sum + (g.payment_amount || 0), 0);
+        const grantNodeId = `grants:${licenseNumber}`;
+        if (!seen.has(grantNodeId)) {
+          seen.add(grantNodeId);
+          nodes.push({
+            id: grantNodeId,
+            label: `State Grants: $${(totalGrants / 1000).toFixed(0)}K`,
+            type: 'vendor',
+            metadata: { count: grants.length, total: totalGrants },
+          });
+        }
+        edges.push({
+          id: `provider-grants:${licenseNumber}`,
+          from: grantNodeId,
+          to: entityId,
+          type: 'state_grant',
+          amount: totalGrants,
+        });
+      }
+    }
+  }
+
   if (entityType === 'org') {
     // Organization from unified registry - find all linked funding
     const orgId = entityName; // This is the UUID
@@ -740,7 +859,7 @@ async function getConnections(entityId: string) {
   }
 
   if (entityType === 'case') {
-    // Fraud case - find defendants and linked entities
+    // Fraud case - find org name, donations, grants, and defendants
     const caseId = entityName; // UUID
 
     const { data: caseData } = await supabase
@@ -750,10 +869,215 @@ async function getConnections(entityId: string) {
       .single();
 
     if (caseData) {
-      // Get defendants for this case
+      // Extract organization name from case_name
+      // Format: "United States v. Name et al. (Organization Name)" or just "Organization Name Fraud"
+      let orgSearchTerms: string[] = [];
+
+      // Try to extract from parentheses first
+      const parenMatch = caseData.case_name.match(/\(([^)]+)\)/);
+      if (parenMatch) {
+        orgSearchTerms.push(parenMatch[1]);
+      }
+
+      // Also try the case summary for organization names
+      if (caseData.summary) {
+        // Extract quoted organization names from summary
+        const quotedMatches = caseData.summary.match(/"([^"]+)"/g);
+        quotedMatches?.forEach((m: string) => orgSearchTerms.push(m.replace(/"/g, '')));
+      }
+
+      // Use fraud type keywords if available
+      if (caseData.fraud_type) {
+        orgSearchTerms.push(caseData.fraud_type);
+      }
+
+      // Fallback: use first meaningful words from case name
+      if (orgSearchTerms.length === 0) {
+        const cleanName = caseData.case_name
+          .replace(/United States v\./i, '')
+          .replace(/et al\.?/gi, '')
+          .replace(/\([^)]*\)/g, '')
+          .trim();
+        if (cleanName.length > 3) {
+          orgSearchTerms.push(cleanName.split(' ')[0]);
+        }
+      }
+
+      // Search for donations FROM organizations matching the case
+      for (const searchTerm of orgSearchTerms.slice(0, 3)) { // Limit searches
+        // Search by employer name
+        const { data: employerDonations } = await supabase
+          .from('political_donations')
+          .select('id, contributor_name, contributor_employer, recipient_name, recipient_type, amount, receipt_date')
+          .ilike('contributor_employer', `%${searchTerm}%`)
+          .order('amount', { ascending: false })
+          .limit(20);
+
+        // Create organization node
+        if (employerDonations && employerDonations.length > 0) {
+          const orgNodeId = `company:${searchTerm}`;
+          if (!seen.has(orgNodeId)) {
+            seen.add(orgNodeId);
+            nodes.push({
+              id: orgNodeId,
+              label: searchTerm,
+              type: 'company',
+              metadata: { linked_case: caseData.case_name },
+            });
+            edges.push({
+              id: `case-org:${caseId}:${searchTerm}`,
+              from: entityId,
+              to: orgNodeId,
+              type: 'defendant',
+              label: 'implicated org',
+            });
+          }
+
+          // Group donations by recipient
+          const recipientTotals = new Map<string, { amount: number; type: string; donors: Set<string> }>();
+          employerDonations.forEach(d => {
+            const existing = recipientTotals.get(d.recipient_name) || { amount: 0, type: d.recipient_type, donors: new Set() };
+            existing.amount += d.amount;
+            if (d.contributor_name) existing.donors.add(d.contributor_name);
+            recipientTotals.set(d.recipient_name, existing);
+          });
+
+          // Add politician/committee nodes and edges
+          recipientTotals.forEach((data, recipientName) => {
+            const recipientId = `recipient:${recipientName}`;
+            if (!seen.has(recipientId)) {
+              seen.add(recipientId);
+              nodes.push({
+                id: recipientId,
+                label: recipientName,
+                type: data.type === 'PCC' ? 'politician' : 'committee',
+                metadata: { donor_count: data.donors.size },
+              });
+            }
+            edges.push({
+              id: `case-donation:${searchTerm}:${recipientName}`,
+              from: orgNodeId,
+              to: recipientId,
+              type: 'donation',
+              amount: data.amount,
+              label: `${data.donors.size} donors`,
+            });
+          });
+        }
+
+        // Also search for contributor NAME matching (for orgs that donate directly)
+        const { data: directDonations } = await supabase
+          .from('political_donations')
+          .select('id, contributor_name, recipient_name, recipient_type, amount')
+          .ilike('contributor_name', `%${searchTerm}%`)
+          .order('amount', { ascending: false })
+          .limit(20);
+
+        if (directDonations && directDonations.length > 0) {
+          directDonations.forEach(d => {
+            // Add the donating entity
+            const donorId = `donor:${d.contributor_name}`;
+            if (!seen.has(donorId)) {
+              seen.add(donorId);
+              nodes.push({
+                id: donorId,
+                label: d.contributor_name,
+                type: 'company', // Organizations donating directly
+                metadata: { linked_case: caseData.case_name },
+              });
+              edges.push({
+                id: `case-donor:${caseId}:${d.contributor_name}`,
+                from: entityId,
+                to: donorId,
+                type: 'defendant',
+                label: 'related entity',
+              });
+            }
+
+            // Add recipient
+            const recipientId = `recipient:${d.recipient_name}`;
+            if (!seen.has(recipientId)) {
+              seen.add(recipientId);
+              nodes.push({
+                id: recipientId,
+                label: d.recipient_name,
+                type: d.recipient_type === 'PCC' ? 'politician' : 'committee',
+              });
+            }
+            edges.push({
+              id: `direct-donation:${d.id}`,
+              from: donorId,
+              to: recipientId,
+              type: 'donation',
+              amount: d.amount,
+            });
+          });
+        }
+
+        // Search for state grants to this organization
+        const { data: grants } = await supabase
+          .from('state_grants')
+          .select('id, recipient_name, payment_amount, agency, source_state')
+          .ilike('recipient_name', `%${searchTerm}%`)
+          .order('payment_amount', { ascending: false })
+          .limit(10);
+
+        if (grants && grants.length > 0) {
+          const totalGrants = grants.reduce((sum, g) => sum + (g.payment_amount || 0), 0);
+          const grantNodeId = `grants:${searchTerm}`;
+          if (!seen.has(grantNodeId)) {
+            seen.add(grantNodeId);
+            nodes.push({
+              id: grantNodeId,
+              label: `State Grants: $${(totalGrants / 1000000).toFixed(1)}M`,
+              type: 'vendor',
+              metadata: { count: grants.length, total: totalGrants },
+            });
+            edges.push({
+              id: `case-grants:${caseId}:${searchTerm}`,
+              from: grantNodeId,
+              to: entityId,
+              type: 'state_grant',
+              amount: totalGrants,
+              label: `${grants.length} payments`,
+            });
+          }
+        }
+
+        // Search for PPP loans
+        const { data: pppLoans } = await supabase
+          .from('ppp_loans')
+          .select('loan_number, borrower_name, current_approval_amount, forgiveness_amount')
+          .ilike('borrower_name', `%${searchTerm}%`)
+          .limit(10);
+
+        pppLoans?.forEach(p => {
+          const pppId = `ppp:${p.loan_number}`;
+          if (!seen.has(pppId)) {
+            seen.add(pppId);
+            nodes.push({
+              id: pppId,
+              label: p.borrower_name,
+              type: 'company',
+              group: 'ppp',
+              metadata: { amount: p.current_approval_amount, forgiven: p.forgiveness_amount },
+            });
+          }
+          edges.push({
+            id: `case-ppp:${p.loan_number}`,
+            from: pppId,
+            to: entityId,
+            type: 'ppp_loan',
+            amount: p.current_approval_amount,
+            label: 'PPP loan',
+          });
+        });
+      }
+
+      // Also get defendants if any exist
       const { data: defendants } = await supabase
         .from('defendants')
-        .select('id, name, role, sentence, restitution_amount, person_id')
+        .select('id, name, role, sentence, restitution_amount')
         .eq('case_id', caseId);
 
       defendants?.forEach(d => {
@@ -778,49 +1102,7 @@ async function getConnections(entityId: string) {
           type: 'defendant',
           label: d.role || 'defendant',
         });
-
-        // If defendant has person_id, link to that person's other data
-        if (d.person_id) {
-          const personId = `person:${d.person_id}`;
-          if (!seen.has(personId)) {
-            // Could fetch more person data here
-          }
-        }
       });
-
-      // Search for related PPP loans by case fraud amount threshold
-      if (caseData.total_fraud_amount && caseData.total_fraud_amount > 100000) {
-        // Try to find PPP loans that might be related by searching defendant names
-        for (const d of defendants || []) {
-          const { data: pppMatches } = await supabase
-            .from('ppp_loans')
-            .select('loan_number, borrower_name, current_approval_amount')
-            .ilike('borrower_name', `%${d.name.split(' ')[0]}%`)
-            .limit(2);
-
-          pppMatches?.forEach(p => {
-            const pppId = `ppp:${p.loan_number}`;
-            if (!seen.has(pppId)) {
-              seen.add(pppId);
-              nodes.push({
-                id: pppId,
-                label: p.borrower_name,
-                type: 'company',
-                group: 'ppp',
-                metadata: { amount: p.current_approval_amount },
-              });
-            }
-            edges.push({
-              id: `case-ppp:${p.loan_number}`,
-              from: `defendant:${d.id}`,
-              to: pppId,
-              type: 'ppp_loan',
-              amount: p.current_approval_amount,
-              label: 'potential link',
-            });
-          });
-        }
-      }
     }
   }
 
