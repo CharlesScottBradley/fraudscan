@@ -243,14 +243,17 @@ export default function SupportPage() {
         </div>
       </section>
 
-      {/* Coming Soon */}
+      {/* Bounty Board */}
       <section className="mb-12">
         <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
           Bounty Board
         </h2>
-        <p className="text-gray-500 text-sm">
-          Coming soon: Request specific features or data. Top contributors get priority.
+        <p className="text-gray-500 text-sm mb-3">
+          Get paid for completing research projects using public records.
         </p>
+        <Link href="/crowdsource/bounties" className="text-green-500 hover:text-green-400 text-sm">
+          View open bounties →
+        </Link>
       </section>
 
       {/* Footer Navigation */}
