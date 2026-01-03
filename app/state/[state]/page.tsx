@@ -296,41 +296,87 @@ async function getH1BWithCoords(stateCode: string) {
 async function getPPPLoansWithCoords(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
-  const { data, count } = await supabase
+  // Get count first
+  const { count } = await supabase
     .from('ppp_loans')
-    .select(`
-      id, loan_number, borrower_name, borrower_city,
-      current_approval_amount, forgiveness_amount,
-      jobs_reported, naics_code, business_type,
-      latitude, longitude, is_flagged
-    `, { count: 'exact' })
+    .select('*', { count: 'exact', head: true })
     .eq('borrower_state', stateUpper)
-    .not('latitude', 'is', null)
-    .order('current_approval_amount', { ascending: false, nullsFirst: false })
-    .limit(5000);
+    .not('latitude', 'is', null);
 
-  return { loans: data || [], count: count || 0 };
+  // Paginate to get all data (Supabase 1000 row limit)
+  const allLoans: any[] = [];
+  const pageSize = 1000;
+  let page = 0;
+  let hasMore = true;
+
+  while (hasMore && page < 10) {
+    const { data } = await supabase
+      .from('ppp_loans')
+      .select(`
+        id, loan_number, borrower_name, borrower_city,
+        current_approval_amount, forgiveness_amount,
+        jobs_reported, naics_code, business_type,
+        latitude, longitude, is_flagged
+      `)
+      .eq('borrower_state', stateUpper)
+      .not('latitude', 'is', null)
+      .order('current_approval_amount', { ascending: false, nullsFirst: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (data && data.length > 0) {
+      allLoans.push(...data);
+      hasMore = data.length === pageSize;
+      page++;
+    } else {
+      hasMore = false;
+    }
+  }
+
+  return { loans: allLoans, count: count || 0 };
 }
 
 async function getNursingHomesWithCoords(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
-  const { data, count } = await supabase
+  // Get count first
+  const { count } = await supabase
     .from('nursing_homes')
-    .select(`
-      id, provider_name, city, state,
-      overall_rating, health_inspection_rating,
-      staffing_rating, quality_rating,
-      number_of_certified_beds, number_of_residents,
-      latitude, longitude,
-      abuse_icon, total_penalties_amount
-    `, { count: 'exact' })
+    .select('*', { count: 'exact', head: true })
     .eq('state', stateUpper)
-    .not('latitude', 'is', null)
-    .order('total_penalties_amount', { ascending: false, nullsFirst: false })
-    .limit(5000);
+    .not('latitude', 'is', null);
 
-  return { homes: data || [], count: count || 0 };
+  // Paginate to get all data (Supabase 1000 row limit)
+  const allHomes: any[] = [];
+  const pageSize = 1000;
+  let page = 0;
+  let hasMore = true;
+
+  while (hasMore && page < 10) {
+    const { data } = await supabase
+      .from('nursing_homes')
+      .select(`
+        id, provider_name, city, state,
+        overall_rating, health_inspection_rating,
+        staffing_rating, quality_rating,
+        number_of_certified_beds, number_of_residents,
+        latitude, longitude,
+        abuse_icon, total_penalties_amount
+      `)
+      .eq('state', stateUpper)
+      .not('latitude', 'is', null)
+      .order('total_penalties_amount', { ascending: false, nullsFirst: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (data && data.length > 0) {
+      allHomes.push(...data);
+      hasMore = data.length === pageSize;
+      page++;
+    } else {
+      hasMore = false;
+    }
+  }
+
+  return { homes: allHomes, count: count || 0 };
 }
 
 export const revalidate = 60;
