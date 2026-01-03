@@ -339,14 +339,80 @@ function SubmitFormContent() {
   };
 
   if (success) {
+    const submissionTypeLabels: Record<string, string> = {
+      file_upload: 'File Upload',
+      tip: 'Tip',
+      lead: 'Lead',
+      connection: 'Connection',
+    };
+
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="border border-gray-800 p-8 text-center">
-          <p className="font-mono text-gray-500 mb-4">SUBMISSION_RECEIVED</p>
-          <p className="text-white mb-2">Your submission is pending review.</p>
-          <p className="text-gray-500 text-sm mb-6">
-            You will be notified at {formData.submitter_email} when it has been processed.
-          </p>
+        <div className="border border-green-800/50 bg-green-900/10 rounded-lg p-8 text-center">
+          {/* Success Icon */}
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-900/30 border border-green-700/50 flex items-center justify-center">
+            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <h2 className="text-xl font-bold text-white mb-2">Submission Successful</h2>
+          <p className="font-mono text-green-500/80 text-sm mb-4">UPLOAD_COMPLETE</p>
+
+          {/* Submission Summary */}
+          <div className="bg-black/30 border border-gray-800 rounded p-4 mb-6 text-left">
+            <p className="text-gray-500 text-xs mb-3 uppercase tracking-wide">Submission Summary</p>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Type:</span>
+                <span className="text-white">{submissionTypeLabels[submissionType]}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">State:</span>
+                <span className="text-white">{STATE_NAMES[formData.state_code] || formData.state_code}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Title:</span>
+                <span className="text-white truncate ml-4">{formData.title}</span>
+              </div>
+              {file && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">File:</span>
+                  <span className="text-white truncate ml-4">{file.name}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-gray-500">Data Type:</span>
+                <span className="text-white">{DATA_TYPES[formData.data_type] || formData.data_type}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Next Steps */}
+          <div className="text-left mb-6">
+            <p className="text-gray-500 text-xs mb-2 uppercase tracking-wide">What Happens Next</p>
+            <ul className="text-sm text-gray-400 space-y-1">
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">1.</span>
+                <span>Our team will review your submission for quality and relevance</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">2.</span>
+                <span>If approved, your data will be integrated into the database</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">3.</span>
+                <span>You&apos;ll receive a confirmation email at <span className="text-white">{formData.submitter_email}</span></span>
+              </li>
+              {formData.username && (
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 mt-0.5">4.</span>
+                  <span>Points will be added to your leaderboard profile as <span className="text-white">{formData.username}</span></span>
+                </li>
+              )}
+            </ul>
+          </div>
+
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/crowdsource"
