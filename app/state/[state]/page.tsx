@@ -134,48 +134,6 @@ async function getStateStats(stateCode: string) {
   };
 }
 
-async function getPPPStats(stateCode: string) {
-  const stateUpper = stateCode.toUpperCase();
-
-  const { count } = await supabase
-    .from('ppp_loans')
-    .select('*', { count: 'exact', head: true })
-    .eq('borrower_state', stateUpper);
-
-  const { data: sumData } = await supabase
-    .from('ppp_loans')
-    .select('current_approval_amount')
-    .eq('borrower_state', stateUpper);
-
-  const totalAmount = sumData?.reduce((sum, l) => sum + (l.current_approval_amount || 0), 0) || 0;
-
-  return {
-    count: count || 0,
-    totalAmount,
-  };
-}
-
-async function getGrantStats(stateCode: string) {
-  const stateUpper = stateCode.toUpperCase();
-
-  const { count } = await supabase
-    .from('state_grants')
-    .select('*', { count: 'exact', head: true })
-    .eq('source_state', stateUpper);
-
-  const { data: sumData } = await supabase
-    .from('state_grants')
-    .select('payment_amount')
-    .eq('source_state', stateUpper);
-
-  const totalAmount = sumData?.reduce((sum, g) => sum + (g.payment_amount || 0), 0) || 0;
-
-  return {
-    count: count || 0,
-    totalAmount,
-  };
-}
-
 async function getOrganizationsWithCoords(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
@@ -225,19 +183,36 @@ async function getOrgStats(stateCode: string) {
     .eq('state', stateUpper)
     .eq('is_fraud_prone_industry', true);
 
-  // Get total government funding for all orgs in state
-  const { data: fundingData } = await supabase
-    .from('organizations')
-    .select('total_government_funding')
-    .eq('state', stateUpper);
-
-  const totalFunding = fundingData?.reduce((sum, o) => sum + (o.total_government_funding || 0), 0) || 0;
-
   return {
     total: total || 0,
     withCoords: withCoords || 0,
     fraudProne: fraudProne || 0,
-    totalFunding,
+  };
+}
+
+async function getFundingTotals(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  // Use RPC for efficient server-side aggregation
+  const { data, error } = await supabase.rpc('get_state_funding_totals', {
+    state_code: stateUpper
+  });
+
+  if (error || !data) {
+    console.error('Error fetching funding totals:', error);
+    return { pppTotal: 0, grantTotal: 0, providerFunding: 0, totalTracked: 0 };
+  }
+
+  const totalTracked = (data.ppp_total || 0) + (data.grant_total || 0) + (data.provider_funding || 0);
+
+  return {
+    pppTotal: data.ppp_total || 0,
+    pppCount: data.ppp_count || 0,
+    grantTotal: data.grant_total || 0,
+    grantCount: data.grant_count || 0,
+    providerFunding: data.provider_funding || 0,
+    providerCount: data.provider_count || 0,
+    totalTracked,
   };
 }
 
@@ -307,15 +282,14 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, pppStats, grantStats, orgData, orgStats, h1bStats, h1bApplications] = await Promise.all([
+  const [providers, stats, orgData, orgStats, h1bStats, h1bApplications, fundingTotals] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
-    getPPPStats(state),
-    getGrantStats(state),
     getOrganizationsWithCoords(state),
     getOrgStats(state),
     getH1BStats(state),
     getH1BWithCoords(state),
+    getFundingTotals(state),
   ]);
 
   return (
@@ -334,9 +308,9 @@ export default async function StatePage({ params }: PageProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(orgStats.totalFunding)}
+            {formatMoney(fundingTotals.totalTracked)}
           </p>
-          <p className="text-gray-500 text-sm">Total Govt Spending</p>
+          <p className="text-gray-500 text-sm">Govt Spending Tracked</p>
         </div>
         <div className="border border-gray-800 p-4">
           <p className="text-blue-500 font-mono text-xl font-bold">
@@ -426,8 +400,8 @@ export default async function StatePage({ params }: PageProps) {
         stateCode={state.toUpperCase()}
         stateName={stateInfo.name}
         initialProviderCount={stats.providerCount}
-        initialPPPCount={pppStats.count}
-        initialGrantCount={grantStats.count}
+        initialPPPCount={fundingTotals.pppCount}
+        initialGrantCount={fundingTotals.grantCount}
       />
 
       {/* Email Signup - state-specific */}
