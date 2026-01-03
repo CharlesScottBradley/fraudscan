@@ -44,26 +44,57 @@ interface H1BApplication {
   longitude: number;
 }
 
+interface PPPLoan {
+  id: string;
+  loan_number: string;
+  borrower_name: string;
+  borrower_city: string;
+  current_approval_amount: number | null;
+  forgiveness_amount: number | null;
+  jobs_reported: number | null;
+  latitude: number;
+  longitude: number;
+  is_flagged?: boolean;
+}
+
+interface NursingHome {
+  id: string;
+  provider_name: string;
+  city: string;
+  state: string;
+  overall_rating: number | null;
+  number_of_certified_beds: number | null;
+  latitude: number;
+  longitude: number;
+  abuse_icon?: string;
+  total_penalties_amount: number | null;
+}
+
 interface UnifiedStateMapProps {
   organizations: Organization[];
   providers: Provider[];
   h1bApplications: H1BApplication[];
+  pppLoans: PPPLoan[];
+  nursingHomes: NursingHome[];
   center: [number, number];
   zoom: number;
   stateName: string;
 }
 
-type EntityType = 'organization' | 'provider' | 'h1b';
 type SelectedEntity =
   | { type: 'organization'; data: Organization }
   | { type: 'provider'; data: Provider }
   | { type: 'h1b'; data: H1BApplication }
+  | { type: 'ppp'; data: PPPLoan }
+  | { type: 'nursing_home'; data: NursingHome }
   | null;
 
 function UnifiedStateMapInner({
   organizations,
   providers,
   h1bApplications,
+  pppLoans,
+  nursingHomes,
   center,
   zoom,
   stateName
@@ -75,9 +106,11 @@ function UnifiedStateMapInner({
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Layer visibility state
-  const [showOrgs, setShowOrgs] = useState(true);
+  const [showOrgs, setShowOrgs] = useState(false); // Off by default - too many
   const [showProviders, setShowProviders] = useState(true);
   const [showH1B, setShowH1B] = useState(true);
+  const [showPPP, setShowPPP] = useState(true);
+  const [showNursingHomes, setShowNursingHomes] = useState(true);
 
   // Selected entity state
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity>(null);
@@ -123,6 +156,14 @@ function UnifiedStateMapInner({
   useEffect(() => {
     toggleLayer('h1b', showH1B);
   }, [showH1B, toggleLayer]);
+
+  useEffect(() => {
+    toggleLayer('ppp', showPPP);
+  }, [showPPP, toggleLayer]);
+
+  useEffect(() => {
+    toggleLayer('nursing-homes', showNursingHomes);
+  }, [showNursingHomes, toggleLayer]);
 
   // Initialize map
   useEffect(() => {
@@ -405,6 +446,179 @@ function UnifiedStateMapInner({
           });
         }
 
+        // === PPP LOANS LAYER ===
+        if (pppLoans.length > 0) {
+          const pppGeojson: GeoJSON.FeatureCollection = {
+            type: 'FeatureCollection',
+            features: pppLoans
+              .filter(l => l.latitude && l.longitude)
+              .map(loan => ({
+                type: 'Feature' as const,
+                geometry: {
+                  type: 'Point' as const,
+                  coordinates: [loan.longitude, loan.latitude],
+                },
+                properties: {
+                  id: loan.id,
+                  loan_number: loan.loan_number,
+                  borrower_name: loan.borrower_name,
+                  city: loan.borrower_city,
+                  amount: loan.current_approval_amount || 0,
+                  forgiveness: loan.forgiveness_amount || 0,
+                  jobs: loan.jobs_reported || 0,
+                  is_flagged: loan.is_flagged || false,
+                  entity_type: 'ppp',
+                },
+              })),
+          };
+
+          map.current.addSource('ppp', {
+            type: 'geojson',
+            data: pppGeojson,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+          });
+
+          // PPP clusters - green for money
+          map.current.addLayer({
+            id: 'ppp-clusters',
+            type: 'circle',
+            source: 'ppp',
+            filter: ['has', 'point_count'],
+            paint: {
+              'circle-color': '#22c55e',
+              'circle-radius': ['step', ['get', 'point_count'], 18, 100, 24, 500, 32],
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#15803d',
+            },
+          });
+
+          map.current.addLayer({
+            id: 'ppp-cluster-count',
+            type: 'symbol',
+            source: 'ppp',
+            filter: ['has', 'point_count'],
+            layout: {
+              'text-field': ['get', 'point_count_abbreviated'],
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-size': 12,
+            },
+            paint: { 'text-color': '#ffffff' },
+          });
+
+          // PPP points
+          map.current.addLayer({
+            id: 'ppp-points',
+            type: 'circle',
+            source: 'ppp',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+              'circle-color': [
+                'case',
+                ['get', 'is_flagged'], '#ef4444',
+                ['>', ['get', 'amount'], 1000000], '#22c55e',
+                ['>', ['get', 'amount'], 150000], '#84cc16',
+                '#a3e635',
+              ],
+              'circle-radius': [
+                'case',
+                ['>', ['get', 'amount'], 1000000], 8,
+                ['>', ['get', 'amount'], 150000], 6,
+                4,
+              ],
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#ffffff',
+            },
+          });
+        }
+
+        // === NURSING HOMES LAYER ===
+        if (nursingHomes.length > 0) {
+          const nhGeojson: GeoJSON.FeatureCollection = {
+            type: 'FeatureCollection',
+            features: nursingHomes
+              .filter(n => n.latitude && n.longitude)
+              .map(nh => ({
+                type: 'Feature' as const,
+                geometry: {
+                  type: 'Point' as const,
+                  coordinates: [nh.longitude, nh.latitude],
+                },
+                properties: {
+                  id: nh.id,
+                  name: nh.provider_name,
+                  city: nh.city,
+                  rating: nh.overall_rating || 0,
+                  beds: nh.number_of_certified_beds || 0,
+                  penalties: nh.total_penalties_amount || 0,
+                  has_abuse: nh.abuse_icon === 'Y',
+                  entity_type: 'nursing_home',
+                },
+              })),
+          };
+
+          map.current.addSource('nursing-homes', {
+            type: 'geojson',
+            data: nhGeojson,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+          });
+
+          // Nursing home clusters - pink/rose
+          map.current.addLayer({
+            id: 'nursing-homes-clusters',
+            type: 'circle',
+            source: 'nursing-homes',
+            filter: ['has', 'point_count'],
+            paint: {
+              'circle-color': '#ec4899',
+              'circle-radius': ['step', ['get', 'point_count'], 18, 50, 24, 200, 32],
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#be185d',
+            },
+          });
+
+          map.current.addLayer({
+            id: 'nursing-homes-cluster-count',
+            type: 'symbol',
+            source: 'nursing-homes',
+            filter: ['has', 'point_count'],
+            layout: {
+              'text-field': ['get', 'point_count_abbreviated'],
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-size': 12,
+            },
+            paint: { 'text-color': '#ffffff' },
+          });
+
+          // Nursing home points - color by rating
+          map.current.addLayer({
+            id: 'nursing-homes-points',
+            type: 'circle',
+            source: 'nursing-homes',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+              'circle-color': [
+                'case',
+                ['get', 'has_abuse'], '#ef4444',
+                ['>', ['get', 'penalties'], 100000], '#f97316',
+                ['<', ['get', 'rating'], 3], '#f59e0b',
+                '#ec4899',
+              ],
+              'circle-radius': [
+                'case',
+                ['>', ['get', 'beds'], 200], 8,
+                ['>', ['get', 'beds'], 100], 6,
+                5,
+              ],
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#ffffff',
+            },
+          });
+        }
+
         // === CLICK HANDLERS ===
         const handleClusterClick = (sourceId: string) => (e: mapboxgl.MapMouseEvent) => {
           if (!map.current) return;
@@ -457,6 +671,26 @@ function UnifiedStateMapInner({
           }
         });
 
+        // PPP point click
+        map.current.on('click', 'ppp-points', (e) => {
+          if (!e.features?.[0]) return;
+          const props = e.features[0].properties;
+          const loan = pppLoans.find(l => l.id === props?.id);
+          if (loan) {
+            setSelectedEntity({ type: 'ppp', data: loan });
+          }
+        });
+
+        // Nursing home point click
+        map.current.on('click', 'nursing-homes-points', (e) => {
+          if (!e.features?.[0]) return;
+          const props = e.features[0].properties;
+          const nh = nursingHomes.find(n => n.id === props?.id);
+          if (nh) {
+            setSelectedEntity({ type: 'nursing_home', data: nh });
+          }
+        });
+
         // Cluster clicks
         if (organizations.length > 0) {
           map.current.on('click', 'organizations-clusters', handleClusterClick('organizations'));
@@ -467,10 +701,16 @@ function UnifiedStateMapInner({
         if (h1bApplications.length > 0) {
           map.current.on('click', 'h1b-clusters', handleClusterClick('h1b'));
         }
+        if (pppLoans.length > 0) {
+          map.current.on('click', 'ppp-clusters', handleClusterClick('ppp'));
+        }
+        if (nursingHomes.length > 0) {
+          map.current.on('click', 'nursing-homes-clusters', handleClusterClick('nursing-homes'));
+        }
 
         // Cursor handlers
-        const pointLayers = ['organizations-points', 'providers-points', 'h1b-points'];
-        const clusterLayers = ['organizations-clusters', 'providers-clusters', 'h1b-clusters'];
+        const pointLayers = ['organizations-points', 'providers-points', 'h1b-points', 'ppp-points', 'nursing-homes-points'];
+        const clusterLayers = ['organizations-clusters', 'providers-clusters', 'h1b-clusters', 'ppp-clusters', 'nursing-homes-clusters'];
         const allLayers = [...pointLayers, ...clusterLayers].filter(layer => map.current?.getLayer(layer));
 
         allLayers.forEach(layer => {
@@ -500,7 +740,7 @@ function UnifiedStateMapInner({
         map.current = null;
       }
     };
-  }, [mapboxgl, organizations, providers, h1bApplications, center, zoom]);
+  }, [mapboxgl, organizations, providers, h1bApplications, pppLoans, nursingHomes, center, zoom]);
 
   const formatMoney = (amount: number | null) => {
     if (!amount) return 'N/A';
@@ -522,6 +762,8 @@ function UnifiedStateMapInner({
   const orgCount = organizations.filter(o => o.latitude && o.longitude).length;
   const providerCount = providers.filter(p => p.latitude && p.longitude).length;
   const h1bCount = h1bApplications.filter(a => a.latitude && a.longitude).length;
+  const pppCount = pppLoans.filter(l => l.latitude && l.longitude).length;
+  const nursingHomeCount = nursingHomes.filter(n => n.latitude && n.longitude).length;
 
   if (error) {
     return (
@@ -590,7 +832,7 @@ function UnifiedStateMapInner({
           </label>
         )}
         {h1bCount > 0 && (
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer mb-1.5">
             <input
               type="checkbox"
               checked={showH1B}
@@ -600,6 +842,34 @@ function UnifiedStateMapInner({
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
               H1B ({h1bCount.toLocaleString()})
+            </span>
+          </label>
+        )}
+        {pppCount > 0 && (
+          <label className="flex items-center gap-2 cursor-pointer mb-1.5">
+            <input
+              type="checkbox"
+              checked={showPPP}
+              onChange={(e) => setShowPPP(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-green-500 focus:ring-green-500 focus:ring-offset-0"
+            />
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              PPP Loans ({pppCount.toLocaleString()})
+            </span>
+          </label>
+        )}
+        {nursingHomeCount > 0 && (
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showNursingHomes}
+              onChange={(e) => setShowNursingHomes(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-pink-500 focus:ring-pink-500 focus:ring-offset-0"
+            />
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+              Nursing Homes ({nursingHomeCount.toLocaleString()})
             </span>
           </label>
         )}
@@ -711,6 +981,74 @@ function UnifiedStateMapInner({
               <p className="text-gray-500 text-xs mt-2">Case: {selectedEntity.data.case_number}</p>
             </>
           )}
+
+          {selectedEntity.type === 'ppp' && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                <span className="text-green-400 text-xs uppercase tracking-wide">PPP Loan</span>
+              </div>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.borrower_name}</h3>
+              <p className="text-gray-400 text-xs mt-1">{selectedEntity.data.borrower_city}</p>
+              <p className="text-green-500 font-mono mt-2">
+                {formatMoney(selectedEntity.data.current_approval_amount)}
+              </p>
+              {selectedEntity.data.forgiveness_amount && selectedEntity.data.forgiveness_amount > 0 && (
+                <p className="text-gray-400 text-xs mt-1">
+                  Forgiven: {formatMoney(selectedEntity.data.forgiveness_amount)}
+                </p>
+              )}
+              {selectedEntity.data.jobs_reported && (
+                <p className="text-gray-400 text-xs mt-1">
+                  Jobs reported: {selectedEntity.data.jobs_reported}
+                </p>
+              )}
+              {selectedEntity.data.is_flagged && (
+                <span className="inline-block mt-2 px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
+                  Flagged
+                </span>
+              )}
+              <a
+                href={`/ppp/${selectedEntity.data.loan_number}`}
+                className="block mt-3 text-green-400 hover:text-green-300 text-xs"
+              >
+                View details
+              </a>
+            </>
+          )}
+
+          {selectedEntity.type === 'nursing_home' && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+                <span className="text-pink-400 text-xs uppercase tracking-wide">Nursing Home</span>
+              </div>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.provider_name}</h3>
+              <p className="text-gray-400 text-xs mt-1">
+                {selectedEntity.data.city}, {selectedEntity.data.state}
+              </p>
+              {selectedEntity.data.overall_rating && (
+                <p className="text-gray-300 text-sm mt-2">
+                  Rating: {'★'.repeat(selectedEntity.data.overall_rating)}{'☆'.repeat(5 - selectedEntity.data.overall_rating)}
+                </p>
+              )}
+              {selectedEntity.data.number_of_certified_beds && (
+                <p className="text-gray-400 text-xs mt-1">
+                  {selectedEntity.data.number_of_certified_beds} beds
+                </p>
+              )}
+              {selectedEntity.data.total_penalties_amount && selectedEntity.data.total_penalties_amount > 0 && (
+                <p className="text-orange-500 font-mono mt-2">
+                  Penalties: {formatMoney(selectedEntity.data.total_penalties_amount)}
+                </p>
+              )}
+              {selectedEntity.data.abuse_icon === 'Y' && (
+                <span className="inline-block mt-2 px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
+                  Abuse Reported
+                </span>
+              )}
+            </>
+          )}
         </div>
       )}
 
@@ -751,7 +1089,7 @@ function UnifiedStateMapInner({
         )}
 
         {showH1B && h1bCount > 0 && (
-          <div>
+          <div className="mb-2">
             <div className="text-gray-500 text-[10px] uppercase tracking-wide mb-1">H1B</div>
             <div className="flex items-center gap-2 mb-0.5">
               <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
@@ -764,6 +1102,42 @@ function UnifiedStateMapInner({
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
               <span>Willful violator</span>
+            </div>
+          </div>
+        )}
+
+        {showPPP && pppCount > 0 && (
+          <div className="mb-2">
+            <div className="text-gray-500 text-[10px] uppercase tracking-wide mb-1">PPP Loans</div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              <span>$1M+ loan</span>
+            </div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-lime-400" />
+              <span>Standard loan</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <span>Flagged</span>
+            </div>
+          </div>
+        )}
+
+        {showNursingHomes && nursingHomeCount > 0 && (
+          <div>
+            <div className="text-gray-500 text-[10px] uppercase tracking-wide mb-1">Nursing Homes</div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+              <span>Facility</span>
+            </div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+              <span>Low rating</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <span>Abuse reported</span>
             </div>
           </div>
         )}

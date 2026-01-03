@@ -137,28 +137,50 @@ async function getStateStats(stateCode: string) {
 async function getOrganizationsWithCoords(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
-  // Get organizations with coordinates for mapping
-  const { data: orgs, count } = await supabase
+  // Get total count first
+  const { count } = await supabase
     .from('organizations')
-    .select(`
-      id,
-      legal_name,
-      city,
-      state,
-      latitude,
-      longitude,
-      total_government_funding,
-      is_fraud_prone_industry,
-      naics_code,
-      naics_description
-    `, { count: 'exact' })
+    .select('*', { count: 'exact', head: true })
     .eq('state', stateUpper)
-    .not('latitude', 'is', null)
-    .order('total_government_funding', { ascending: false, nullsFirst: false })
-    .limit(5000);  // Limit for performance
+    .not('latitude', 'is', null);
+
+  // Supabase has 1000 row default limit, need to paginate
+  const allOrgs: any[] = [];
+  const pageSize = 1000;
+  let page = 0;
+  let hasMore = true;
+
+  while (hasMore && page < 10) { // Max 10k records for map performance
+    const { data } = await supabase
+      .from('organizations')
+      .select(`
+        id,
+        legal_name,
+        city,
+        state,
+        latitude,
+        longitude,
+        total_government_funding,
+        is_fraud_prone_industry,
+        naics_code,
+        naics_description
+      `)
+      .eq('state', stateUpper)
+      .not('latitude', 'is', null)
+      .order('total_government_funding', { ascending: false, nullsFirst: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (data && data.length > 0) {
+      allOrgs.push(...data);
+      hasMore = data.length === pageSize;
+      page++;
+    } else {
+      hasMore = false;
+    }
+  }
 
   return {
-    organizations: orgs || [],
+    organizations: allOrgs,
     totalWithCoords: count || 0,
   };
 }
@@ -239,20 +261,76 @@ async function getH1BStats(stateCode: string) {
 async function getH1BWithCoords(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
-  const { data } = await supabase
-    .from('h1b_applications')
+  // Supabase has 1000 row default limit, need to paginate
+  const allData: any[] = [];
+  const pageSize = 1000;
+  let page = 0;
+  let hasMore = true;
+
+  while (hasMore && page < 10) { // Max 10k records
+    const { data } = await supabase
+      .from('h1b_applications')
+      .select(`
+        id, case_number, employer_name, job_title,
+        worksite_city, worksite_state, latitude, longitude,
+        wage_rate_from, wage_unit, visa_class,
+        h1b_dependent, willful_violator
+      `)
+      .eq('worksite_state', stateUpper)
+      .not('latitude', 'is', null)
+      .order('wage_rate_from', { ascending: false, nullsFirst: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (data && data.length > 0) {
+      allData.push(...data);
+      hasMore = data.length === pageSize;
+      page++;
+    } else {
+      hasMore = false;
+    }
+  }
+
+  return allData;
+}
+
+async function getPPPLoansWithCoords(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { data, count } = await supabase
+    .from('ppp_loans')
     .select(`
-      id, case_number, employer_name, job_title,
-      worksite_city, worksite_state, latitude, longitude,
-      wage_rate_from, wage_unit, visa_class,
-      h1b_dependent, willful_violator
-    `)
-    .eq('worksite_state', stateUpper)
+      id, loan_number, borrower_name, borrower_city,
+      current_approval_amount, forgiveness_amount,
+      jobs_reported, naics_code, business_type,
+      latitude, longitude, is_flagged
+    `, { count: 'exact' })
+    .eq('borrower_state', stateUpper)
     .not('latitude', 'is', null)
-    .order('wage_rate_from', { ascending: false, nullsFirst: false })
+    .order('current_approval_amount', { ascending: false, nullsFirst: false })
     .limit(5000);
 
-  return data || [];
+  return { loans: data || [], count: count || 0 };
+}
+
+async function getNursingHomesWithCoords(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { data, count } = await supabase
+    .from('nursing_homes')
+    .select(`
+      id, provider_name, city, state,
+      overall_rating, health_inspection_rating,
+      staffing_rating, quality_rating,
+      number_of_certified_beds, number_of_residents,
+      latitude, longitude,
+      abuse_icon, total_penalties_amount
+    `, { count: 'exact' })
+    .eq('state', stateUpper)
+    .not('latitude', 'is', null)
+    .order('total_penalties_amount', { ascending: false, nullsFirst: false })
+    .limit(5000);
+
+  return { homes: data || [], count: count || 0 };
 }
 
 export const revalidate = 60;
@@ -285,7 +363,7 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, orgData, orgStats, h1bStats, h1bApplications, fundingTotals] = await Promise.all([
+  const [providers, stats, orgData, orgStats, h1bStats, h1bApplications, fundingTotals, pppData, nursingHomeData] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
     getOrganizationsWithCoords(state),
@@ -293,6 +371,8 @@ export default async function StatePage({ params }: PageProps) {
     getH1BStats(state),
     getH1BWithCoords(state),
     getFundingTotals(state),
+    getPPPLoansWithCoords(state),
+    getNursingHomesWithCoords(state),
   ]);
 
   return (
@@ -376,17 +456,36 @@ export default async function StatePage({ params }: PageProps) {
               h1b_dependent: h.h1b_dependent,
               willful_violator: h.willful_violator,
             }))}
+            pppLoans={pppData.loans.map(l => ({
+              id: l.id,
+              loan_number: l.loan_number,
+              borrower_name: l.borrower_name,
+              borrower_city: l.borrower_city,
+              current_approval_amount: l.current_approval_amount,
+              forgiveness_amount: l.forgiveness_amount,
+              jobs_reported: l.jobs_reported,
+              latitude: l.latitude,
+              longitude: l.longitude,
+              is_flagged: l.is_flagged,
+            }))}
+            nursingHomes={nursingHomeData.homes.map(n => ({
+              id: n.id,
+              provider_name: n.provider_name,
+              city: n.city,
+              state: n.state,
+              overall_rating: n.overall_rating,
+              number_of_certified_beds: n.number_of_certified_beds,
+              latitude: n.latitude,
+              longitude: n.longitude,
+              abuse_icon: n.abuse_icon,
+              total_penalties_amount: n.total_penalties_amount,
+            }))}
             center={stateInfo.center}
             zoom={stateInfo.zoom}
             stateName={stateInfo.name}
           />
           <p className="text-gray-500 text-xs mt-2">
-            Showing {orgData.organizations.length.toLocaleString()} organizations, {stats.withCoordinates.toLocaleString()} childcare providers, {h1bStats.withCoords.toLocaleString()} H1B applications.
-            {(orgStats.total > orgStats.withCoords || h1bStats.total > h1bStats.withCoords) && (
-              <span className="ml-1 text-gray-600">
-                (Some records pending geocoding)
-              </span>
-            )}
+            {pppData.count.toLocaleString()} PPP loans, {nursingHomeData.count.toLocaleString()} nursing homes, {stats.withCoordinates.toLocaleString()} childcare, {h1bStats.withCoords.toLocaleString()} H1B.
           </p>
         </div>
       )}
