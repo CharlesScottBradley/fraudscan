@@ -55,6 +55,7 @@ export interface StateEntityStats {
   nursing_home: EntityStats;
   ppp: EntityStats & { amount: number; flagged: number; fraudProne: number };
   sba: EntityStats & { amount: number; fraudProne: number };
+  h1b: EntityStats & { avgWage: number };
   fraud_cases: { count: number; amount: number };
   total_count: number;
   total_funding: number;
@@ -73,12 +74,13 @@ export default function USMap({ stateData, activeEntityType = 'all', colorBy = '
   const getStateCount = (stateCode: string): number => {
     const data = stateData[stateCode];
     if (!data) return 0;
-    
+
     switch (activeEntityType) {
       case 'childcare': return data.childcare?.count || 0;
       case 'nursing_home': return data.nursing_home?.count || 0;
       case 'ppp': return data.ppp?.count || 0;
       case 'sba': return data.sba?.count || 0;
+      case 'h1b': return data.h1b?.count || 0;
       default: return data.total_count || 0;
     }
   };
@@ -129,12 +131,17 @@ export default function USMap({ stateData, activeEntityType = 'all', colorBy = '
         detail = `${formatNumber(data.sba.count)} loans · ${formatMoney(data.sba.amount)}`;
         if (data.sba.fraudProne > 0) detail += ` · ${formatNumber(data.sba.fraudProne)} high-risk`;
         break;
+      case 'h1b':
+        detail = `${formatNumber(data.h1b?.count || 0)} LCAs`;
+        if (data.h1b?.avgWage > 0) detail += ` · avg ${formatMoney(data.h1b.avgWage)}`;
+        break;
       default:
         const parts = [];
         if (data.childcare.count > 0) parts.push(`${formatNumber(data.childcare.count)} childcare`);
         if (data.ppp.count > 0) parts.push(`${formatNumber(data.ppp.count)} PPP`);
         if (data.sba?.count > 0) parts.push(`${formatNumber(data.sba.count)} SBA`);
         if (data.nursing_home.count > 0) parts.push(`${formatNumber(data.nursing_home.count)} nursing`);
+        if (data.h1b?.count > 0) parts.push(`${formatNumber(data.h1b.count)} H-1B`);
         detail = parts.join(' · ') || 'No data';
     }
 

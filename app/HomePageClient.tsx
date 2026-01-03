@@ -12,6 +12,7 @@ interface HomePageClientProps {
     nursing_home: number;
     ppp: number;
     sba: number;
+    h1b: number;
   };
   totalFraud: number;
   totalOrganizations: number;
@@ -23,6 +24,7 @@ const FILTERS: { id: EntityType; label: string }[] = [
   { id: 'nursing_home', label: 'Nursing Homes' },
   { id: 'ppp', label: 'PPP Loans' },
   { id: 'sba', label: 'SBA Loans' },
+  { id: 'h1b', label: 'H-1B Visas' },
 ];
 
 function formatMoney(amount: number): string {
