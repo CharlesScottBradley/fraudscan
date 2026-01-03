@@ -70,7 +70,7 @@ const navItems: NavItem[] = [
       { label: 'Data Source Links', href: '/resources/links' },
       { label: 'FOIA Request Generator', href: '/foia' },
       { label: 'District Court Complaint', href: '/lawsuit' },
-      { label: 'Competitive Injury', href: '/competitive-injury' },
+      { label: 'Grants', href: '/grants' },
       { label: 'Submit a Tip', href: '/tip' },
       { label: 'About', href: '/about' },
       { label: 'API Docs', href: '/api/docs' },
