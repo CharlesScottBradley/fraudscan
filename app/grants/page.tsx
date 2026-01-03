@@ -35,9 +35,7 @@ const GRANTS: Grant[] = [
       'Provider license information',
       'Brief description of competitive harm suffered',
     ],
-    howToApply: 'Submit via tip form with "ACCOUNTABILITY GRANT" in your message.',
-    learnMoreLink: '/competitive-injury',
-    learnMoreText: 'Learn about competitive injury claims',
+    howToApply: 'Submit via tip form with "ACCOUNTABILITY GRANT" in your message. See legal information below.',
   },
   {
     id: 'beneficiary-storytelling',
@@ -183,42 +181,270 @@ export default function GrantsPage() {
         })}
       </div>
 
-      {/* What We Don't Do */}
-      <div className="mt-10 border border-gray-800 bg-gray-900/30 rounded-lg p-5">
-        <h3 className="text-white font-medium mb-3">What SomaliScan Does NOT Do</h3>
-        <ul className="space-y-2 text-sm text-gray-500">
-          <li className="flex gap-2">
-            <span className="text-red-500">✕</span>
-            <span>Provide legal advice or evaluate the merit of potential claims</span>
-          </li>
-          <li className="flex gap-2">
-            <span className="text-red-500">✕</span>
-            <span>Refer cases to attorneys or receive referral fees</span>
-          </li>
-          <li className="flex gap-2">
-            <span className="text-red-500">✕</span>
-            <span>Have any financial stake in litigation outcomes</span>
-          </li>
-          <li className="flex gap-2">
-            <span className="text-red-500">✕</span>
-            <span>Guarantee any outcome from storytelling or advocacy</span>
-          </li>
-        </ul>
+      {/* Legal Information Section */}
+      <div className="mt-16 pt-10 border-t border-gray-800">
+        <h2 className="text-xl font-bold text-white mb-6">Legal Information for Providers</h2>
+
+        {/* Primary Disclaimer */}
+        <div className="border-2 border-red-900/70 bg-red-950/30 rounded-lg p-6 mb-8">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="text-red-500 text-2xl">!</div>
+            <div>
+              <p className="text-red-200 text-base font-bold">Important Legal Disclaimers</p>
+            </div>
+          </div>
+
+          <div className="space-y-4 text-xs text-red-200/70">
+            <div className="border-l-2 border-red-800 pl-4">
+              <p className="text-red-200/90 font-semibold mb-1">This Is Not Legal Advice</p>
+              <p>
+                This page provides general educational information only. Nothing here constitutes legal advice,
+                creates an attorney-client relationship, or should be relied upon as a substitute for consultation
+                with a licensed attorney. Laws vary by jurisdiction and change frequently.
+              </p>
+            </div>
+
+            <div className="border-l-2 border-red-800 pl-4">
+              <p className="text-red-200/90 font-semibold mb-1">No Encouragement to Sue</p>
+              <p>
+                This page should <strong>not</strong> be construed as encouragement or solicitation to file lawsuits.
+                Whether you have a viable legal claim depends on facts specific to your situation. Many factors affect
+                whether litigation is advisable, including costs, time, likelihood of success, and collectability.
+                <strong> Most civil cases do not result in recovery for the plaintiff.</strong>
+              </p>
+            </div>
+
+            <div className="border-l-2 border-red-800 pl-4">
+              <p className="text-red-200/90 font-semibold mb-1">Conflicts of Interest Notice</p>
+              <p>
+                SomaliScan publishes information about providers based on public records. This information is not
+                verified and should not be used as evidence without independent verification from official government
+                sources. If you pursue litigation involving entities listed on this site, you may be asked about your
+                use of this site during discovery.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* What is Competitive Injury */}
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
+            What is Competitive Injury?
+          </h3>
+          <div className="text-gray-400 text-sm space-y-3">
+            <p>
+              <strong className="text-white">Competitive injury</strong> occurs when a business suffers economic harm because
+              a competitor gained an unfair advantage through unlawful conduct. In the context of Medicaid fraud,
+              legitimate service providers may have been harmed when fraudulent operators:
+            </p>
+            <ul className="list-disc list-inside ml-4 space-y-2 text-gray-500">
+              <li>Received grants, subsidies, reimbursements, or contracts that would otherwise have been available to legitimate providers</li>
+              <li>Undercut legitimate providers&apos; pricing by subsidizing operations with fraudulently obtained funds</li>
+              <li>Saturated markets with phantom capacity, depressing enrollment at real facilities</li>
+              <li>Created artificial competition that forced legitimate providers to reduce services or close</li>
+              <li>Damaged the reputation of entire industries, reducing client/patient trust in legitimate providers</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Legal Theories */}
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
+            Potential Legal Theories
+          </h3>
+          <p className="text-gray-500 text-xs mb-4">
+            The following legal theories may be available depending on jurisdiction and specific facts.
+            Each has significant requirements and limitations. Consult an attorney before pursuing any claim.
+          </p>
+          <div className="space-y-4">
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-white font-medium mb-2">Unfair Competition</h4>
+              <p className="text-gray-500 text-xs">
+                State Uniform Deceptive Trade Practices Acts and similar laws prohibit unfair competitive practices.
+                Requires showing direct competitive harm, not just that fraud existed.
+              </p>
+            </div>
+
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-white font-medium mb-2">Tortious Interference with Business</h4>
+              <p className="text-gray-500 text-xs">
+                Applies when a third party intentionally interferes with existing or prospective business relationships.
+                Requires showing the fraudster specifically interfered with your relationships, not just that they competed in the same market.
+              </p>
+            </div>
+
+            <div className="border border-yellow-900/50 bg-yellow-950/20 rounded p-4">
+              <h4 className="text-white font-medium mb-2">Civil RICO (18 U.S.C. § 1964)</h4>
+              <div className="text-yellow-200/80 text-xs mb-2 p-2 bg-yellow-900/20 rounded">
+                <strong>WARNING:</strong> Civil RICO claims are among the most frequently sanctioned in federal court.
+                Courts routinely impose Rule 11 sanctions on plaintiffs who allege RICO without meeting its stringent
+                requirements. Only pursue with an attorney experienced in RICO litigation.
+              </div>
+              <p className="text-gray-500 text-xs">
+                For injuries caused by patterns of racketeering activity. Successful plaintiffs may recover treble
+                damages and attorney&apos;s fees, but the burden of proof is extremely high.
+              </p>
+            </div>
+
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-white font-medium mb-2">State False Claims Act (Qui Tam)</h4>
+              <p className="text-gray-500 text-xs">
+                State False Claims Acts allow private parties to file suit on behalf of the government. Has specific
+                procedural requirements including filing under seal. Primarily focused on recovering funds for the
+                government, not compensating injured competitors.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Potential Damages */}
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
+            Potential Damages
+          </h3>
+          <p className="text-gray-500 text-xs mb-4">
+            Recovery depends on proving causation between the fraud and your specific losses.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-green-400 font-medium mb-2">Lost Profits</h4>
+              <p className="text-gray-500 text-xs">
+                Revenue you would have earned absent the fraudulent competition. Requires showing specific
+                clients or contracts were diverted to the fraudulent provider.
+              </p>
+            </div>
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-green-400 font-medium mb-2">Denied Grants/Subsidies</h4>
+              <p className="text-gray-500 text-xs">
+                If you applied for and were denied funding that was instead awarded to a fraudulent provider.
+              </p>
+            </div>
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-green-400 font-medium mb-2">Business Closure Damages</h4>
+              <p className="text-gray-500 text-xs">
+                If fraud-driven competition contributed to closure or significant downsizing.
+              </p>
+            </div>
+            <div className="border border-gray-800 rounded p-4">
+              <h4 className="text-green-400 font-medium mb-2">Attorney&apos;s Fees</h4>
+              <p className="text-gray-500 text-xs">
+                Certain statutes provide for fee-shifting. Many attorneys take competitive injury cases on contingency.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Documenting Your Situation */}
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
+            Documenting Your Situation
+          </h3>
+          <p className="text-gray-400 text-sm mb-4">
+            If you believe your business was harmed, preserve the following for consultation with an attorney:
+          </p>
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <div className="text-green-500 font-mono text-sm">1.</div>
+              <div>
+                <p className="text-white text-sm font-medium">Financial Records</p>
+                <p className="text-gray-500 text-xs">Tax returns, P&L statements, enrollment/client records showing changes</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-green-500 font-mono text-sm">2.</div>
+              <div>
+                <p className="text-white text-sm font-medium">Grant/Contract Applications</p>
+                <p className="text-gray-500 text-xs">Applications denied, with documentation of who received awards instead</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-green-500 font-mono text-sm">3.</div>
+              <div>
+                <p className="text-white text-sm font-medium">Market Information</p>
+                <p className="text-gray-500 text-xs">Names of providers in your area who have been charged or are under investigation</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-green-500 font-mono text-sm">4.</div>
+              <div>
+                <p className="text-white text-sm font-medium">Timeline</p>
+                <p className="text-gray-500 text-xs">When your business began declining, correlated with when fraudulent providers entered your market</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Important Considerations */}
+        <section className="mb-10">
+          <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">
+            Important Considerations
+          </h3>
+          <div className="space-y-4 text-sm text-gray-400">
+            <div className="border-l-2 border-gray-700 pl-4">
+              <p className="text-white font-medium mb-1">Statute of Limitations</p>
+              <p className="text-xs text-gray-500">
+                Most claims have filing deadlines (often 2-6 years). Consult an attorney promptly.
+              </p>
+            </div>
+            <div className="border-l-2 border-gray-700 pl-4">
+              <p className="text-white font-medium mb-1">Collectability</p>
+              <p className="text-xs text-gray-500">
+                Many defendants may be judgment-proof. Winning a judgment does not guarantee collecting money.
+              </p>
+            </div>
+            <div className="border-l-2 border-gray-700 pl-4">
+              <p className="text-white font-medium mb-1">Costs and Time</p>
+              <p className="text-xs text-gray-500">
+                Litigation is expensive. Federal cases can take 2-5 years. Consider whether recovery justifies the investment.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* What We Don't Do */}
+        <div className="border border-gray-800 bg-gray-900/30 rounded-lg p-5">
+          <h3 className="text-white font-medium mb-3">What SomaliScan Does NOT Do</h3>
+          <ul className="space-y-2 text-sm text-gray-500">
+            <li className="flex gap-2">
+              <span className="text-red-500">✕</span>
+              <span>Provide legal advice or evaluate the merit of potential claims</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-red-500">✕</span>
+              <span>Refer cases to attorneys or receive referral fees</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-red-500">✕</span>
+              <span>Have any financial stake in litigation outcomes</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-red-500">✕</span>
+              <span>Verify the accuracy of public records displayed on this site</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Resources */}
+        <div className="mt-8">
+          <h3 className="text-white font-medium mb-3">Resources for Finding Legal Help</h3>
+          <div className="space-y-2 text-sm">
+            <a href="https://www.americanbar.org/groups/legal_services/flh-home/" target="_blank" rel="noopener noreferrer" className="block text-green-500 hover:underline">
+              ABA Free Legal Help Directory
+            </a>
+            <a href="https://www.lawhelpmn.org/" target="_blank" rel="noopener noreferrer" className="block text-green-500 hover:underline">
+              LawHelpMN - Free Legal Resources
+            </a>
+            <a href="https://www.sba.gov/local-assistance" target="_blank" rel="noopener noreferrer" className="block text-green-500 hover:underline">
+              SBA Local Assistance - Small Business Resources
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* Related Links */}
       <div className="mt-10 pt-8 border-t border-gray-800">
         <h3 className="text-white font-medium mb-4">Related</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
-            href="/competitive-injury"
-            className="border border-gray-800 rounded p-4 hover:border-gray-700 transition-colors"
-          >
-            <h4 className="text-white font-medium mb-1">Competitive Injury</h4>
-            <p className="text-gray-500 text-xs">
-              Educational info for providers harmed by fraudulent competitors.
-            </p>
-          </Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link
             href="/crowdsource/bounties"
             className="border border-gray-800 rounded p-4 hover:border-gray-700 transition-colors"
