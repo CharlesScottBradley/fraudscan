@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import StateMap from '../../components/StateMap';
-import OrganizationsMap from '../../components/OrganizationsMap';
+import UnifiedStateMap from '../../components/UnifiedStateMap';
 import StateDataTable from './StateDataTable';
 import EmailSignup from '../../components/EmailSignup';
 
@@ -233,6 +232,45 @@ async function getOrgStats(stateCode: string) {
   };
 }
 
+async function getH1BStats(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { count: total } = await supabase
+    .from('h1b_applications')
+    .select('*', { count: 'exact', head: true })
+    .eq('worksite_state', stateUpper);
+
+  const { count: withCoords } = await supabase
+    .from('h1b_applications')
+    .select('*', { count: 'exact', head: true })
+    .eq('worksite_state', stateUpper)
+    .not('latitude', 'is', null);
+
+  return {
+    total: total || 0,
+    withCoords: withCoords || 0,
+  };
+}
+
+async function getH1BWithCoords(stateCode: string) {
+  const stateUpper = stateCode.toUpperCase();
+
+  const { data } = await supabase
+    .from('h1b_applications')
+    .select(`
+      id, case_number, employer_name, job_title,
+      worksite_city, worksite_state, latitude, longitude,
+      wage_rate_from, wage_unit, visa_class,
+      h1b_dependent, willful_violator
+    `)
+    .eq('worksite_state', stateUpper)
+    .not('latitude', 'is', null)
+    .order('wage_rate_from', { ascending: false, nullsFirst: false })
+    .limit(5000);
+
+  return data || [];
+}
+
 export const revalidate = 60;
 
 function formatMoney(amount: number): string {
@@ -260,13 +298,15 @@ export default async function StatePage({ params }: PageProps) {
     );
   }
 
-  const [providers, stats, pppStats, grantStats, orgData, orgStats] = await Promise.all([
+  const [providers, stats, pppStats, grantStats, orgData, orgStats, h1bStats, h1bApplications] = await Promise.all([
     getStateProviders(state),
     getStateStats(state),
     getPPPStats(state),
     getGrantStats(state),
     getOrganizationsWithCoords(state),
     getOrgStats(state),
+    getH1BStats(state),
+    getH1BWithCoords(state),
   ]);
 
   return (
@@ -325,15 +365,23 @@ export default async function StatePage({ params }: PageProps) {
             <p className="text-gray-500 text-sm">Childcare Providers</p>
           </div>
         )}
+        {h1bStats.total > 0 && (
+          <div className="border border-gray-800 p-4">
+            <p className="text-purple-500 font-mono text-xl font-bold">
+              {h1bStats.total.toLocaleString()}
+            </p>
+            <p className="text-gray-500 text-sm">H1B Applications</p>
+          </div>
+        )}
       </div>
 
-      {/* Organizations Map - show if there are geocoded organizations */}
-      {orgStats.withCoords > 0 && (
+      {/* Unified Map - show if any geocoded data exists */}
+      {(orgStats.withCoords > 0 || stats.withCoordinates > 0 || h1bStats.withCoords > 0) && (
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-4">
-            Organizations ({orgStats.withCoords.toLocaleString()} mapped)
+            {stateInfo.name} Map
           </h2>
-          <OrganizationsMap
+          <UnifiedStateMap
             organizations={orgData.organizations.map(o => ({
               id: o.id,
               legal_name: o.legal_name,
@@ -346,47 +394,51 @@ export default async function StatePage({ params }: PageProps) {
               naics_code: o.naics_code,
               naics_description: o.naics_description,
             }))}
+            providers={providers
+              .filter(p => p.latitude && p.longitude)
+              .map(p => ({
+                id: p.id,
+                license_number: p.license_number,
+                name: p.name,
+                latitude: p.latitude,
+                longitude: p.longitude,
+                license_type: p.license_type,
+                total_funding: p.total_funding,
+              }))}
+            h1bApplications={h1bApplications.map(h => ({
+              id: h.id,
+              case_number: h.case_number,
+              employer_name: h.employer_name,
+              job_title: h.job_title,
+              worksite_city: h.worksite_city,
+              worksite_state: h.worksite_state,
+              latitude: h.latitude,
+              longitude: h.longitude,
+              wage_rate_from: h.wage_rate_from,
+              wage_unit: h.wage_unit,
+              visa_class: h.visa_class,
+              h1b_dependent: h.h1b_dependent,
+              willful_violator: h.willful_violator,
+            }))}
             center={stateInfo.center}
             zoom={stateInfo.zoom}
-            title={`${stateInfo.name} Organizations`}
+            stateName={stateInfo.name}
           />
           <p className="text-gray-500 text-xs mt-2">
-            Showing top {orgData.organizations.length.toLocaleString()} organizations by funding.
-            {orgStats.total > orgStats.withCoords && (
-              <span className="ml-1">
-                ({(orgStats.total - orgStats.withCoords).toLocaleString()} organizations pending geocoding)
+            Showing {orgData.organizations.length.toLocaleString()} organizations, {stats.withCoordinates.toLocaleString()} childcare providers, {h1bStats.withCoords.toLocaleString()} H1B applications.
+            {(orgStats.total > orgStats.withCoords || h1bStats.total > h1bStats.withCoords) && (
+              <span className="ml-1 text-gray-600">
+                (Some records pending geocoding)
               </span>
             )}
           </p>
         </div>
       )}
 
-      {orgStats.withCoords === 0 && orgStats.total > 0 && (
+      {orgStats.withCoords === 0 && stats.withCoordinates === 0 && h1bStats.withCoords === 0 && (orgStats.total > 0 || stats.providerCount > 0 || h1bStats.total > 0) && (
         <div className="mb-8 border border-gray-800 p-8 text-center">
-          <p className="text-gray-500">{orgStats.total.toLocaleString()} organizations in {stateInfo.name} - geocoding in progress.</p>
-          <p className="text-gray-600 text-sm mt-2">PPP loan and organization data is available in the table below.</p>
-        </div>
-      )}
-
-      {/* Provider Map - only show if there are geocoded providers */}
-      {stats.withCoordinates > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            Childcare Providers ({stats.withCoordinates.toLocaleString()} mapped)
-          </h2>
-          <StateMap
-            providers={providers.map(p => ({
-              id: p.id,
-              license_number: p.license_number,
-              name: p.name,
-              latitude: p.latitude,
-              longitude: p.longitude,
-              license_type: p.license_type,
-              total_funding: p.total_funding,
-            }))}
-            center={stateInfo.center}
-            zoom={stateInfo.zoom}
-          />
+          <p className="text-gray-500">Data for {stateInfo.name} is being geocoded.</p>
+          <p className="text-gray-600 text-sm mt-2">Check the table below for available records.</p>
         </div>
       )}
 
