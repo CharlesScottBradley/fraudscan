@@ -322,49 +322,19 @@ export default async function StatePage({ params }: PageProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(pppStats.totalAmount)}
+            {formatMoney(pppStats.totalAmount + grantStats.totalAmount + stats.totalFunding)}
           </p>
-          <p className="text-gray-500 text-sm">PPP Loans</p>
+          <p className="text-gray-500 text-sm">Total Govt Spending</p>
         </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-white font-mono text-xl font-bold">
-            {pppStats.count.toLocaleString()}
-          </p>
-          <p className="text-gray-500 text-sm">PPP Recipients</p>
-        </div>
-        {grantStats.count > 0 && (
-          <div className="border border-gray-800 p-4">
-            <p className="text-orange-500 font-mono text-xl font-bold">
-              {formatMoney(grantStats.totalAmount)}
-            </p>
-            <p className="text-gray-500 text-sm">State Grants ({grantStats.count.toLocaleString()})</p>
-          </div>
-        )}
         <div className="border border-gray-800 p-4">
           <p className="text-blue-500 font-mono text-xl font-bold">
             {orgStats.total.toLocaleString()}
           </p>
           <p className="text-gray-500 text-sm">Organizations</p>
         </div>
-        {orgStats.fraudProne > 0 && (
-          <div className="border border-gray-800 p-4">
-            <p className="text-amber-500 font-mono text-xl font-bold">
-              {orgStats.fraudProne.toLocaleString()}
-            </p>
-            <p className="text-gray-500 text-sm">Fraud-Prone Industry</p>
-          </div>
-        )}
-        {stats.providerCount > 0 && (
-          <div className="border border-gray-800 p-4">
-            <p className="text-white font-mono text-xl font-bold">
-              {stats.providerCount.toLocaleString()}
-            </p>
-            <p className="text-gray-500 text-sm">Childcare Providers</p>
-          </div>
-        )}
         {h1bStats.total > 0 && (
           <div className="border border-gray-800 p-4">
             <p className="text-purple-500 font-mono text-xl font-bold">
