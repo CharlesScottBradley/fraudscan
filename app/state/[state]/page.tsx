@@ -225,10 +225,19 @@ async function getOrgStats(stateCode: string) {
     .eq('state', stateUpper)
     .eq('is_fraud_prone_industry', true);
 
+  // Get total government funding for all orgs in state
+  const { data: fundingData } = await supabase
+    .from('organizations')
+    .select('total_government_funding')
+    .eq('state', stateUpper);
+
+  const totalFunding = fundingData?.reduce((sum, o) => sum + (o.total_government_funding || 0), 0) || 0;
+
   return {
     total: total || 0,
     withCoords: withCoords || 0,
     fraudProne: fraudProne || 0,
+    totalFunding,
   };
 }
 
@@ -325,7 +334,7 @@ export default async function StatePage({ params }: PageProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(pppStats.totalAmount + grantStats.totalAmount + stats.totalFunding)}
+            {formatMoney(orgStats.totalFunding)}
           </p>
           <p className="text-gray-500 text-sm">Total Govt Spending</p>
         </div>
