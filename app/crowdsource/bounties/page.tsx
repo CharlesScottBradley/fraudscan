@@ -20,6 +20,43 @@ interface Bounty {
 
 const BOUNTIES: Bounty[] = [
   {
+    id: 'beneficiary-storytelling',
+    title: 'Beneficiary Storytelling Grant',
+    amount: 2500,
+    slots: 2,
+    claimed: 0,
+    status: 'open',
+    difficulty: 'beginner',
+    description: 'Were your benefits cut, denied, or delayed? We fund individuals willing to share their story publicly to advocate for stronger fraud prevention and program accountability.',
+    requirements: [
+      'You personally experienced benefit reduction, denial, or delay (childcare subsidies, Medicaid, SNAP, etc.)',
+      'Willing to have your story published (name can be anonymized if needed)',
+      'Able to provide basic documentation of benefit loss (denial letter, cut-off notice, etc.)',
+      'Available for a 30-60 minute recorded interview or willing to write a first-person account',
+      'U.S. resident who received benefits from a state or federal program',
+    ],
+    deliverables: [
+      'Recorded video or audio interview (30-60 minutes) OR written first-person account (1,500+ words)',
+      'Copies of documentation showing benefit denial/reduction (redacted for privacy as needed)',
+      'Signed release allowing publication of your story (anonymized version available)',
+      'Brief timeline of events: when benefits started, what happened, current status',
+    ],
+    sources: [
+      'Personal experience and recollection',
+      'Benefit denial or termination letters',
+      'Communication with caseworkers or agencies (emails, letters)',
+      'Medical records showing care disruption (if applicable)',
+      'Financial records showing impact (if willing to share)',
+    ],
+    notAccepted: [
+      'Secondhand stories (must be your own experience)',
+      'Situations where benefits were correctly denied due to ineligibility',
+      'Unwillingness to have any version of story published',
+      'Inability to provide any documentation of the benefit issue',
+      'Stories primarily about general dissatisfaction rather than specific harm',
+    ],
+  },
+  {
     id: 'corporate-ownership-map',
     title: 'Corporate Relationship Documentation Project',
     amount: 1000,
