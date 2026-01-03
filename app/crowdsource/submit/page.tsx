@@ -482,8 +482,33 @@ function SubmitFormContent() {
       </div>
 
       {error && (
-        <div className="border border-gray-800 p-4 mb-6">
-          <p className="text-gray-400">{error}</p>
+        <div className="border border-red-800/50 bg-red-900/10 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            {/* Error Icon */}
+            <div className="w-8 h-8 flex-shrink-0 rounded-full bg-red-900/30 border border-red-700/50 flex items-center justify-center">
+              <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-mono text-red-500/80 text-xs mb-1">SUBMISSION_FAILED</p>
+              <p className="text-white text-sm mb-2">{error}</p>
+              <p className="text-gray-500 text-xs">
+                Please check your input and try again. If the problem persists, contact us at{' '}
+                <a href="mailto:tips@somaliscan.com" className="text-gray-400 hover:text-white">tips@somaliscan.com</a>
+              </p>
+            </div>
+            {/* Dismiss button */}
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="text-gray-500 hover:text-white flex-shrink-0"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
 
