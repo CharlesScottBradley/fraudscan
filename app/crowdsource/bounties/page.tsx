@@ -95,8 +95,8 @@ const BOUNTIES: Bounty[] = [
     title: 'Impossible Billing Documentation',
     amount: 500,
     slots: 2,
-    claimed: 1,
-    status: 'open',
+    claimed: 2,
+    status: 'completed',
     difficulty: 'advanced',
     description: 'Mathematical analysis using public records showing that a provider billed for services that could not have physically occurred based on licensed capacity, operating hours, or geographic constraints.',
     requirements: [
@@ -163,6 +163,13 @@ export default function BountyBoardPage() {
       <div className="border border-green-900/50 bg-green-950/20 rounded p-4 mb-8">
         <p className="text-green-400 font-medium text-sm mb-3">Recently Awarded</p>
         <div className="space-y-3">
+          <div className="flex items-center justify-between text-sm">
+            <div>
+              <span className="text-white">Impossible Billing Documentation</span>
+              <span className="text-gray-500 ml-2">— Ruun Family Child Care, WA ($122K impossible payments)</span>
+            </div>
+            <span className="text-green-500 font-mono">$500</span>
+          </div>
           <div className="flex items-center justify-between text-sm">
             <div>
               <span className="text-white">Impossible Billing Documentation</span>
