@@ -20,6 +20,44 @@ interface Bounty {
 
 const BOUNTIES: Bounty[] = [
   {
+    id: 'state-data-compilation',
+    title: 'Complete State Data Compilation',
+    amount: 1000,
+    slots: 11,
+    claimed: 0,
+    status: 'open',
+    difficulty: 'intermediate',
+    description: 'Compile a complete data set for one state: government spending, provider registries, organization lists, or other accountability-relevant public records into a clean, structured format.',
+    requirements: [
+      'Data must be for ONE of these states: IL, ID, CA, TX, LA, MA, NY, VA, OH, PA, or KY',
+      'Data set must be "complete" — covering all available records of a specific type (e.g., all childcare providers, all state vendor payments, all CCAP recipients)',
+      'Data must be from official government sources (state portals, FOIA responses, transparency databases)',
+      'Must include source URLs and date of collection',
+      'One bounty per state — first complete submission for each state wins',
+    ],
+    deliverables: [
+      'Structured data file (CSV, JSON, or Excel) with consistent column formatting',
+      'Data dictionary explaining each column/field',
+      'Source documentation: URLs, FOIA request numbers, or portal screenshots',
+      'Brief methodology document explaining collection process and any limitations',
+    ],
+    sources: [
+      'State transparency/checkbook portals',
+      'State licensing databases (childcare, healthcare, etc.)',
+      'Secretary of State business registries',
+      'FOIA/public records responses',
+      'Federal data portals with state-level data (USAspending, SAM.gov)',
+      'State agency open data portals',
+    ],
+    notAccepted: [
+      'Partial data sets (must be complete for the category)',
+      'Data already available on SomaliScan',
+      'Scraped data without source attribution',
+      'Data requiring paid subscriptions to access',
+      'States not listed above',
+    ],
+  },
+  {
     id: 'corporate-ownership-map',
     title: 'Corporate Relationship Documentation Project',
     amount: 1000,
