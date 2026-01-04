@@ -632,17 +632,15 @@ export default function DaycareSlotsPage() {
           href="https://toshi.bet/r/mulligann"
           target="_blank"
           rel="noopener noreferrer sponsored"
-          className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-bold rounded-lg shadow-lg transition-all hover:scale-105"
+          className="block hover:scale-105 transition-transform"
         >
-          <div className="relative w-8 h-8">
-            <Image
-              src="/slots/toshi-logo.svg"
-              alt="Toshi"
-              fill
-              className="object-contain"
-            />
-          </div>
-          <span style={{ fontFamily: 'var(--font-cinzel)' }}>SIGN UP FOR A CHANCE TO WIN 1 BTC</span>
+          <Image
+            src="/slots/toshibutton.png"
+            alt="Toshi Bet - 200% Deposit Match - Play Now"
+            width={468}
+            height={60}
+            className="rounded-lg shadow-lg"
+          />
         </a>
 
         <div className="mt-3 text-center text-gray-500 text-[10px]">
