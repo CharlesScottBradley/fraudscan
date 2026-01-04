@@ -81,7 +81,7 @@ export default function WelcomeBanner() {
             />
           </div>
           <span className="text-xs text-yellow-400 font-semibold tracking-wide">
-            SPONSORED BY TOSHI — TRY THE DAYCARE SLOTS
+            SPONSORED BY TOSHI BET — TRY THE DAYCARE SLOTS
           </span>
           <div className="relative w-5 h-5">
             <Image

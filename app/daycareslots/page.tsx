@@ -429,7 +429,7 @@ export default function DaycareSlotsPage() {
             />
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight" style={{ fontFamily: 'var(--font-cinzel)' }}>
-            TOSHI&apos;S DAYCARE SLOTS
+            TOSHI BET&apos;S DAYCARE SLOTS
           </h1>
           <div className="relative w-16 h-16 md:w-20 md:h-20">
             <Image
@@ -524,7 +524,7 @@ export default function DaycareSlotsPage() {
               />
             </div>
             <span className="text-yellow-400 font-bold text-lg tracking-wider" style={{ fontFamily: 'var(--font-cinzel)' }}>
-              TOSHI GAMING
+              TOSHI BET GAMING
             </span>
             <div className="relative w-10 h-10">
               <Image
