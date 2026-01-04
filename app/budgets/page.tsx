@@ -160,7 +160,7 @@ export default function BudgetsPage() {
         </div>
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">{formatMoney(totals.budget_expenditure)}</p>
-          <p className="text-gray-500 text-sm">Total Expenditure</p>
+          <p className="text-gray-500 text-sm">Total Expenditure Tracked*</p>
         </div>
         <div className="border border-gray-800 p-4">
           <p className="text-purple-500 font-mono text-xl font-bold">{formatNumber(totals.budgets)}</p>
