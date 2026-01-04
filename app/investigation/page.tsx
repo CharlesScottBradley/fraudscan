@@ -121,6 +121,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'fraser-credentials',
+    title: 'Fraser Credential Fraud',
+    description: 'MN\'s largest autism provider has staff with unverifiable credentials',
+    href: '/investigation/fraser-credentials',
+    stats: '6 unverified',
+    isNew: true
+  },
+  {
     id: 'mn-oh-wa',
     title: 'Three-State Analysis',
     description: 'Deep dive into Minnesota, Ohio, and Washington funding data',
@@ -180,14 +188,25 @@ export default async function InvestigationsPage() {
         <h2 className="text-sm font-medium text-gray-400 mb-4">Investigation Types</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {INVESTIGATION_TYPES.map(type => (
-            <Link 
+            <Link
               key={type.id}
               href={type.href}
-              className="border border-gray-800 p-4 hover:border-gray-700 transition-colors block"
+              className={`border p-4 hover:border-gray-700 transition-colors block ${
+                type.isNew ? 'border-red-800 bg-red-900/10' : 'border-gray-800'
+              }`}
             >
               <div className="flex justify-between items-start mb-2">
-                <h3 className="text-white font-medium">{type.title}</h3>
-                <span className="text-xs text-gray-500 font-mono">{type.stats}</span>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-white font-medium">{type.title}</h3>
+                  {type.isNew && (
+                    <span className="text-xs bg-red-600 text-white px-1.5 py-0.5 rounded font-medium">
+                      NEW
+                    </span>
+                  )}
+                </div>
+                <span className={`text-xs font-mono ${type.isNew ? 'text-red-400' : 'text-gray-500'}`}>
+                  {type.stats}
+                </span>
               </div>
               <p className="text-sm text-gray-500">{type.description}</p>
             </Link>
