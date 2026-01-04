@@ -894,9 +894,9 @@ function UnifiedStateMapInner({
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
                 <span className="text-blue-400 text-xs uppercase tracking-wide">Organization</span>
               </div>
-              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.legal_name}</h3>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.legal_name || 'Unknown'}</h3>
               <p className="text-gray-400 text-xs mt-1">
-                {selectedEntity.data.city}, {selectedEntity.data.state}
+                {selectedEntity.data.city || 'Unknown'}, {selectedEntity.data.state || ''}
               </p>
               {selectedEntity.data.naics_description && (
                 <p className="text-gray-500 text-xs mt-1">{selectedEntity.data.naics_description}</p>
@@ -924,8 +924,8 @@ function UnifiedStateMapInner({
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 <span className="text-emerald-400 text-xs uppercase tracking-wide">Childcare Provider</span>
               </div>
-              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.name}</h3>
-              <p className="text-gray-400 text-xs mt-1">{selectedEntity.data.license_type}</p>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.name || 'Unknown'}</h3>
+              <p className="text-gray-400 text-xs mt-1">{selectedEntity.data.license_type || 'N/A'}</p>
               {selectedEntity.data.total_funding && selectedEntity.data.total_funding > 0 && (
                 <p className="text-green-500 font-mono mt-2">
                   {formatMoney(selectedEntity.data.total_funding)}
@@ -955,17 +955,17 @@ function UnifiedStateMapInner({
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
                 <span className="text-purple-400 text-xs uppercase tracking-wide">H1B Application</span>
               </div>
-              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.employer_name}</h3>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.employer_name || 'Unknown'}</h3>
               <p className="text-gray-400 text-xs mt-1">
-                {selectedEntity.data.worksite_city}, {selectedEntity.data.worksite_state}
+                {selectedEntity.data.worksite_city || 'Unknown'}, {selectedEntity.data.worksite_state || ''}
               </p>
-              <p className="text-gray-300 text-sm mt-2">{selectedEntity.data.job_title}</p>
+              <p className="text-gray-300 text-sm mt-2">{selectedEntity.data.job_title || 'N/A'}</p>
               <p className="text-green-500 font-mono mt-2">
                 {formatWage(selectedEntity.data.wage_rate_from, selectedEntity.data.wage_unit)}
               </p>
               <div className="flex gap-2 mt-2 flex-wrap">
                 <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">
-                  {selectedEntity.data.visa_class}
+                  {selectedEntity.data.visa_class || 'N/A'}
                 </span>
                 {selectedEntity.data.h1b_dependent && (
                   <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded">
@@ -978,7 +978,7 @@ function UnifiedStateMapInner({
                   </span>
                 )}
               </div>
-              <p className="text-gray-500 text-xs mt-2">Case: {selectedEntity.data.case_number}</p>
+              <p className="text-gray-500 text-xs mt-2">Case: {selectedEntity.data.case_number || 'N/A'}</p>
             </>
           )}
 
@@ -988,8 +988,8 @@ function UnifiedStateMapInner({
                 <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
                 <span className="text-green-400 text-xs uppercase tracking-wide">PPP Loan</span>
               </div>
-              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.borrower_name}</h3>
-              <p className="text-gray-400 text-xs mt-1">{selectedEntity.data.borrower_city}</p>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.borrower_name || 'Unknown'}</h3>
+              <p className="text-gray-400 text-xs mt-1">{selectedEntity.data.borrower_city || 'Unknown'}</p>
               <p className="text-green-500 font-mono mt-2">
                 {formatMoney(selectedEntity.data.current_approval_amount)}
               </p>
@@ -998,9 +998,9 @@ function UnifiedStateMapInner({
                   Forgiven: {formatMoney(selectedEntity.data.forgiveness_amount)}
                 </p>
               )}
-              {selectedEntity.data.jobs_reported && (
+              {selectedEntity.data.jobs_reported != null && selectedEntity.data.jobs_reported > 0 && (
                 <p className="text-gray-400 text-xs mt-1">
-                  Jobs reported: {selectedEntity.data.jobs_reported}
+                  Jobs reported: {selectedEntity.data.jobs_reported.toLocaleString()}
                 </p>
               )}
               {selectedEntity.data.is_flagged && (
@@ -1023,21 +1023,21 @@ function UnifiedStateMapInner({
                 <span className="w-2.5 h-2.5 rounded-full bg-pink-500" />
                 <span className="text-pink-400 text-xs uppercase tracking-wide">Nursing Home</span>
               </div>
-              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.provider_name}</h3>
+              <h3 className="font-bold pr-6 text-sm">{selectedEntity.data.provider_name || 'Unknown'}</h3>
               <p className="text-gray-400 text-xs mt-1">
-                {selectedEntity.data.city}, {selectedEntity.data.state}
+                {selectedEntity.data.city || 'Unknown'}, {selectedEntity.data.state || ''}
               </p>
-              {selectedEntity.data.overall_rating && (
+              {selectedEntity.data.overall_rating != null && selectedEntity.data.overall_rating > 0 && (
                 <p className="text-gray-300 text-sm mt-2">
-                  Rating: {'★'.repeat(selectedEntity.data.overall_rating)}{'☆'.repeat(5 - selectedEntity.data.overall_rating)}
+                  Rating: {'★'.repeat(Math.min(selectedEntity.data.overall_rating, 5))}{'☆'.repeat(Math.max(0, 5 - selectedEntity.data.overall_rating))}
                 </p>
               )}
-              {selectedEntity.data.number_of_certified_beds && (
+              {selectedEntity.data.number_of_certified_beds != null && selectedEntity.data.number_of_certified_beds > 0 && (
                 <p className="text-gray-400 text-xs mt-1">
-                  {selectedEntity.data.number_of_certified_beds} beds
+                  {selectedEntity.data.number_of_certified_beds.toLocaleString()} beds
                 </p>
               )}
-              {selectedEntity.data.total_penalties_amount && selectedEntity.data.total_penalties_amount > 0 && (
+              {selectedEntity.data.total_penalties_amount != null && selectedEntity.data.total_penalties_amount > 0 && (
                 <p className="text-orange-500 font-mono mt-2">
                   Penalties: {formatMoney(selectedEntity.data.total_penalties_amount)}
                 </p>

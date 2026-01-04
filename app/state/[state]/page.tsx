@@ -216,25 +216,59 @@ async function getOrgStats(stateCode: string) {
 async function getFundingTotals(stateCode: string) {
   const stateUpper = stateCode.toUpperCase();
 
-  // Use RPC for efficient server-side aggregation
+  // Try RPC for efficient server-side aggregation
   const { data, error } = await supabase.rpc('get_state_funding_totals', {
     state_code: stateUpper
   });
 
-  if (error || !data) {
-    console.error('Error fetching funding totals:', error);
-    return { pppTotal: 0, grantTotal: 0, providerFunding: 0, totalTracked: 0 };
+  // If RPC exists and works, use its data
+  if (!error && data) {
+    const totalTracked = (data.ppp_total || 0) + (data.grant_total || 0) + (data.provider_funding || 0);
+    return {
+      pppTotal: data.ppp_total || 0,
+      pppCount: data.ppp_count || 0,
+      grantTotal: data.grant_total || 0,
+      grantCount: data.grant_count || 0,
+      providerFunding: data.provider_funding || 0,
+      providerCount: data.provider_count || 0,
+      totalTracked,
+    };
   }
 
-  const totalTracked = (data.ppp_total || 0) + (data.grant_total || 0) + (data.provider_funding || 0);
+  // Fallback: direct queries (less efficient but works without RPC)
+  const [pppResult, grantResult, orgResult] = await Promise.all([
+    supabase
+      .from('ppp_loans')
+      .select('current_approval_amount', { count: 'exact' })
+      .eq('borrower_state', stateUpper),
+    supabase
+      .from('state_grants')
+      .select('payment_amount', { count: 'exact' })
+      .eq('source_state', stateUpper),
+    supabase
+      .from('organizations')
+      .select('total_government_funding', { count: 'exact' })
+      .eq('state', stateUpper),
+  ]);
+
+  // Sum up PPP (limit to first 1000 for performance, use count for display)
+  const pppTotal = pppResult.data?.reduce((sum, l) => sum + (l.current_approval_amount || 0), 0) || 0;
+  const pppCount = pppResult.count || 0;
+
+  const grantTotal = grantResult.data?.reduce((sum, g) => sum + (g.payment_amount || 0), 0) || 0;
+  const grantCount = grantResult.count || 0;
+
+  const orgFunding = orgResult.data?.reduce((sum, o) => sum + (o.total_government_funding || 0), 0) || 0;
+
+  const totalTracked = pppTotal + grantTotal + orgFunding;
 
   return {
-    pppTotal: data.ppp_total || 0,
-    pppCount: data.ppp_count || 0,
-    grantTotal: data.grant_total || 0,
-    grantCount: data.grant_count || 0,
-    providerFunding: data.provider_funding || 0,
-    providerCount: data.provider_count || 0,
+    pppTotal,
+    pppCount,
+    grantTotal,
+    grantCount,
+    providerFunding: 0,
+    providerCount: 0,
     totalTracked,
   };
 }
@@ -438,20 +472,20 @@ export default async function StatePage({ params }: PageProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
           <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(fundingTotals.totalTracked)}
+            {formatMoney(fundingTotals?.totalTracked ?? 0)}
           </p>
           <p className="text-gray-500 text-sm">Govt Spending Tracked</p>
         </div>
         <div className="border border-gray-800 p-4">
           <p className="text-blue-500 font-mono text-xl font-bold">
-            {orgStats.total.toLocaleString()}
+            {(orgStats?.total ?? 0).toLocaleString()}
           </p>
           <p className="text-gray-500 text-sm">Organizations</p>
         </div>
-        {h1bStats.total > 0 && (
+        {(h1bStats?.total ?? 0) > 0 && (
           <div className="border border-gray-800 p-4">
             <p className="text-purple-500 font-mono text-xl font-bold">
-              {h1bStats.total.toLocaleString()}
+              {(h1bStats?.total ?? 0).toLocaleString()}
             </p>
             <p className="text-gray-500 text-sm">H1B Applications</p>
           </div>
@@ -459,13 +493,13 @@ export default async function StatePage({ params }: PageProps) {
       </div>
 
       {/* Unified Map - show if any geocoded data exists */}
-      {(orgStats.withCoords > 0 || stats.withCoordinates > 0 || h1bStats.withCoords > 0) && (
+      {((orgStats?.withCoords ?? 0) > 0 || (stats?.withCoordinates ?? 0) > 0 || (h1bStats?.withCoords ?? 0) > 0) && (
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-4">
             {stateInfo.name} Map
           </h2>
           <UnifiedStateMap
-            organizations={orgData.organizations.map(o => ({
+            organizations={(orgData?.organizations ?? []).map(o => ({
               id: o.id,
               legal_name: o.legal_name,
               city: o.city,
@@ -477,7 +511,7 @@ export default async function StatePage({ params }: PageProps) {
               naics_code: o.naics_code,
               naics_description: o.naics_description,
             }))}
-            providers={providers
+            providers={(providers ?? [])
               .filter(p => p.latitude && p.longitude)
               .map(p => ({
                 id: p.id,
@@ -488,7 +522,7 @@ export default async function StatePage({ params }: PageProps) {
                 license_type: p.license_type,
                 total_funding: p.total_funding,
               }))}
-            h1bApplications={h1bApplications.map(h => ({
+            h1bApplications={(h1bApplications ?? []).map(h => ({
               id: h.id,
               case_number: h.case_number,
               employer_name: h.employer_name,
@@ -503,7 +537,7 @@ export default async function StatePage({ params }: PageProps) {
               h1b_dependent: h.h1b_dependent,
               willful_violator: h.willful_violator,
             }))}
-            pppLoans={pppData.loans.map(l => ({
+            pppLoans={(pppData?.loans ?? []).map(l => ({
               id: l.id,
               loan_number: l.loan_number,
               borrower_name: l.borrower_name,
@@ -515,7 +549,7 @@ export default async function StatePage({ params }: PageProps) {
               longitude: l.longitude,
               is_flagged: l.is_flagged,
             }))}
-            nursingHomes={nursingHomeData.homes.map(n => ({
+            nursingHomes={(nursingHomeData?.homes ?? []).map(n => ({
               id: n.id,
               provider_name: n.provider_name,
               city: n.city,
@@ -532,12 +566,12 @@ export default async function StatePage({ params }: PageProps) {
             stateName={stateInfo.name}
           />
           <p className="text-gray-500 text-xs mt-2">
-            {pppData.count.toLocaleString()} PPP loans, {nursingHomeData.count.toLocaleString()} nursing homes, {stats.withCoordinates.toLocaleString()} childcare, {h1bStats.withCoords.toLocaleString()} H1B.
+            {(pppData?.count ?? 0).toLocaleString()} PPP loans, {(nursingHomeData?.count ?? 0).toLocaleString()} nursing homes, {(stats?.withCoordinates ?? 0).toLocaleString()} childcare, {(h1bStats?.withCoords ?? 0).toLocaleString()} H1B.
           </p>
         </div>
       )}
 
-      {orgStats.withCoords === 0 && stats.withCoordinates === 0 && h1bStats.withCoords === 0 && (orgStats.total > 0 || stats.providerCount > 0 || h1bStats.total > 0) && (
+      {(orgStats?.withCoords ?? 0) === 0 && (stats?.withCoordinates ?? 0) === 0 && (h1bStats?.withCoords ?? 0) === 0 && ((orgStats?.total ?? 0) > 0 || (stats?.providerCount ?? 0) > 0 || (h1bStats?.total ?? 0) > 0) && (
         <div className="mb-8 border border-gray-800 p-8 text-center">
           <p className="text-gray-500">Data for {stateInfo.name} is being geocoded.</p>
           <p className="text-gray-600 text-sm mt-2">Check the table below for available records.</p>
@@ -548,9 +582,9 @@ export default async function StatePage({ params }: PageProps) {
       <StateDataTable
         stateCode={state.toUpperCase()}
         stateName={stateInfo.name}
-        initialProviderCount={stats.providerCount}
-        initialPPPCount={fundingTotals.pppCount}
-        initialGrantCount={fundingTotals.grantCount}
+        initialProviderCount={stats?.providerCount ?? 0}
+        initialPPPCount={fundingTotals?.pppCount ?? 0}
+        initialGrantCount={fundingTotals?.grantCount ?? 0}
       />
 
       {/* Budget Documents Section */}

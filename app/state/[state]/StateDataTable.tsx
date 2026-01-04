@@ -162,7 +162,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
             }`}
           >
-            All ({(providerCount + pppCount + grantCount).toLocaleString()})
+            All ({((providerCount ?? 0) + (pppCount ?? 0) + (grantCount ?? 0)).toLocaleString()})
           </button>
           <button
             onClick={() => handleTypeChange('providers')}
@@ -172,7 +172,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
             }`}
           >
-            Providers ({providerCount.toLocaleString()})
+            Providers ({(providerCount ?? 0).toLocaleString()})
           </button>
           <button
             onClick={() => handleTypeChange('ppp_loans')}
@@ -182,9 +182,9 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
             }`}
           >
-            PPP Loans ({pppCount.toLocaleString()})
+            PPP Loans ({(pppCount ?? 0).toLocaleString()})
           </button>
-          {grantCount > 0 && (
+          {(grantCount ?? 0) > 0 && (
             <button
               onClick={() => handleTypeChange('state_grants')}
               className={`px-3 py-1.5 text-sm rounded ${
@@ -193,7 +193,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
               }`}
             >
-              State Grants ({grantCount.toLocaleString()})
+              State Grants ({(grantCount ?? 0).toLocaleString()})
             </button>
           )}
         </div>
@@ -257,7 +257,7 @@ export default function StateDataTable({ stateCode, stateName, initialProviderCo
 
       {/* Results count */}
       <p className="text-gray-500 text-sm mb-3">
-        {loading ? 'Loading...' : `Showing ${data.length} of ${totalCount.toLocaleString()} results`}
+        {loading ? 'Loading...' : `Showing ${data?.length ?? 0} of ${(totalCount ?? 0).toLocaleString()} results`}
       </p>
 
       {/* Table */}
