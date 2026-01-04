@@ -3,8 +3,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
-// Slot symbols
-const SYMBOLS = ['💰', '🏛️', '🎖️', '👶', '⭐', '🦅', '📋', '🚨'];
+// Slot symbols - now using images
+const SYMBOL_IMAGES = [
+  '/slots/1.png', // Money bag
+  '/slots/2.png', // Capitol
+  '/slots/3.png', // Medal
+  '/slots/4.png', // Eagle
+  '/slots/5.png', // Baby
+  '/slots/6.png', // Approved
+];
+
+// Fallback emojis for loading states
+const SYMBOLS = ['💰', '🏛️', '🎖️', '🦅', '👶', '📋'];
 
 // Win outcomes with their probabilities and messages
 const OUTCOMES = [
@@ -51,7 +61,7 @@ export default function DaycareSlotsPage() {
   const [balance, setBalance] = useState(100000);
   const [bet, setBet] = useState(1000);
   const [spinning, setSpinning] = useState(false);
-  const [reels, setReels] = useState(['💰', '💰', '💰']);
+  const [reels, setReels] = useState([0, 0, 0]); // Now indices into SYMBOL_IMAGES
   const [result, setResult] = useState<typeof OUTCOMES[0] | null>(null);
   const [winAmount, setWinAmount] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -139,9 +149,9 @@ export default function DaycareSlotsPage() {
     let spinCount = 0;
     const spinInterval = setInterval(() => {
       setReels([
-        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+        Math.floor(Math.random() * SYMBOL_IMAGES.length),
+        Math.floor(Math.random() * SYMBOL_IMAGES.length),
+        Math.floor(Math.random() * SYMBOL_IMAGES.length),
       ]);
       spinCount++;
       if (spinCount > 20) {
@@ -152,10 +162,10 @@ export default function DaycareSlotsPage() {
         const win = getRandomWinAmount(outcome.minWin, outcome.maxWin);
 
         // Set final reels (matching symbols for visual effect)
-        const finalSymbol = outcome.isDeported ? '🚨' :
-                          outcome.isJackpot ? '⭐' :
-                          SYMBOLS[Math.floor(Math.random() * 6)];
-        setReels([finalSymbol, finalSymbol, finalSymbol]);
+        const finalIndex = outcome.isDeported ? 4 : // Baby for deported (ironic)
+                          outcome.isJackpot ? 0 :   // Money bag for jackpot
+                          Math.floor(Math.random() * SYMBOL_IMAGES.length);
+        setReels([finalIndex, finalIndex, finalIndex]);
 
         setResult(outcome);
         setWinAmount(win);
@@ -246,9 +256,27 @@ export default function DaycareSlotsPage() {
 
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2" style={{ fontFamily: 'var(--font-cinzel)' }}>
-          TOSHI&apos;S DAYCARE SLOTS
-        </h1>
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <div className="relative w-16 h-16 md:w-20 md:h-20">
+            <Image
+              src="/slots/toshi-logo.svg"
+              alt="Toshi"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight" style={{ fontFamily: 'var(--font-cinzel)' }}>
+            TOSHI&apos;S DAYCARE SLOTS
+          </h1>
+          <div className="relative w-16 h-16 md:w-20 md:h-20">
+            <Image
+              src="/slots/toshi-logo.svg"
+              alt="Toshi"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
         <p className="text-gray-500 text-sm">Sponsored by Your Tax Dollars</p>
       </div>
 
@@ -263,18 +291,40 @@ export default function DaycareSlotsPage() {
 
       {/* Balance Display */}
       <div className="bg-gray-900 border border-gray-800 rounded-lg px-8 py-4 mb-6">
-        <div className="text-gray-500 text-xs uppercase tracking-wider mb-1">Government Money</div>
+        <div className="text-gray-500 text-xs uppercase tracking-wider mb-1">Government Funding</div>
         <div className="text-3xl font-mono text-green-400">{formatMoney(balance)}</div>
       </div>
 
       {/* Slot Machine */}
       <div className="bg-gradient-to-b from-gray-800 to-gray-900 border-4 border-yellow-600 rounded-2xl p-6 mb-6 shadow-2xl">
+        {/* Machine Header with Toshi branding */}
+        <div className="flex items-center justify-center gap-2 mb-4 pb-4 border-b border-yellow-600/50">
+          <div className="relative w-10 h-10">
+            <Image
+              src="/slots/toshi-logo.svg"
+              alt="Toshi"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <span className="text-yellow-400 font-bold text-lg tracking-wider" style={{ fontFamily: 'var(--font-cinzel)' }}>
+            TOSHI GAMING
+          </span>
+          <div className="relative w-10 h-10">
+            <Image
+              src="/slots/toshi-logo.svg"
+              alt="Toshi"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
         {/* Reels */}
         <div className="flex gap-2 mb-4">
-          {reels.map((symbol, i) => (
+          {reels.map((symbolIndex, i) => (
             <div
               key={i}
-              className={`w-24 h-24 md:w-32 md:h-32 bg-white rounded-lg flex items-center justify-center text-5xl md:text-7xl border-4 border-gray-600 shadow-inner ${
+              className={`w-24 h-24 md:w-32 md:h-32 bg-black rounded-lg flex items-center justify-center border-4 border-gray-600 shadow-inner overflow-hidden ${
                 spinning ? 'animate-pulse' : ''
               }`}
               style={{
@@ -282,7 +332,14 @@ export default function DaycareSlotsPage() {
                 transform: spinning ? `translateY(${Math.random() * 10 - 5}px)` : 'none',
               }}
             >
-              {symbol}
+              <div className="relative w-20 h-20 md:w-28 md:h-28">
+                <Image
+                  src={SYMBOL_IMAGES[symbolIndex]}
+                  alt={SYMBOLS[symbolIndex]}
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -339,10 +396,42 @@ export default function DaycareSlotsPage() {
         Reset Balance to $100K
       </button>
 
-      {/* Disclaimer */}
+      {/* Disclaimer for satire game */}
       <div className="mt-8 text-center text-gray-600 text-xs max-w-md">
         <p>This is satire. No real money is involved.</p>
         <p className="mt-1">Fun fact: You always win. Just like real government contractors.</p>
+      </div>
+
+      {/* Sponsor Section with Clear Separation */}
+      <div className="mt-8 pt-6 border-t border-gray-700 w-full max-w-md">
+        <p className="text-gray-500 text-xs text-center mb-3 uppercase tracking-wider">
+          Sponsored Content
+        </p>
+
+        <a
+          href="https://toshi.bet/r/mulligann"
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-bold rounded-lg shadow-lg transition-all hover:scale-105"
+        >
+          <div className="relative w-8 h-8">
+            <Image
+              src="/slots/toshi-logo.svg"
+              alt="Toshi"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <span style={{ fontFamily: 'var(--font-cinzel)' }}>SIGN UP FOR A CHANCE TO WIN 1 BTC</span>
+        </a>
+
+        <div className="mt-3 text-center text-gray-500 text-[10px]">
+          <p>
+            <strong>DISCLOSURE:</strong> Affiliate link to third-party crypto casino.
+            Real gambling with real money. Must be of legal gambling age.
+            Gambling may be illegal in your jurisdiction. Gamble responsibly.
+          </p>
+        </div>
       </div>
 
     </div>
