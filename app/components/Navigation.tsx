@@ -42,6 +42,7 @@ const navItems: NavItem[] = [
       },
       { label: 'PPP Loans', href: '/ppp' },
       { label: 'SBA Loans', href: '/sba' },
+      { label: 'Government Budgets', href: '/budgets' },
       { label: 'Improper Payments', href: '/improper-payments' },
     ],
   },
