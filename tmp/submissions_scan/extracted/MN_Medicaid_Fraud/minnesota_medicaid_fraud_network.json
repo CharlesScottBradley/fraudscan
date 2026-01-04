@@ -1,0 +1,194 @@
+[
+  {
+    "Entity Name": "Moktar Hassan Aden",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Brilliant Minds Services LLC; Mustafa Dayib Ali; Khalid Ahmed Dayib; Abdifitah Mohamud Mohamed",
+    "Connection Type": "Shared Ownership; Shared Business Address; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-349 (MJD/JFD), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Mustafa Dayib Ali",
+    "Entity Type": "Individual - Co-Conspirator",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Brilliant Minds Services LLC; Moktar Hassan Aden; Khalid Ahmed Dayib; Abdifitah Mohamud Mohamed",
+    "Connection Type": "Shared Ownership; Shared Business Address; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-349 (MJD/JFD), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Khalid Ahmed Dayib",
+    "Entity Type": "Individual - Co-Conspirator",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Brilliant Minds Services LLC; Moktar Hassan Aden; Mustafa Dayib Ali; Abdifitah Mohamud Mohamed",
+    "Connection Type": "Shared Ownership; Shared Business Address; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-349 (MJD/JFD), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Abdifitah Mohamud Mohamed",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Brilliant Minds Services LLC; Foundation First Services LLC; Moktar Hassan Aden; Mustafa Dayib Ali; Khalid Ahmed Dayib; Pristine Health LLC",
+    "Connection Type": "Shared Ownership; Shared Business Address; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-349 (MJD/JFD), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Christopher Adesoji Falade",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Faladcare Inc.; Emmanuel Oluwademilade Falade",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers; Family Relationship (Father-Son)",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-351 (JMB/DJF), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Emmanuel Oluwademilade Falade",
+    "Entity Type": "Individual - Co-Conspirator",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Faladcare Inc.; Christopher Adesoji Falade",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers; Family Relationship (Father-Son)",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-351 (JMB/DJF), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Asad Ahmed Adow",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Leo Human Services LLC; Anwar Ahmed Adow",
+    "Connection Type": "Shared Ownership; Documented Business Transactions; Family Relationship (Brothers)",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-354 (ADM), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Anwar Ahmed Adow",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Liberty Plus LLC; Asad Ahmed Adow",
+    "Connection Type": "Shared Ownership; Documented Business Transactions; Family Relationship (Brothers)",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-353 (PAM), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Abdinajib Hassan Yussuf",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Star Autism Center LLC",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Asha Farhan Hassan",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud (Guilty Plea Dec 18 2025)",
+    "Connected Entities": "Star Autism Center LLC (related); Feeding Our Future",
+    "Connection Type": "Cross-Scheme Participation; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes; DOJ Press Release, September 24, 2025, https://www.justice.gov/usao-mn/pr/first-defendant-charged-autism-fraud-scheme-0"
+  },
+  {
+    "Entity Name": "Anthony Waddell Jefferson",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Lester Brown; Multiple Minnesota LLCs",
+    "Connection Type": "Shared Ownership; Documented Business Transactions; Business Partnership",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Lester Brown",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Anthony Waddell Jefferson; Multiple Minnesota LLCs",
+    "Connection Type": "Shared Ownership; Documented Business Transactions; Business Partnership",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Hassan Ahmed Hussein",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Pristine Health LLC; Ahmed Abdirashid Mohamed; Foundation First Services LLC",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Ahmed Abdirashid Mohamed",
+    "Entity Type": "Individual - Business Owner",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud",
+    "Connected Entities": "Pristine Health LLC; Hassan Ahmed Hussein; Foundation First Services LLC",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers; Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Kaamil Omar Sallah",
+    "Entity Type": "Individual - Business Owner (Fugitive)",
+    "Enforcement Record Source": "DOJ Charges - Wire Fraud (4 counts)",
+    "Connected Entities": "SafeLodgings Inc.",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Brilliant Minds Services LLC",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Moktar Hassan Aden; Mustafa Dayib Ali; Khalid Ahmed Dayib; Abdifitah Mohamud Mohamed; Foundation First Services LLC",
+    "Connection Type": "Shared Business Address (Griggs-Midway Building St. Paul); Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-349 (MJD/JFD), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Foundation First Services LLC",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Abdifitah Mohamud Mohamed; Brilliant Minds Services LLC; Pristine Health LLC; Hassan Ahmed Hussein; Ahmed Abdirashid Mohamed",
+    "Connection Type": "Shared Business Address (Griggs-Midway Building St. Paul); Documented Business Transactions (Facilitated Fraud)",
+    "Source Citation": "DOJ Press Release, September 18, 2025 & December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Faladcare Inc.",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Christopher Adesoji Falade; Emmanuel Oluwademilade Falade",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-351 (JMB/DJF), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Leo Human Services LLC",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Asad Ahmed Adow; Anwar Ahmed Adow",
+    "Connection Type": "Shared Ownership (Brothers); Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-354 (ADM), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Liberty Plus LLC",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Anwar Ahmed Adow; Asad Ahmed Adow",
+    "Connection Type": "Shared Ownership (Brothers); Documented Business Transactions",
+    "Source Citation": "DOJ Press Release, September 18, 2025, U.S. Attorney's Office, District of Minnesota, Case 25-cr-353 (PAM), https://www.justice.gov/usao-mn/pr/defendants-charged-first-wave-housing-stabilization-fraud-cases"
+  },
+  {
+    "Entity Name": "Star Autism Center LLC",
+    "Entity Type": "Business Entity - EIDBI Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Abdinajib Hassan Yussuf; Asha Farhan Hassan (related)",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Pristine Health LLC",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Hassan Ahmed Hussein; Ahmed Abdirashid Mohamed; Foundation First Services LLC",
+    "Connection Type": "Shared Ownership; Documented Business Transactions (Used Foundation First for Fake Paperwork)",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "SafeLodgings Inc.",
+    "Entity Type": "Business Entity - HSS Provider",
+    "Enforcement Record Source": "Fraudulent Entity Used in Medicaid Fraud",
+    "Connected Entities": "Kaamil Omar Sallah",
+    "Connection Type": "Shared Ownership; Shared Principals/Officers",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  },
+  {
+    "Entity Name": "Ultimate Home Health Services LLC",
+    "Entity Type": "Business Entity - ICS Provider",
+    "Enforcement Record Source": "Under Federal Investigation (Search Warrant Executed)",
+    "Connected Entities": "Unknown Principals",
+    "Connection Type": "Documented Fraud in Court Filings",
+    "Source Citation": "DOJ Press Release, December 18, 2025, U.S. Attorney's Office, District of Minnesota, https://www.justice.gov/usao-mn/pr/six-additional-defendants-charged-one-defendant-pleads-guilty-ongoing-fraud-schemes"
+  }
+]

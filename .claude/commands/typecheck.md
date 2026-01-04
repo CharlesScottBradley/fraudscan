@@ -1,0 +1,1 @@
+Run TypeScript type checking with `npx tsc --noEmit` and report any type errors found. List files and line numbers for each error.

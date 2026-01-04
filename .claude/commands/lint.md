@@ -1,0 +1,1 @@
+Run the linter (`npm run lint`) and report any issues. Offer to auto-fix what can be fixed.

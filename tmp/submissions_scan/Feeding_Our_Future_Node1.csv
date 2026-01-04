@@ -1,0 +1,22 @@
+Entity Name,Entity Type,Enforcement Record Source,Connected Entities,Connection Type,Source Citation
+Feeding Our Future,Nonprofit Org,"https://www.justice.gov/archives/opa/pr/us-attorney-announces-federal-charges-against-47-defendants-250-million-feeding-our-future : United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Salim Ahmed Said,Beneficiary/partner,
+Salim Ahmed Said,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Safari Restaurant,Co-owner,https://sahanjournal.com/public-safety/feeding-our-future-suspect-threatened-to-kill-witness/
+Safari Restaurant,Retail Business,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Abdulkadir Nur Salah,Co-owner,https://sahanjournal.com/public-safety/feeding-our-future-suspect-threatened-to-kill-witness/
+Abdulkadir Nur Salah,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Abdi Nur Salah,Brother,https://tittlepress.com/trending/1553954/
+Abdi Nur Salah,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Stigma-Free International,Owner/Registrant,https://www.justice.gov/usao-mn/pr/former-minneapolis-mayoral-aide-and-safari-restaurant-co-owner-both-plead-guilty-250
+Stigma-Free International,Nonprofit Org,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","Abdinasir Mahamed Abshir, Asad Mohamed Abshir, Hamdi Hussein Omar, Abdikadir Ainanshe Mohamud, Ahmed Mohamed Artan",Employees,https://sahanjournal.com/news/feeding-our-future-indictments-who-charged-food-fraud-minnesota/
+Abdinasir Mahamed Abshir,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","Horseed, Calikamin","Co-owner, Owner",https://www.justice.gov/usao-mn/pr/thirty-seventh-feeding-our-future-defendant-pleads-guilty-obstruction-justice
+Asad Mohamed Abshir,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","Horseed,Santana LLC","Co-owner, Owner",https://www.justice.gov/usao-mn/pr/thirty-seventh-feeding-our-future-defendant-pleads-guilty-obstruction-justice
+Hamdi Hussein Omar,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","Feeding Our Youth, Omar Management",Owner,https://www.justice.gov/usao-mn/pr/three-more-plead-guilty-feeding-our-future-fraud-scheme
+Abdikadir Ainanshe Mohamud,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","Tunyar Trading, Five A’s Project LLC","Owner, Co-owner",https://www.justice.gov/usao-mn/pr/minneapolis-man-pleads-guilty-250-million-feeding-our-future-fraud-scheme
+Ahmed Mohamed Artan,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","Olive Management, Optimum Community Services + Five A’s Project LLC",Owner + Co-owner,https://www.hometownsource.com/sun_post/free/golden-valley-man-guilty-of-1-6-million-fraud-from-feeding-our-future-scheme/article_bb7ed370-409f-47d1-932f-c6712fdb2fe1.html
+Five A’s Project LLC,Shell Company,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Abdihakim Ali Ahmed,Co-owner,https://www.americanexperiment.org/feeding-our-future-46th-conviction/
+Abdihakim Ali Ahmed,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","1130 Holdings, ASA Limited","Owner, Co-owner",https://www.justice.gov/usao-mn/pr/minneapolis-man-pleads-guilty-forty-fifth-conviction-250-million-feeding-our-future
+ASA Limited,Shell Company,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22",Ahmed Abdullahi Ghedi,Co-owner,https://www.irs.gov/compliance/criminal-investigation/minneapolis-man-pleads-guilty-forty-seventh-conviction-in-the-feeding-our-future-fraud-scheme
+Ahmed Abdullahi Ghedi,Individual,"United States v. Aimee Marie Bock, et al., 22-CR-223 (NEB/TNL), District of Minnesota, 9/22","AG Limited, Cosmopolitan Business Properties",Owner,https://www.justice.gov/usao-mn/pr/minneapolis-man-pleads-guilty-forty-seventh-conviction-feeding-our-future-fraud-scheme
+,,,,,
+,,,,*All Connection types include ,
+,,,,both ‘business transactions',
+,,,,and ‘shared principles',
+,,,,(the above describes the nature,
+,,,,of the shared principles/relationship),

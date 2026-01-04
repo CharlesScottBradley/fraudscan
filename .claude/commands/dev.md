@@ -1,0 +1,1 @@
+Start the Next.js development server on port 3000. If port 3000 is in use, kill the existing process first. Then confirm the server is running.

@@ -1,0 +1,1 @@
+Search the codebase for TODO, FIXME, HACK, and XXX comments. List them grouped by file with line numbers. Summarize the most important ones.

@@ -1,0 +1,16 @@
+{
+  "rules": [
+    "No monkey patches - fix issues at the source, not with workarounds",
+    "Always run typecheck after making TypeScript changes",
+    "Always run build before saying a task is complete",
+    "Prefer editing existing files over creating new ones",
+    "Use existing patterns in the codebase - don't introduce new paradigms without discussion",
+    "No console.log left in production code - use proper logging or remove",
+    "All affiliate/sponsor links must have rel='sponsored' and proper disclaimers",
+    "Test localStorage features in incognito to verify fresh state behavior",
+    "When fixing a bug, understand the root cause first - don't just suppress symptoms",
+    "If something seems wrong, investigate before proceeding",
+    "Commit messages should explain WHY, not just WHAT",
+    "No hardcoded secrets or API keys - use environment variables"
+  ]
+}

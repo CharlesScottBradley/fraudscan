@@ -247,7 +247,7 @@
       "links": [
         { "name": "Transparent Idaho", "url": "https://transparent.idaho.gov/", "category": "fiscal", "description": "State spending and payroll" },
         { "name": "Secretary of State", "url": "https://sosbiz.idaho.gov/", "category": "business", "description": "Business entity search" },
-        { "name": "IDHW Childcare", "url": "https://healthandwelfare.idaho.gov/services-programs/children-families/child-care", "category": "childcare", "description": "Childcare licensing" },
+        { "name": "IDHW Childcare", "url": "https://healthandwelfare.idaho.gov/services-programs/child-care", "category": "childcare", "description": "Childcare licensing" },
         { "name": "Sunshine Reports", "url": "https://sos.idaho.gov/elect/finance/index.html", "category": "political", "description": "Campaign finance database" }
       ]
     },

@@ -1,0 +1,1 @@
+Run `npm run build` and report any TypeScript or build errors. If there are errors, list them clearly and offer to fix them.

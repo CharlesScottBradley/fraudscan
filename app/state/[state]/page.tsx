@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import UnifiedStateMap from '../../components/UnifiedStateMap';
 import StateDataTable from './StateDataTable';
+import BudgetSection from './BudgetSection';
 import EmailSignup from '../../components/EmailSignup';
 
 // All US states with map centers
@@ -550,6 +551,12 @@ export default async function StatePage({ params }: PageProps) {
         initialProviderCount={stats.providerCount}
         initialPPPCount={fundingTotals.pppCount}
         initialGrantCount={fundingTotals.grantCount}
+      />
+
+      {/* Budget Documents Section */}
+      <BudgetSection
+        stateCode={state.toUpperCase()}
+        stateName={stateInfo.name}
       />
 
       {/* Email Signup - state-specific */}

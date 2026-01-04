@@ -1,0 +1,1 @@
+Run Prisma migrations. Use `npx prisma migrate dev` for development or `npx prisma migrate deploy` for production. Ask which environment if unclear.

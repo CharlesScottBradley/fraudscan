@@ -1,0 +1,299 @@
+[
+    {
+        "Entity Name": "Andrew Chmiel",
+        "Entity Type": "Business Owner",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20250520 | DOJ Press Release April 9 2019",
+        "Connected Entities": [
+            "Video Doctor Network",
+            "Telemedicine Companies",
+            "DME Suppliers"
+        ],
+        "Connection Type": [
+            "Documented Business Transactions (kickback payments)",
+            "Shared Business Partnerships"
+        ],
+        "Source Citation": "DOJ Press Release, April 9, 2019, District of South Carolina; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Leah Hagen",
+        "Entity Type": "Business Owner",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20220519 | DOJ Press Release April 9 2019",
+        "Connected Entities": [
+            "Michael Hagen",
+            "Two DME Companies"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (co-owner)",
+            "Shared Principals/Officers"
+        ],
+        "Source Citation": "DOJ Press Release, April 9, 2019, Northern District of Texas; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Michael Hagen",
+        "Entity Type": "Business Owner",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20220519 | DOJ Press Release April 9 2019",
+        "Connected Entities": [
+            "Leah Hagen",
+            "Two DME Companies"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (co-owner)",
+            "Shared Principals/Officers"
+        ],
+        "Source Citation": "DOJ Press Release, April 9, 2019, Northern District of Texas; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Najib Jabbour",
+        "Entity Type": "Business Owner",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20220519 | DOJ Press Release April 9 2019",
+        "Connected Entities": [
+            "Darin Flashberg",
+            "Seven DME Companies"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (co-owner)",
+            "Shared Principals/Officers"
+        ],
+        "Source Citation": "DOJ Press Release, April 9, 2019, Central District of California; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Daphne Jenkins",
+        "Entity Type": "Nurse Practitioner",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20240919 | DOJ Sentencing April 10 2024",
+        "Connected Entities": [
+            "Telemedicine Company",
+            "Telemarketing Companies",
+            "DME Suppliers"
+        ],
+        "Connection Type": [
+            "Documented Business Transactions (paid by telemedicine company",
+            "orders sold to DME suppliers)"
+        ],
+        "Source Citation": "DOJ Press Release, April 11, 2024, District of Massachusetts, https://www.justice.gov/usao-ma/pr/telemedicine-nurse-practitioner-sentenced-78-million-durable-medical-equipment-fraud; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Randy Swackhammer",
+        "Entity Type": "Physician",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20221220 | DOJ Press Release April 9 2019",
+        "Connected Entities": [
+            "Telemedicine Company",
+            "DME Suppliers"
+        ],
+        "Connection Type": [
+            "Documented Business Transactions (worked for telemedicine company",
+            "wrote orders for DME suppliers)"
+        ],
+        "Source Citation": "DOJ Press Release, April 9, 2019, Eastern District of Pennsylvania; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Jeremy Waxman",
+        "Entity Type": "Business Owner",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20230518 | DOJ Press Release January 30 2023",
+        "Connected Entities": [
+            "Dean Zusmer",
+            "Lawrence Alexander",
+            "DME Companies",
+            "Marketers"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (co-owner with Alexander)",
+            "Documented Business Transactions (paid kickbacks to marketers",
+            "acquired patient referrals)"
+        ],
+        "Source Citation": "DOJ Press Release, January 30, 2023, Press Release Number 23-117, https://www.justice.gov/archives/opa/pr/two-florida-doctors-convicted-31-million-medicare-fraud-scheme; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Dean Zusmer",
+        "Entity Type": "Chiropractor",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20230920 | DOJ Conviction January 30 2023",
+        "Connected Entities": [
+            "Jeremy Waxman",
+            "Lawrence Alexander",
+            "DME Company",
+            "Marketers",
+            "Telemedicine Companies"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned one of four DME companies)",
+            "Documented Business Transactions (paid kickbacks to marketers and telemedicine companies)"
+        ],
+        "Source Citation": "DOJ Press Release, January 30, 2023, Press Release Number 23-117, https://www.justice.gov/archives/opa/pr/two-florida-doctors-convicted-31-million-medicare-fraud-scheme; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Lawrence Alexander",
+        "Entity Type": "Physician (Orthopedic Surgeon)",
+        "Enforcement Record Source": "OIG LEIE Exclusion 20240320 | DOJ Conviction January 30 2023",
+        "Connected Entities": [
+            "Jeremy Waxman",
+            "Dean Zusmer",
+            "DME Company",
+            "Family Member (nominee)"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (co-owner with Waxman)",
+            "Shared Principals/Officers (concealed ownership using family member's name)"
+        ],
+        "Source Citation": "DOJ Press Release, January 30, 2023, Press Release Number 23-117, https://www.justice.gov/archives/opa/pr/two-florida-doctors-convicted-31-million-medicare-fraud-scheme; HHS-OIG LEIE Database, accessed January 2, 2026"
+    },
+    {
+        "Entity Name": "Ankita Singh",
+        "Entity Type": "Physician",
+        "Enforcement Record Source": "DOJ Conviction February 29 2024 | DOJ Sentencing July 19 2024",
+        "Connected Entities": [
+            "Two Telemedicine Companies",
+            "Telemarketers",
+            "DME Suppliers"
+        ],
+        "Connection Type": [
+            "Documented Business Transactions (worked as independent contractor for telemedicine companies",
+            "signed orders for DME suppliers)"
+        ],
+        "Source Citation": "DOJ Press Release, July 19, 2024, Northern District of Ohio, https://www.justice.gov/usao-ndoh/pr/ohio-medical-doctor-sentenced-prison-healthcare-fraud-scheme"
+    },
+    {
+        "Entity Name": "Video Doctor USA",
+        "Entity Type": "Telemedicine Company",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019 | DOJ Press Release September 6 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry",
+            "Elliot Loewenstern",
+            "Telemed Health Group LLC"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned by Stockett)",
+            "Shared Principals/Officers (Stockett as owner",
+            "Harry as co-conspirator",
+            "Loewenstern as VP Marketing)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019; DOJ Press Release, September 6, 2019, https://www.justice.gov/archives/opa/pr/owner-and-chief-executive-officer-telemedicine-company-pleads-guilty-424-million-conspiracy"
+    },
+    {
+        "Entity Name": "Telemed Health Group LLC",
+        "Entity Type": "Telemedicine Company",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019 | DOJ Press Release September 6 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry",
+            "Video Doctor USA"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned by Stockett",
+            "collectively Video Doctor Network)",
+            "Shared Principals/Officers (Stockett as CEO)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019; DOJ Press Release, September 6, 2019"
+    },
+    {
+        "Entity Name": "PCS CC LLC",
+        "Entity Type": "Call Center Company",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry",
+            "Droneza Consulting"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)",
+            "Documented Business Transactions (transferred kickback payments to Droneza Consulting)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019; DOJ Press Release, September 6, 2019"
+    },
+    {
+        "Entity Name": "Droneza Consulting",
+        "Entity Type": "Shell Company",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019 | DOJ Press Release September 6 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry",
+            "PCS CC LLC",
+            "Telemed Health Group LLC"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)",
+            "Documented Business Transactions (money laundering - received funds from PCS CC LLC",
+            "transferred to AffordADoc)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019; DOJ Press Release, September 6, 2019"
+    },
+    {
+        "Entity Name": "Les Raphael LLC",
+        "Entity Type": "Business Entity",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019, Page 2"
+    },
+    {
+        "Entity Name": "NPC Consulting LLC",
+        "Entity Type": "Business Entity",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019, Page 2"
+    },
+    {
+        "Entity Name": "SCPL",
+        "Entity Type": "Business Entity",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019, Page 2"
+    },
+    {
+        "Entity Name": "Best Dialer LLC",
+        "Entity Type": "Business Entity",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019, Page 2"
+    },
+    {
+        "Entity Name": "Affordadoc",
+        "Entity Type": "Business Entity",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry",
+            "Telemed Health Group LLC"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019, Page 2"
+    },
+    {
+        "Entity Name": "Procall",
+        "Entity Type": "Business Entity",
+        "Enforcement Record Source": "DOJ Indictment April 5 2019",
+        "Connected Entities": [
+            "Lester Stockett",
+            "Creaghan Harry",
+            "PCS CC LLC"
+        ],
+        "Connection Type": [
+            "Shared Entity Ownership (owned/controlled by Stockett and Harry)"
+        ],
+        "Source Citation": "DOJ Indictment, Case No. 2018R00919, District of New Jersey, April 5, 2019, Page 2"
+    }
+]

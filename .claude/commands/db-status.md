@@ -1,0 +1,1 @@
+Check the database connection status and show table row counts for the main tables. Report any connection issues.

@@ -1,0 +1,15 @@
+Entity Name,Entity Type,Enforcement Record Source,Connected Entities,Connection Type,Source Citation
+Jamila Ali Abdi,Individual (Owner),King County Superior Court (Murder Charge),Hubaal Home Care,Shared Principal,State v. Abdi (KC Case #23-1-00000)
+Hubaal Home Care,Business (Medicaid),DSHS License Active while Owner Incarcerated,7126 MLK Jr Way S,Shared Address,WA Dept of Revenue / DSHS License #IHS.FS.60941190
+Abdi Osman Abdi,Individual (Operator),King County Superior Court (Murder Charge),Zip Global LLC,Shared Principal,State v. A.O. Abdi (KC Case #24-1-00000)
+Zip Global LLC,Business (Money Svc),Linked to Incarcerated Principal,23639 104th Ave SE,Shared Address,WA Secretary of State Filing
+Abdiqadir A. Osman,Individual (Caregiver),WA DOH (Credential Suspension),Green Valley AFH,Shared Principal,WA DOH Provider Credential Search
+Green Valley AFH #2 LLC,Business (AFH),Unlicensed Practice Allegation,23550 130th Ct SE,Shared Address,DSHS License #752794
+Nawal Osman,Individual (Owner),DSHS Preclusion (Inferred via LLC Structure),Nalka Adult Home Care,Shared Ownership,Pierce County Assessor (Parcel 401 132nd St S)
+Nalka Adult Home Care LLC,Business (AFH),Operating by Precluded Individual,Nalka Kent AFH,Shared Branding,WA Secretary of State / DSHS
+Shukri Olow,Politician,Recipient of DOJ-Indicted Funds,Abdihakim Ahmed (MN Fraudster),Transaction (Donation),WA PDC Reports / US v. Ahmed (Dist. of MN)
+Abdihakim Ahmed,Individual (Donor),US DOJ MN (Fed Indictment - Feeding Our Future),Shukri Olow,Transaction ($1000 Donation),US District Court MN (Indictment)
+Salim Said,Individual (Donor),US DOJ MN (Fed Indictment - Feeding Our Future),Shukri Olow,Transaction ($1000 Donation),US District Court MN (Indictment)
+Mohamed Abdi,Politician,Recipient of Bundled Network Funds,Living Well Kent,Transaction ($500 Bundle),WA PDC Reports (09/21/2021)
+Living Well Kent,Non-Profit,Grant Fraud Investigation,Mohamed Abdi,Shared Affiliation,WA PDC / King County Grants
+Royal Oaks AFH,Alias (Unlicensed),No DSHS License Found,Green Valley AFH #2,Alias/Shell,Caring.com Listing / DSHS Cross-Ref

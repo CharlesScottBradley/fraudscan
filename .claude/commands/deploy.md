@@ -1,0 +1,1 @@
+Push the current branch to origin to trigger a Vercel deployment. First run git status to show what will be pushed, then push and provide the Vercel deployment URL.
