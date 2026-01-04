@@ -121,6 +121,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'mn-medicaid-fraud',
+    title: 'MN Medicaid Fraud Wave',
+    description: '$9B+ in fraud across FOF, housing, and autism programs',
+    href: '/investigation/mn-medicaid-fraud',
+    stats: '98 charged',
+    isNew: true
+  },
+  {
     id: 'fraser-credentials',
     title: 'Fraser Credential Fraud',
     description: 'MN\'s largest autism provider has staff with unverifiable credentials',
