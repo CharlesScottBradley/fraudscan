@@ -472,8 +472,8 @@ export default function MNMedicaidFraudPage() {
       <div className="border-t border-gray-800 pt-6">
         <h3 className="text-sm font-medium text-gray-400 mb-4">Related</h3>
         <div className="flex flex-wrap gap-4 text-sm">
-          <Link href="/investigation/fraser-credentials" className="text-gray-400 hover:text-green-400">
-            Fraser Credential Fraud
+          <Link href="/investigation/mn-oh-wa" className="text-gray-400 hover:text-green-400">
+            Three-State Analysis
           </Link>
           <span className="text-gray-700">|</span>
           <Link href="/investigation" className="text-gray-400 hover:text-green-400">

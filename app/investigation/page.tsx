@@ -129,19 +129,11 @@ const INVESTIGATION_TYPES = [
     isNew: true
   },
   {
-    id: 'fraser-credentials',
-    title: 'Fraser Credential Fraud',
-    description: 'MN\'s largest autism provider has staff with unverifiable credentials',
-    href: '/investigation/fraser-credentials',
-    stats: '6 unverified',
-    isNew: true
-  },
-  {
     id: 'mn-oh-wa',
     title: 'Three-State Analysis',
     description: 'Deep dive into Minnesota, Ohio, and Washington funding data',
     href: '/investigation/mn-oh-wa',
-    stats: '$87B tracked'
+    stats: '$655B tracked'
   },
   {
     id: 'address-clusters',
