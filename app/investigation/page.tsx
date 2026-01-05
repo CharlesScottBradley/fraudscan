@@ -121,12 +121,20 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'unemployed-army',
+    title: 'The Unemployed Army',
+    description: '$1.75B in anomalous donations from "NOT EMPLOYED" donors',
+    href: '/investigation/unemployed-army',
+    stats: '16.3M donations',
+    isNew: true
+  },
+  {
     id: 'mn-medicaid-fraud',
     title: 'MN Medicaid Fraud Wave',
     description: '$9B+ in fraud across FOF, housing, and autism programs',
     href: '/investigation/mn-medicaid-fraud',
     stats: '98 charged',
-    isNew: true
+    isNew: false
   },
   {
     id: 'mn-oh-wa',

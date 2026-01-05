@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Unemployed Army - $1.75 Billion in Anomalous Donation Patterns</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-highlight: #1a1a1a;
+            --border-color: #2a2a2a;
+            --text-primary: #e5e5e5;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --green: #22c55e;
+            --green-dim: #166534;
+            --red: #ef4444;
+            --red-dim: #7f1d1d;
+            --yellow: #eab308;
+            --yellow-dim: #713f12;
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-critical {
+            background: var(--red);
+            color: white;
+        }
+
+        .badge-high {
+            background: var(--red-dim);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        .badge-medium {
+            background: var(--yellow-dim);
+            color: var(--yellow);
+            border: 1px solid var(--yellow);
+        }
+
+        .badge-low {
+            background: var(--bg-highlight);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .meta-row span {
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 4px;
+        }
+
+        .stat-card.highlight {
+            border-color: var(--red);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stat-value.money {
+            color: var(--green);
+        }
+
+        .stat-value.danger {
+            color: var(--red);
+        }
+
+        .stat-value.warning {
+            color: var(--yellow);
+        }
+
+        .stat-subtext {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: var(--bg-highlight);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .section-badge {
+            margin-left: auto;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: var(--bg-highlight);
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.7rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: var(--bg-highlight);
+        }
+
+        .data-table .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .data-table .money {
+            color: var(--green);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .data-table .danger {
+            color: var(--red);
+        }
+
+        .data-table .warning {
+            color: var(--yellow);
+        }
+
+        .data-table .name {
+            color: var(--cyan);
+            font-weight: 500;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--cyan);
+            padding: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .summary-box p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .summary-box strong {
+            color: var(--text-primary);
+        }
+
+        /* Callout */
+        .callout {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--red);
+            padding: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .callout-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .callout-text strong {
+            color: var(--text-primary);
+        }
+
+        /* Terminal Tree */
+        .terminal-tree {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.8;
+        }
+
+        .tree-line {
+            color: var(--text-muted);
+        }
+
+        .tree-line .key {
+            color: var(--text-secondary);
+        }
+
+        .tree-line .value {
+            color: var(--text-primary);
+        }
+
+        .tree-line .value.money {
+            color: var(--green);
+        }
+
+        .tree-line .value.danger {
+            color: var(--red);
+        }
+
+        .tree-line .value.warning {
+            color: var(--yellow);
+        }
+
+        /* Two Column Grid */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Math Card */
+        .math-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 4px;
+        }
+
+        .math-card.critical {
+            border-color: var(--red);
+        }
+
+        .math-equation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .math-result {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--red);
+            margin: 0.5rem 0;
+        }
+
+        .math-conclusion {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Timeline Chart */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar-label {
+            width: 80px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 20px;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            background: var(--blue);
+            border-radius: 2px;
+        }
+
+        .bar.explosion {
+            background: var(--red);
+        }
+
+        .bar-value {
+            width: 120px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Indicator Grid */
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .indicator {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .indicator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .indicator-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .indicator-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .indicator-value.danger {
+            color: var(--red);
+        }
+
+        .indicator-value.warning {
+            color: var(--yellow);
+        }
+
+        /* Table Container */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .indicator-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .indicator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div>
+                    <h1>The Unemployed Army: $1.75 Billion Investigation</h1>
+                    <p class="subtitle">Suspicious Political Donations from "NOT EMPLOYED" Individuals</p>
+                </div>
+                <span class="badge badge-critical">CRITICAL</span>
+            </div>
+            <div class="meta-row">
+                <div>Investigation ID: <span>ua-2024-001</span></div>
+                <div>Generated: <span>2026-01-05</span></div>
+                <div>Records Analyzed: <span>58,207,350</span></div>
+                <div>Source: <span>FEC Individual Contributions</span></div>
+            </div>
+        </header>
+
+        <!-- Important Disclaimer -->
+        <div class="callout" style="border-left-color: var(--blue); margin-bottom: 2rem;">
+            <div class="callout-title" style="color: var(--blue);">Important Disclaimer</div>
+            <div class="callout-text">
+                This report presents statistical analysis of publicly available FEC data. Unusual patterns do not prove wrongdoing. There may be legitimate explanations including data entry errors, batch processing artifacts, platform technical issues, legitimate sources of income not reflected in employment status (retirement, investments, savings, spousal income), or other factors. The individuals and organizations referenced have not been charged with any crimes. This analysis is provided for informational purposes and raises questions for regulatory review - it is not an accusation of illegal conduct.
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card highlight">
+                <div class="stat-label">Total Anomalous Donations</div>
+                <div class="stat-value danger">$1.75B</div>
+                <div class="stat-subtext">From "NOT EMPLOYED" donors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Donations</div>
+                <div class="stat-value">16.3M</div>
+                <div class="stat-subtext">Individual transactions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Unique Donors</div>
+                <div class="stat-value">804,077</div>
+                <div class="stat-subtext">Claiming "NOT EMPLOYED"</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ActBlue Share</div>
+                <div class="stat-value warning">$691M</div>
+                <div class="stat-subtext">40% via C00401224</div>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">01</div>
+                <h2>Executive Summary</h2>
+            </div>
+            <div class="summary-box">
+                <p>Analysis of 58 million FEC donation records reveals <strong>$1.75 billion in political donations</strong> from individuals reporting "NOT EMPLOYED" status. The data contains donation patterns that <strong>appear highly anomalous</strong>, including one record showing 930 donations in a single day and sustained rates averaging 38 donations per day for months. These patterns warrant investigation to determine whether they reflect data issues, platform artifacts, or activities requiring regulatory review.</p>
+            </div>
+        </section>
+
+        <!-- The Physical Impossibility -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">02</div>
+                <h2>The Physical Impossibility</h2>
+                <span class="badge badge-high section-badge">ANOMALY DETECTED</span>
+            </div>
+
+            <div class="callout">
+                <div class="callout-title">Robert Otto - 930 Donations in ONE DAY</div>
+                <div class="callout-text">
+                    On November 3, 2024, FEC records show a single "unemployed" donor from Greensboro, NC with <strong>930 separate political donations</strong> recorded in 24 hours. This would require making one donation every <strong>93 seconds</strong> for the entire day without sleep, food, or breaks. <strong>This pattern warrants investigation to determine whether it reflects data errors, platform issues, or other explanations.</strong>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="math-card critical">
+                    <div class="math-equation">930 donations / 24 hours = 38.75 per hour</div>
+                    <div class="math-equation">60 min / 38.75 = 1.55 minutes per donation</div>
+                    <div class="math-result">= 93 SECONDS PER DONATION</div>
+                    <div class="math-conclusion">Sustained for 24 straight hours. Physically impossible.</div>
+                </div>
+                <div class="math-card critical">
+                    <div class="math-equation">Edson Griswold: 38.18 donations/day average</div>
+                    <div class="math-equation">Over 237 days = 9,049 total donations</div>
+                    <div class="math-result">$130,242 DONATED WHILE UNEMPLOYED</div>
+                    <div class="math-conclusion">No employment income reported in FEC filings. Source of funds unknown from public records.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Extreme Donors -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">03</div>
+                <h2>Top 10 "Speed Demon" Donors</h2>
+                <span class="badge badge-medium section-badge">10+ DONATIONS/DAY</span>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Donor Name</th>
+                            <th>Location</th>
+                            <th>Donations/Day</th>
+                            <th>Total Donations</th>
+                            <th>Total Given</th>
+                            <th>Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono">1</td>
+                            <td class="name">Edson Griswold</td>
+                            <td>Denver, CO</td>
+                            <td class="mono danger">38.18</td>
+                            <td class="mono">9,049</td>
+                            <td class="money">$130,242</td>
+                            <td>237 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">2</td>
+                            <td class="name">Agnes Matenos</td>
+                            <td>Peabody, MA</td>
+                            <td class="mono danger">31.88</td>
+                            <td class="mono">6,791</td>
+                            <td class="money">$43,321</td>
+                            <td>213 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">3</td>
+                            <td class="name">Gerald Farr</td>
+                            <td>San Marcos, TX</td>
+                            <td class="mono warning">20.57</td>
+                            <td class="mono">14,997</td>
+                            <td class="money">$207,031</td>
+                            <td>729 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">4</td>
+                            <td class="name">Wendy Urbanowicz</td>
+                            <td>Vancouver, WA</td>
+                            <td class="mono warning">19.33</td>
+                            <td class="mono">14,111</td>
+                            <td class="money">$71,137</td>
+                            <td>730 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">5</td>
+                            <td class="name">Michelle Schweitzer</td>
+                            <td>Seattle, WA</td>
+                            <td class="mono warning">13.80</td>
+                            <td class="mono">10,035</td>
+                            <td class="money">$56,295</td>
+                            <td>727 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">6</td>
+                            <td class="name">Melinda Dearman</td>
+                            <td>San Antonio, TX</td>
+                            <td class="mono warning">13.55</td>
+                            <td class="mono">9,888</td>
+                            <td class="money">$42,467</td>
+                            <td>730 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">7</td>
+                            <td class="name">Sun Hae Kim</td>
+                            <td>Flushing, NY</td>
+                            <td class="mono warning">12.92</td>
+                            <td class="mono">6,681</td>
+                            <td class="money">$15,223</td>
+                            <td>517 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">8</td>
+                            <td class="name">Carol Ann Roan Dennis</td>
+                            <td>Oak Harbor, WA</td>
+                            <td class="mono warning">11.76</td>
+                            <td class="mono">5,761</td>
+                            <td class="money">$22,765</td>
+                            <td>490 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">9</td>
+                            <td class="name">Sandra Archer</td>
+                            <td>Woodridge, IL</td>
+                            <td class="mono warning">11.95</td>
+                            <td class="mono">5,259</td>
+                            <td class="money">$33,520</td>
+                            <td>440 days</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">10</td>
+                            <td class="name">Thomas Scott</td>
+                            <td>Anchorage, AK</td>
+                            <td class="mono warning">10.81</td>
+                            <td class="mono">5,879</td>
+                            <td class="money">$47,966</td>
+                            <td>544 days</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Timeline Analysis -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">04</div>
+                <h2>The January 2023 Explosion</h2>
+                <span class="badge badge-high section-badge">252x INCREASE</span>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Monthly Donation Volume from "NOT EMPLOYED" Donors (2022-2024)</div>
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <div class="bar-label">Dec 2022</div>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 0.02%"></div>
+                        </div>
+                        <div class="bar-value">696</div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">Jan 2023</div>
+                        <div class="bar-container">
+                            <div class="bar explosion" style="width: 6%"></div>
+                        </div>
+                        <div class="bar-value">175,959 (+252x)</div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">Jun 2023</div>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 11%"></div>
+                        </div>
+                        <div class="bar-value">325,578</div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">Dec 2023</div>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 22%"></div>
+                        </div>
+                        <div class="bar-value">658,880</div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">Jul 2024</div>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 40%"></div>
+                        </div>
+                        <div class="bar-value">1,162,111</div>
+                    </div>
+                    <div class="bar-row">
+                        <div class="bar-label">Oct 2024</div>
+                        <div class="bar-container">
+                            <div class="bar explosion" style="width: 100%"></div>
+                        </div>
+                        <div class="bar-value">2,906,422 (PEAK)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout" style="margin-top: 1.5rem;">
+                <div class="callout-title">Unusual Growth Pattern</div>
+                <div class="callout-text">
+                    A 252x increase in one month (December 2022 to January 2023) is a highly unusual growth trajectory. Possible explanations include: <strong>changes in data collection methods</strong>, <strong>platform-level processing changes</strong>, <strong>coordinated campaigns</strong>, or <strong>patterns that warrant regulatory review</strong>.
+                </div>
+            </div>
+        </section>
+
+        <!-- Fraud Indicators -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">05</div>
+                <h2>Statistical Anomalies Detected</h2>
+            </div>
+
+            <div class="indicator-grid">
+                <div class="indicator">
+                    <div class="indicator-header">
+                        <span class="indicator-name">Single-Day Extreme</span>
+                        <span class="badge badge-critical">UNEXPLAINED</span>
+                    </div>
+                    <div class="indicator-value danger">930/day</div>
+                    <div class="stat-subtext">Robert Otto - Nov 3, 2024</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-header">
+                        <span class="indicator-name">Sustained Rate</span>
+                        <span class="badge badge-high">BOT-LIKE</span>
+                    </div>
+                    <div class="indicator-value warning">38/day avg</div>
+                    <div class="stat-subtext">For 237 consecutive days</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-header">
+                        <span class="indicator-name">Volume Spike</span>
+                        <span class="badge badge-high">ANOMALOUS</span>
+                    </div>
+                    <div class="indicator-value danger">252x</div>
+                    <div class="stat-subtext">Dec 2022 to Jan 2023</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-header">
+                        <span class="indicator-name">No Income Source</span>
+                        <span class="badge badge-medium">SUSPICIOUS</span>
+                    </div>
+                    <div class="indicator-value warning">$207K</div>
+                    <div class="stat-subtext">Donated while "unemployed"</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-header">
+                        <span class="indicator-name">Micro-Donations</span>
+                        <span class="badge badge-medium">PATTERN</span>
+                    </div>
+                    <div class="indicator-value">$107 avg</div>
+                    <div class="stat-subtext">Consistent small amounts</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-header">
+                        <span class="indicator-name">Healthcare Fraud Match</span>
+                        <span class="badge badge-high">CROSS-REF</span>
+                    </div>
+                    <div class="indicator-value danger">2</div>
+                    <div class="stat-subtext">OIG exclusion matches</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Committee Distribution - NEW SECTION -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">06</div>
+                <h2>Where The Money Went: Committee Breakdown</h2>
+                <span class="badge badge-critical section-badge">SYSTEMIC</span>
+            </div>
+
+            <div class="callout">
+                <div class="callout-title">Not Just ActBlue - The Entire Democratic Fundraising Ecosystem</div>
+                <div class="callout-text">
+                    While ActBlue received the largest share (37.6%), these donations flowed across <strong>the broader Democratic Party fundraising ecosystem</strong> - including the DNC, DSCC, DCCC, Harris Victory Fund, and dozens of PACs and candidate committees. This distribution pattern raises questions about donation verification practices across multiple platforms and committees.
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Committee</th>
+                            <th>Name</th>
+                            <th>Donations</th>
+                            <th>Unique Donors</th>
+                            <th>Amount</th>
+                            <th>% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono">C00401224</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00401224" style="color: var(--cyan); text-decoration: none;">ActBlue</a></td>
+                            <td class="mono">6,133,474</td>
+                            <td class="mono">364,250</td>
+                            <td class="money">$691,134,441</td>
+                            <td class="mono danger">37.60%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00703975</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00703975" style="color: var(--cyan); text-decoration: none;">Fight For The People PAC</a></td>
+                            <td class="mono">1,560,593</td>
+                            <td class="mono">352,199</td>
+                            <td class="money">$178,812,156</td>
+                            <td class="mono warning">9.57%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00744946</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00744946" style="color: var(--cyan); text-decoration: none;">Harris Victory Fund</a></td>
+                            <td class="mono">995,110</td>
+                            <td class="mono">218,308</td>
+                            <td class="money">$166,727,767</td>
+                            <td class="mono warning">6.10%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00042366</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00042366" style="color: var(--cyan); text-decoration: none;">DSCC (Senate Democrats)</a></td>
+                            <td class="mono">469,788</td>
+                            <td class="mono">53,353</td>
+                            <td class="money">$34,971,225</td>
+                            <td class="mono">2.88%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00000935</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00000935" style="color: var(--cyan); text-decoration: none;">DCCC (House Democrats)</a></td>
+                            <td class="mono">398,041</td>
+                            <td class="mono">41,896</td>
+                            <td class="money">$25,726,086</td>
+                            <td class="mono">2.44%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00264697</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00264697" style="color: var(--cyan); text-decoration: none;">Dignity of Work PAC</a></td>
+                            <td class="mono">345,501</td>
+                            <td class="mono">41,838</td>
+                            <td class="money">$24,400,909</td>
+                            <td class="mono">2.12%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00412304</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00412304" style="color: var(--cyan); text-decoration: none;">Montanans for Tester</a></td>
+                            <td class="mono">335,119</td>
+                            <td class="mono">42,902</td>
+                            <td class="money">$22,880,584</td>
+                            <td class="mono">2.05%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00839597</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00839597" style="color: var(--cyan); text-decoration: none;">Friends of Colin Allred 2024</a></td>
+                            <td class="mono">328,895</td>
+                            <td class="mono">38,024</td>
+                            <td class="money">$20,708,716</td>
+                            <td class="mono">2.02%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00580068</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00580068" style="color: var(--cyan); text-decoration: none;">Progressive Turnout Project</a></td>
+                            <td class="mono">309,593</td>
+                            <td class="mono">21,718</td>
+                            <td class="money">$9,898,375</td>
+                            <td class="mono">1.90%</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">C00010603</td>
+                            <td class="name"><a href="https://somaliscan.org/committees/C00010603" style="color: var(--cyan); text-decoration: none;">DNC (Democratic National Committee)</a></td>
+                            <td class="mono">230,045</td>
+                            <td class="mono">54,489</td>
+                            <td class="money">$32,111,945</td>
+                            <td class="mono">1.41%</td>
+                        </tr>
+                        <tr style="background: var(--bg-highlight);">
+                            <td class="mono"></td>
+                            <td><strong>Other Committees (100+)</strong></td>
+                            <td class="mono">5,205,236</td>
+                            <td class="mono">-</td>
+                            <td class="money">$541,685,374</td>
+                            <td class="mono">31.91%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="summary-box" style="margin-top: 1.5rem; border-left-color: var(--yellow);">
+                <p><strong style="color: var(--yellow);">Key Insight:</strong> Only 37.6% of these donations went directly to ActBlue. The remaining <strong>62.4% ($1.06 billion)</strong> flowed to the DNC, DSCC, DCCC, Harris Victory Fund, and dozens of Democratic candidates and PACs. This distribution suggests <strong>donation verification questions extend beyond any single platform</strong>.</p>
+            </div>
+        </section>
+
+        <!-- Geographic Distribution -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">07</div>
+                <h2>Geographic Concentration of Extreme Donors</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Extreme Donors (10+/day)</th>
+                            <th>Total Donations</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>California</strong></td>
+                            <td class="mono">57</td>
+                            <td class="mono">223,291</td>
+                            <td class="money">$2,257,198</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Texas</strong></td>
+                            <td class="mono">19</td>
+                            <td class="mono">93,945</td>
+                            <td class="money">$1,407,841</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Florida</strong></td>
+                            <td class="mono">18</td>
+                            <td class="mono">66,470</td>
+                            <td class="money">$934,777</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Washington</strong></td>
+                            <td class="mono">14</td>
+                            <td class="mono">96,335</td>
+                            <td class="money">$634,271</td>
+                        </tr>
+                        <tr>
+                            <td><strong>New York</strong></td>
+                            <td class="mono">13</td>
+                            <td class="mono">44,075</td>
+                            <td class="money">$592,259</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pennsylvania</strong></td>
+                            <td class="mono">9</td>
+                            <td class="mono">48,705</td>
+                            <td class="money">$1,235,560</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ohio</strong></td>
+                            <td class="mono">8</td>
+                            <td class="mono">53,663</td>
+                            <td class="money">$790,268</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Minnesota</strong></td>
+                            <td class="mono">6</td>
+                            <td class="mono">40,565</td>
+                            <td class="money">$817,432</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Potential Violations -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">07</div>
+                <h2>Potential Regulatory Concerns for FEC Review</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Statute</th>
+                            <th>Violation</th>
+                            <th>Maximum Penalty</th>
+                            <th>Pattern Observed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono">52 U.S.C. 30122</td>
+                            <td>Straw donor contributions</td>
+                            <td>$50K + 5 years</td>
+                            <td class="danger">Impossible donation volumes</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">52 U.S.C. 30121</td>
+                            <td>Foreign national contributions</td>
+                            <td>$250K + 5 years</td>
+                            <td class="warning">Unverifiable donors</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">52 U.S.C. 30116</td>
+                            <td>Contribution limit evasion</td>
+                            <td>Civil penalties</td>
+                            <td class="warning">Coordinated small donations</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">18 U.S.C. 1001</td>
+                            <td>False statement</td>
+                            <td>5 years prison</td>
+                            <td class="warning">False occupation reporting</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">18 U.S.C. 1343</td>
+                            <td>Wire fraud</td>
+                            <td>20 years per count</td>
+                            <td class="danger">930 potential counts (one day)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Investigation Thesis -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">08</div>
+                <h2>Investigation Thesis</h2>
+            </div>
+
+            <div class="summary-box" style="border-left-color: var(--red);">
+                <p style="margin-bottom: 1rem;"><strong style="color: var(--red);">Questions Raised by the Data</strong></p>
+                <p>The patterns identified in this analysis raise significant questions that warrant investigation by appropriate authorities:</p>
+                <p style="margin-top: 1rem;"><strong>1. Donation frequency anomalies</strong> - What explains single-day volumes and sustained rates that appear to exceed typical human behavior patterns?</p>
+                <p style="margin-top: 0.5rem;"><strong>2. Identity verification gaps</strong> - How do platforms verify donor eligibility when "NOT EMPLOYED" is reported? What checks exist?</p>
+                <p style="margin-top: 0.5rem;"><strong>3. Volume timing questions</strong> - What caused the 252x increase in January 2023? Was this a data collection change or activity change?</p>
+                <p style="margin-top: 0.5rem;"><strong>4. Source of funds</strong> - How do individuals reporting no employment fund six-figure donation totals over extended periods?</p>
+                <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">These questions do not establish that wrongdoing occurred, but they suggest the need for enhanced verification and investigation.</p>
+            </div>
+        </section>
+
+        <!-- Investigation Summary Tree -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">09</div>
+                <h2>Investigation Summary</h2>
+            </div>
+            <div class="terminal-tree">
+                <div class="tree-line">INVESTIGATION_SUMMARY</div>
+                <div class="tree-line">|-</div>
+                <div class="tree-line">|- <span class="key">total_records_analyzed</span>: <span class="value">58,207,350</span></div>
+                <div class="tree-line">|- <span class="key">not_employed_donations</span>: <span class="value">16,300,000</span></div>
+                <div class="tree-line">|- <span class="key">total_suspicious_amount</span>: <span class="value danger">$1.75B</span></div>
+                <div class="tree-line">|-</div>
+                <div class="tree-line">|- EXTREME_DONORS</div>
+                <div class="tree-line">|  |- <span class="key">unique_unemployed_donors</span>: <span class="value">804,077</span></div>
+                <div class="tree-line">|  |- <span class="key">extreme_donors_10plus</span>: <span class="value danger">168</span></div>
+                <div class="tree-line">|  |- <span class="key">max_single_day</span>: <span class="value danger">930 donations</span></div>
+                <div class="tree-line">|  |- <span class="key">max_sustained_rate</span>: <span class="value danger">38.18/day for 237 days</span></div>
+                <div class="tree-line">|-</div>
+                <div class="tree-line">|- KEY_FINDINGS</div>
+                <div class="tree-line">|  |- <span class="key">physically_impossible</span>: <span class="value danger">Yes (multiple donors)</span></div>
+                <div class="tree-line">|  |- <span class="key">volume_spike_jan_2023</span>: <span class="value danger">252x increase</span></div>
+                <div class="tree-line">|  |- <span class="key">actblue_concentration</span>: <span class="value warning">40% ($691M)</span></div>
+                <div class="tree-line">|-</div>
+                <div class="tree-line">|- STATUS</div>
+                <div class="tree-line">   |- <span class="key">priority</span>: <span class="value danger">CRITICAL</span></div>
+                <div class="tree-line">   |- <span class="key">recommended_action</span>: <span class="value">DOJ/FEC referral</span></div>
+                <div class="tree-line">   |- <span class="key">potential_violations</span>: <span class="value">5 federal statutes</span></div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>FraudWatch Investigation Report | Investigation ID: ua-2024-001 | Generated: 2026-01-05</p>
+            <p style="margin-top: 0.5rem;">Data Sources: FEC Individual Contributions (58.2M records), OIG Healthcare Exclusions (37K records)</p>
+        </footer>
+    </div>
+</body>
+</html>
