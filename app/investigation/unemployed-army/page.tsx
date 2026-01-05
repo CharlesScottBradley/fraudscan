@@ -323,6 +323,50 @@ export default async function UnemployedArmyPage() {
         </p>
       </div>
 
+      {/* Data Sources */}
+      <div className="mb-8">
+        <h3 className="text-sm font-medium text-gray-400 mb-4">Data Sources</h3>
+        <div className="border border-gray-800 p-4">
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="text-gray-300 font-medium mb-1">Primary Source</p>
+              <p className="text-gray-500">
+                <a href="https://www.fec.gov/data/browse-data/?tab=bulk-data" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 hover:underline">
+                  FEC Individual Contributions Database
+                </a>
+                {' '}- Bulk data files containing all itemized individual contributions to federal committees.
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-300 font-medium mb-1">Data Specification</p>
+              <p className="text-gray-500">
+                <a href="https://www.fec.gov/campaign-finance-data/contributions-individuals-file-description/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 hover:underline">
+                  FEC Individual Contributions File Description
+                </a>
+                {' '}- The <code className="bg-gray-800 px-1 rounded text-xs">OCCUPATION</code> field is self-reported by donors on contribution forms.
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-300 font-medium mb-1">Records Analyzed</p>
+              <p className="text-gray-500">
+                58,207,350 individual contribution records from the 2023-2024 election cycle, filtered for <code className="bg-gray-800 px-1 rounded text-xs">OCCUPATION = &apos;NOT EMPLOYED&apos;</code>.
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-300 font-medium mb-1">Verification Links</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                <a href="https://www.fec.gov/data/committee/C00401224/" target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-gray-800 text-cyan-400 hover:bg-gray-700 rounded">ActBlue (FEC)</a>
+                <a href="https://www.fec.gov/data/committee/C00010603/" target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-gray-800 text-cyan-400 hover:bg-gray-700 rounded">DNC (FEC)</a>
+                <a href="https://www.fec.gov/data/committee/C00042366/" target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-gray-800 text-cyan-400 hover:bg-gray-700 rounded">DSCC (FEC)</a>
+                <a href="https://www.fec.gov/data/committee/C00000935/" target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-gray-800 text-cyan-400 hover:bg-gray-700 rounded">DCCC (FEC)</a>
+                <a href="https://www.fec.gov/data/committee/C00744946/" target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-gray-800 text-cyan-400 hover:bg-gray-700 rounded">Harris Victory Fund (FEC)</a>
+                <a href="https://api.open.fec.gov/developers/" target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-gray-800 text-cyan-400 hover:bg-gray-700 rounded">FEC API</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* View Full Report Link */}
       <div className="flex gap-4 mb-8">
         <a
