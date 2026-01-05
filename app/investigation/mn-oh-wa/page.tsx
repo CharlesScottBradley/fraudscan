@@ -46,6 +46,14 @@ interface StateStats {
   double_dippers: number;
 }
 
+interface OrgStats {
+  state: string;
+  total_orgs: number;
+  childcare_orgs: number;
+  shell_companies: number;
+  ppp_recipients: number;
+}
+
 interface DemographicRow {
   borrower_state: string;
   demographic_value: string;
@@ -147,6 +155,29 @@ async function getFraudCases() {
   return data || [];
 }
 
+async function getOrgStats(): Promise<OrgStats[]> {
+  const stats: OrgStats[] = [];
+
+  for (const state of ['MN', 'OH', 'WA']) {
+    const [totalRes, childcareRes, shellRes, pppRes] = await Promise.all([
+      supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('state', state),
+      supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('state', state).eq('is_childcare', true),
+      supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('state', state).eq('is_shell_company', true),
+      supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('state', state).eq('is_ppp_recipient', true),
+    ]);
+
+    stats.push({
+      state,
+      total_orgs: totalRes.count || 0,
+      childcare_orgs: childcareRes.count || 0,
+      shell_companies: shellRes.count || 0,
+      ppp_recipients: pppRes.count || 0,
+    });
+  }
+
+  return stats;
+}
+
 async function getDoubleDippers(): Promise<DoubleDipper[]> {
   // Get double dippers with varied amounts (not just top by amount)
   // Mix of different states and loan sizes
@@ -198,12 +229,13 @@ function getCaseDate(c: FraudCase): string | null {
 export const revalidate = 300;
 
 export default async function InvestigationDashboard() {
-  const [stateStats, demographics, dojArticles, fraudCases, doubleDippers] = await Promise.all([
+  const [stateStats, demographics, dojArticles, fraudCases, doubleDippers, orgStats] = await Promise.all([
     getStateStats(),
     getDemographics(),
     getDojArticles(),
     getFraudCases(),
-    getDoubleDippers()
+    getDoubleDippers(),
+    getOrgStats()
   ]);
 
   const totals = stateStats.reduce((acc, s) => ({
@@ -213,7 +245,9 @@ export default async function InvestigationDashboard() {
     eidl_count: acc.eidl_count + s.eidl_count,
     eidl_amount: acc.eidl_amount + s.eidl_amount,
     eidl_flagged: acc.eidl_flagged + s.eidl_flagged_count,
+    sba_count: acc.sba_count + s.sba_count,
     sba_amount: acc.sba_amount + s.sba_amount,
+    federal_grants_count: acc.federal_grants_count + s.federal_grants_count,
     federal_grants: acc.federal_grants + s.federal_grants_amount,
     state_grants: acc.state_grants + s.state_grants_amount,
     doj_articles: acc.doj_articles + s.doj_articles,
@@ -221,11 +255,19 @@ export default async function InvestigationDashboard() {
   }), {
     ppp_count: 0, ppp_amount: 0, ppp_flagged: 0,
     eidl_count: 0, eidl_amount: 0, eidl_flagged: 0,
-    sba_amount: 0, federal_grants: 0, state_grants: 0,
+    sba_count: 0, sba_amount: 0,
+    federal_grants_count: 0, federal_grants: 0, state_grants: 0,
     doj_articles: 0, double_dippers: 0
   });
 
-  const totalFunding = totals.ppp_amount + totals.eidl_amount + totals.sba_amount + totals.federal_grants + totals.state_grants;
+  const orgTotals = orgStats.reduce((acc, o) => ({
+    total_orgs: acc.total_orgs + o.total_orgs,
+    childcare_orgs: acc.childcare_orgs + o.childcare_orgs,
+    shell_companies: acc.shell_companies + o.shell_companies,
+    ppp_recipients: acc.ppp_recipients + o.ppp_recipients,
+  }), { total_orgs: 0, childcare_orgs: 0, shell_companies: 0, ppp_recipients: 0 });
+
+  const totalFunding = totals.ppp_amount + totals.eidl_amount + totals.sba_amount + totals.federal_grants;
   const totalFlagged = totals.ppp_flagged + totals.eidl_flagged;
 
   return (
@@ -234,9 +276,13 @@ export default async function InvestigationDashboard() {
       <div className="font-mono text-sm mb-10">
         <p className="text-gray-500">MN_OH_WA_INVESTIGATION</p>
         <div className="mt-2 text-gray-400">
-          <p><span className="text-gray-600">├─</span> total_funding <span className="text-green-500 ml-4">{formatMoney(totalFunding)}</span></p>
+          <p><span className="text-gray-600">├─</span> total_funding_tracked <span className="text-green-500 ml-4">{formatMoney(totalFunding)}</span></p>
+          <p><span className="text-gray-600">├─</span> organizations_tracked <span className="text-white ml-4">{formatNumber(orgTotals.total_orgs)}</span></p>
           <p><span className="text-gray-600">├─</span> covid_loans <span className="text-white ml-4">{formatNumber(totals.ppp_count + totals.eidl_count)}</span></p>
-          <p><span className="text-gray-600">├─</span> flagged_for_review <span className="text-white ml-4">{formatNumber(totalFlagged)}</span></p>
+          <p><span className="text-gray-600">├─</span> federal_grants <span className="text-white ml-4">{formatNumber(totals.federal_grants_count)}</span></p>
+          <p><span className="text-gray-600">├─</span> flagged_for_review <span className="text-red-400 ml-4">{formatNumber(totalFlagged)}</span></p>
+          <p><span className="text-gray-600">├─</span> shell_companies <span className="text-red-400 ml-4">{formatNumber(orgTotals.shell_companies)}</span></p>
+          <p><span className="text-gray-600">├─</span> childcare_providers <span className="text-white ml-4">{formatNumber(orgTotals.childcare_orgs)}</span></p>
           <p><span className="text-gray-600">├─</span> doj_press_releases <span className="text-white ml-4">{totals.doj_articles}</span></p>
           <p><span className="text-gray-600">└─</span> double_dippers <span className="text-white ml-4">{totals.double_dippers}</span></p>
         </div>
@@ -244,19 +290,63 @@ export default async function InvestigationDashboard() {
 
       {/* State breakdown table */}
       <div className="mb-10">
-        <h2 className="text-sm font-medium text-gray-400 mb-3">State Breakdown</h2>
+        <h2 className="text-sm font-medium text-gray-400 mb-3">Funding by State</h2>
+        <div className="border border-gray-800 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-900">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-400">State</th>
+                <th className="text-right p-3 font-medium text-gray-400">PPP</th>
+                <th className="text-right p-3 font-medium text-gray-400">EIDL</th>
+                <th className="text-right p-3 font-medium text-gray-400">SBA 7a/504</th>
+                <th className="text-right p-3 font-medium text-gray-400">Federal Grants</th>
+                <th className="text-right p-3 font-medium text-gray-400">Orgs</th>
+                <th className="text-right p-3 font-medium text-gray-400">Flagged</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {stateStats.map(s => {
+                const org = orgStats.find(o => o.state === s.state);
+                return (
+                  <tr key={s.state} className="hover:bg-gray-900/50">
+                    <td className="p-3 text-white">{STATE_NAMES[s.state]}</td>
+                    <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.ppp_amount)}</td>
+                    <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.eidl_amount)}</td>
+                    <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.sba_amount)}</td>
+                    <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.federal_grants_amount)}</td>
+                    <td className="p-3 text-right font-mono">{formatNumber(org?.total_orgs || 0)}</td>
+                    <td className="p-3 text-right font-mono text-red-400">{formatNumber(s.ppp_flagged_count + s.eidl_flagged_count)}</td>
+                  </tr>
+                );
+              })}
+              <tr className="bg-gray-900/30">
+                <td className="p-3 text-gray-400 font-medium">Total</td>
+                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.ppp_amount)}</td>
+                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.eidl_amount)}</td>
+                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.sba_amount)}</td>
+                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.federal_grants)}</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(orgTotals.total_orgs)}</td>
+                <td className="p-3 text-right font-mono text-red-400">{formatNumber(totalFlagged)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Loan counts table */}
+      <div className="mb-10">
+        <h2 className="text-sm font-medium text-gray-400 mb-3">Loan & Grant Counts</h2>
         <div className="border border-gray-800 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-900">
               <tr>
                 <th className="text-left p-3 font-medium text-gray-400">State</th>
                 <th className="text-right p-3 font-medium text-gray-400">PPP Loans</th>
-                <th className="text-right p-3 font-medium text-gray-400">PPP Amount</th>
                 <th className="text-right p-3 font-medium text-gray-400">EIDL Loans</th>
-                <th className="text-right p-3 font-medium text-gray-400">EIDL Amount</th>
                 <th className="text-right p-3 font-medium text-gray-400">SBA 7a/504</th>
-                <th className="text-right p-3 font-medium text-gray-400">Flagged</th>
+                <th className="text-right p-3 font-medium text-gray-400">Federal Grants</th>
                 <th className="text-right p-3 font-medium text-gray-400">DOJ Articles</th>
+                <th className="text-right p-3 font-medium text-gray-400">Double Dip</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
@@ -264,27 +354,64 @@ export default async function InvestigationDashboard() {
                 <tr key={s.state} className="hover:bg-gray-900/50">
                   <td className="p-3 text-white">{STATE_NAMES[s.state]}</td>
                   <td className="p-3 text-right font-mono">{formatNumber(s.ppp_count)}</td>
-                  <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.ppp_amount)}</td>
                   <td className="p-3 text-right font-mono">{formatNumber(s.eidl_count)}</td>
-                  <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.eidl_amount)}</td>
-                  <td className="p-3 text-right font-mono text-green-500">{formatMoney(s.sba_amount)}</td>
-                  <td className="p-3 text-right font-mono">{formatNumber(s.ppp_flagged_count + s.eidl_flagged_count)}</td>
+                  <td className="p-3 text-right font-mono">{formatNumber(s.sba_count)}</td>
+                  <td className="p-3 text-right font-mono">{formatNumber(s.federal_grants_count)}</td>
                   <td className="p-3 text-right font-mono">{s.doj_articles}</td>
+                  <td className="p-3 text-right font-mono">{s.double_dippers}</td>
                 </tr>
               ))}
               <tr className="bg-gray-900/30">
                 <td className="p-3 text-gray-400 font-medium">Total</td>
                 <td className="p-3 text-right font-mono text-white">{formatNumber(totals.ppp_count)}</td>
-                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.ppp_amount)}</td>
                 <td className="p-3 text-right font-mono text-white">{formatNumber(totals.eidl_count)}</td>
-                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.eidl_amount)}</td>
-                <td className="p-3 text-right font-mono text-green-500">{formatMoney(totals.sba_amount)}</td>
-                <td className="p-3 text-right font-mono text-white">{formatNumber(totalFlagged)}</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(totals.sba_count)}</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(totals.federal_grants_count)}</td>
                 <td className="p-3 text-right font-mono text-white">{totals.doj_articles}</td>
+                <td className="p-3 text-right font-mono text-white">{totals.double_dippers}</td>
               </tr>
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Organizations tracked */}
+      <div className="mb-10">
+        <h2 className="text-sm font-medium text-gray-400 mb-3">Organizations Tracked</h2>
+        <div className="border border-gray-800 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-900">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-400">State</th>
+                <th className="text-right p-3 font-medium text-gray-400">Total Orgs</th>
+                <th className="text-right p-3 font-medium text-gray-400">Childcare</th>
+                <th className="text-right p-3 font-medium text-gray-400">PPP Recipients</th>
+                <th className="text-right p-3 font-medium text-gray-400">Shell Companies</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {orgStats.map(o => (
+                <tr key={o.state} className="hover:bg-gray-900/50">
+                  <td className="p-3 text-white">{STATE_NAMES[o.state]}</td>
+                  <td className="p-3 text-right font-mono">{formatNumber(o.total_orgs)}</td>
+                  <td className="p-3 text-right font-mono">{formatNumber(o.childcare_orgs)}</td>
+                  <td className="p-3 text-right font-mono">{formatNumber(o.ppp_recipients)}</td>
+                  <td className="p-3 text-right font-mono text-red-400">{o.shell_companies > 0 ? formatNumber(o.shell_companies) : '-'}</td>
+                </tr>
+              ))}
+              <tr className="bg-gray-900/30">
+                <td className="p-3 text-gray-400 font-medium">Total</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(orgTotals.total_orgs)}</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(orgTotals.childcare_orgs)}</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(orgTotals.ppp_recipients)}</td>
+                <td className="p-3 text-right font-mono text-red-400">{orgTotals.shell_companies > 0 ? formatNumber(orgTotals.shell_companies) : '-'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-gray-600 text-xs mt-2">
+          Organizations unified from PPP, EIDL, SBA, federal grants, and state licensing data.
+        </p>
       </div>
 
       {/* Funding coverage */}
@@ -326,15 +453,21 @@ export default async function InvestigationDashboard() {
                 <td className="p-3 text-gray-500 text-xs">USASpending.gov</td>
               </tr>
               <tr className="hover:bg-gray-900/50">
+                <td className="p-3 text-white">Childcare Providers</td>
+                <td className="p-3 text-right font-mono text-white">{formatNumber(orgTotals.childcare_orgs)}</td>
+                <td className="p-3 text-right text-gray-400">Licensed</td>
+                <td className="p-3 text-gray-500 text-xs">State licensing boards</td>
+              </tr>
+              <tr className="hover:bg-gray-900/50">
                 <td className="p-3 text-white">State COVID Relief</td>
                 <td className="p-3 text-right font-mono text-gray-500">-</td>
-                <td className="p-3 text-right text-gray-500">Not available</td>
-                <td className="p-3 text-gray-500 text-xs">Requires FOIA</td>
+                <td className="p-3 text-right text-gray-500">Pending</td>
+                <td className="p-3 text-gray-500 text-xs">FOIA in progress</td>
               </tr>
               <tr className="hover:bg-gray-900/50">
                 <td className="p-3 text-white">CCAP Subsidies</td>
                 <td className="p-3 text-right font-mono text-gray-500">-</td>
-                <td className="p-3 text-right text-gray-500">Not available</td>
+                <td className="p-3 text-right text-gray-500">Pending</td>
                 <td className="p-3 text-gray-500 text-xs">State DHS data</td>
               </tr>
             </tbody>
