@@ -84,6 +84,80 @@ const CHARGED_COMPANIES = [
   { name: 'Retsel Real Estate LLC', scheme: 'HSS', fraud_amount: 3500000, status: 'Fraud tourism case' },
 ];
 
+// Uninvestigated Leads - 2104 Park Ave Cluster
+const PARK_AVE_CLUSTER = {
+  address: '2104 Park Ave S, Minneapolis, MN 55404',
+  parcelId: '27053-3502924220076',
+  totalPPP: 2157419,
+  businesses: [
+    {
+      name: 'Alpha Home Care Provider',
+      suite: '102',
+      owner: 'Mohamed Ibrahim Adur',
+      ppp: 698329,
+      ppp_jobs: 141,
+      dhs_payments: 42034699,
+      dhs_years: '2021-2025',
+      license: '1080326',
+      license_status: 'Active',
+      violations: 0,
+      notes: '$9M/year from small suite; 141 jobs claimed'
+    },
+    {
+      name: 'Minnesota Staffing LLC',
+      suite: '104',
+      owner: 'Unknown (Female-owned)',
+      ppp: 1217400,
+      ppp_jobs: 479,
+      dhs_payments: null,
+      dhs_years: null,
+      license: null,
+      license_status: null,
+      violations: null,
+      notes: 'Two PPP loans ($608K each); 479 jobs from Suite 104'
+    },
+    {
+      name: 'First Choice Home Care Inc',
+      suite: 'Main',
+      owner: 'Najah Ahmed Barkhadle',
+      ppp: 165250,
+      ppp_jobs: 53,
+      dhs_payments: null,
+      dhs_years: null,
+      license: '1104851',
+      license_status: 'Active',
+      violations: 2,
+      notes: '2 DHS correction orders (2022, 2023)'
+    },
+    {
+      name: 'Agan Home Care Inc',
+      suite: '110',
+      owner: 'Unknown',
+      ppp: 76440,
+      ppp_jobs: 12,
+      dhs_payments: null,
+      dhs_years: null,
+      license: '1099750',
+      license_status: 'Active',
+      violations: 0,
+      notes: 'Serves East African immigrant community'
+    },
+    {
+      name: 'Aspen Housing Services LLC',
+      suite: '8B',
+      owner: 'Unknown',
+      ppp: null,
+      ppp_jobs: null,
+      dhs_payments: null,
+      dhs_years: null,
+      license: null,
+      license_status: null,
+      violations: null,
+      notes: 'HSS provider - program flagged for fraud'
+    }
+  ]
+};
+
 export const revalidate = 3600;
 
 export default function MNMedicaidFraudPage() {
@@ -344,6 +418,85 @@ export default function MNMedicaidFraudPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Uninvestigated Lead: 2104 Park Ave Cluster */}
+      <div className="bg-orange-900/20 border border-orange-800 p-4 mb-8">
+        <h3 className="text-orange-400 font-medium mb-2">Uninvestigated Lead: 2104 Park Ave S Cluster</h3>
+        <p className="text-sm text-gray-400 mb-4">
+          Five healthcare/staffing businesses operating from a single small commercial building.
+          One business alone received <span className="text-orange-400 font-bold">$42M in DHS payments</span> from 2021-2025.
+        </p>
+
+        <div className="border border-gray-800 overflow-x-auto mb-4">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-900">
+              <tr>
+                <th className="text-left p-2 font-medium text-gray-400">Business</th>
+                <th className="text-left p-2 font-medium text-gray-400">Suite</th>
+                <th className="text-left p-2 font-medium text-gray-400">Owner</th>
+                <th className="text-right p-2 font-medium text-gray-400">PPP</th>
+                <th className="text-right p-2 font-medium text-gray-400">Jobs</th>
+                <th className="text-right p-2 font-medium text-gray-400">DHS Payments</th>
+                <th className="text-left p-2 font-medium text-gray-400">Notes</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {PARK_AVE_CLUSTER.businesses.map((b, idx) => (
+                <tr key={idx} className="hover:bg-gray-900/50">
+                  <td className="p-2 text-white text-xs">{b.name}</td>
+                  <td className="p-2 text-gray-400 text-xs">{b.suite}</td>
+                  <td className="p-2 text-gray-400 text-xs">{b.owner}</td>
+                  <td className="p-2 text-right font-mono text-green-500 text-xs">
+                    {b.ppp ? formatMoney(b.ppp) : '-'}
+                  </td>
+                  <td className="p-2 text-right font-mono text-white text-xs">
+                    {b.ppp_jobs || '-'}
+                  </td>
+                  <td className="p-2 text-right font-mono text-xs">
+                    {b.dhs_payments ? (
+                      <span className="text-orange-400">{formatMoney(b.dhs_payments)}</span>
+                    ) : '-'}
+                  </td>
+                  <td className="p-2 text-gray-500 text-xs">{b.notes}</td>
+                </tr>
+              ))}
+              <tr className="bg-gray-900/30">
+                <td className="p-2 text-gray-400 font-medium text-xs" colSpan={3}>Total at Address</td>
+                <td className="p-2 text-right font-mono text-green-500 text-xs">{formatMoney(PARK_AVE_CLUSTER.totalPPP)}</td>
+                <td className="p-2 text-right font-mono text-white text-xs">685+</td>
+                <td className="p-2 text-right font-mono text-orange-400 text-xs">{formatMoney(42034699)}</td>
+                <td className="p-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="bg-gray-900/50 p-3 rounded">
+            <p className="text-gray-500 mb-2">Why This Is Suspicious</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-400">
+              <li>141 employees claimed from a single small suite</li>
+              <li>$9M/year in billing from Suite 102 alone</li>
+              <li>5 businesses in one building serving vulnerable populations</li>
+              <li>One tenant (First Choice) has 2 DHS correction orders</li>
+              <li>HSS provider at same address (program terminated for fraud)</li>
+            </ul>
+          </div>
+          <div className="bg-gray-900/50 p-3 rounded">
+            <p className="text-gray-500 mb-2">Verified Data Sources</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-400">
+              <li>PPP: SBA PPP Loan Data (Loan #2246227403)</li>
+              <li>DHS Payments: OpenTheBooks.com MN Checkbook</li>
+              <li>Licenses: MN DHS License Lookup</li>
+              <li>Address: Hennepin County Parcel {PARK_AVE_CLUSTER.parcelId}</li>
+            </ul>
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-4">
+          <strong>Status:</strong> No charges filed as of January 2026. This cluster has not been publicly linked to any fraud investigation.
+        </p>
       </div>
 
       {/* How the Fraud Works */}

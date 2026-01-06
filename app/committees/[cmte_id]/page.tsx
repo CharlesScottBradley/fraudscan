@@ -13,6 +13,8 @@ interface Committee {
   total_received: number;
   total_unemployed_donations: number;
   unemployed_donation_count: number;
+  total_retired_donations: number;
+  retired_donation_count: number;
   is_active: boolean;
   fec_url: string | null;
 }
@@ -87,11 +89,19 @@ export default async function CommitteeDetailPage({
     notFound();
   }
 
-  // Calculate percentage of total Unemployed Army donations
+  // Calculate percentage of total donations
   const totalUnemployedDonations = 16311395; // From our analysis
   const totalUnemployedAmount = 1748347868;
-  const pctOfDonations = ((committee.unemployed_donation_count / totalUnemployedDonations) * 100).toFixed(2);
-  const pctOfAmount = ((committee.total_unemployed_donations / totalUnemployedAmount) * 100).toFixed(2);
+  const totalRetiredDonations = 18260909;
+  const totalRetiredAmount = 1887221621;
+
+  const pctOfUnemployedDonations = ((committee.unemployed_donation_count / totalUnemployedDonations) * 100).toFixed(2);
+  const pctOfUnemployedAmount = ((committee.total_unemployed_donations / totalUnemployedAmount) * 100).toFixed(2);
+  const pctOfRetiredDonations = ((committee.retired_donation_count / totalRetiredDonations) * 100).toFixed(2);
+  const pctOfRetiredAmount = ((committee.total_retired_donations / totalRetiredAmount) * 100).toFixed(2);
+
+  // Determine which is the dominant category for this committee
+  const isUnemployedDominant = committee.total_unemployed_donations > committee.total_retired_donations;
 
   return (
     <div>
@@ -101,8 +111,11 @@ export default async function CommitteeDetailPage({
           Investigations
         </Link>
         <span className="text-gray-600 mx-2">/</span>
-        <Link href="/investigation/unemployed-army" className="text-gray-500 hover:text-gray-400">
-          Unemployed Army
+        <Link
+          href={isUnemployedDominant ? "/investigation/unemployed-army" : "/investigation/retired-army"}
+          className="text-gray-500 hover:text-gray-400"
+        >
+          {isUnemployedDominant ? "Unemployed Army" : "Retired Army"}
         </Link>
         <span className="text-gray-600 mx-2">/</span>
         <span className="text-gray-400">{committee.name}</span>
@@ -139,57 +152,125 @@ export default async function CommitteeDetailPage({
         )}
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="border border-gray-800 p-4">
-          <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            "Unemployed" Donations Received
+      {/* Stats Grid - Unemployed */}
+      <div className="mb-4">
+        <h3 className="text-sm font-medium text-blue-400 mb-2 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+          &quot;NOT EMPLOYED&quot; Donations
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Amount Received
+            </div>
+            <div className="text-2xl font-mono text-green-500">
+              {formatMoney(committee.total_unemployed_donations)}
+            </div>
+            <div className="text-xs text-gray-600 mt-1">
+              {pctOfUnemployedAmount}% of total
+            </div>
           </div>
-          <div className="text-2xl font-mono text-green-500">
-            {formatMoney(committee.total_unemployed_donations)}
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Donation Count
+            </div>
+            <div className="text-2xl font-mono text-white">
+              {formatNumber(committee.unemployed_donation_count)}
+            </div>
+            <div className="text-xs text-gray-600 mt-1">
+              {pctOfUnemployedDonations}% of total
+            </div>
           </div>
-          <div className="text-xs text-gray-600 mt-1">
-            {pctOfAmount}% of total
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Avg Donation
+            </div>
+            <div className="text-2xl font-mono text-yellow-500">
+              {committee.unemployed_donation_count > 0
+                ? `$${(committee.total_unemployed_donations / committee.unemployed_donation_count).toFixed(2)}`
+                : '-'}
+            </div>
+          </div>
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Status
+            </div>
+            <div className={`text-2xl font-mono ${committee.is_active ? 'text-green-500' : 'text-gray-500'}`}>
+              {committee.is_active ? 'Active' : 'Inactive'}
+            </div>
           </div>
         </div>
-        <div className="border border-gray-800 p-4">
-          <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            Number of Donations
+      </div>
+
+      {/* Stats Grid - Retired */}
+      <div className="mb-8">
+        <h3 className="text-sm font-medium text-red-400 mb-2 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-red-500"></span>
+          &quot;RETIRED&quot; Donations
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Amount Received
+            </div>
+            <div className="text-2xl font-mono text-green-500">
+              {formatMoney(committee.total_retired_donations)}
+            </div>
+            <div className="text-xs text-gray-600 mt-1">
+              {pctOfRetiredAmount}% of total
+            </div>
           </div>
-          <div className="text-2xl font-mono text-white">
-            {formatNumber(committee.unemployed_donation_count)}
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Donation Count
+            </div>
+            <div className="text-2xl font-mono text-white">
+              {formatNumber(committee.retired_donation_count)}
+            </div>
+            <div className="text-xs text-gray-600 mt-1">
+              {pctOfRetiredDonations}% of total
+            </div>
           </div>
-          <div className="text-xs text-gray-600 mt-1">
-            {pctOfDonations}% of total
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Avg Donation
+            </div>
+            <div className="text-2xl font-mono text-yellow-500">
+              {committee.retired_donation_count > 0
+                ? `$${(committee.total_retired_donations / committee.retired_donation_count).toFixed(2)}`
+                : '-'}
+            </div>
           </div>
-        </div>
-        <div className="border border-gray-800 p-4">
-          <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            Average Donation
-          </div>
-          <div className="text-2xl font-mono text-yellow-500">
-            ${(committee.total_unemployed_donations / committee.unemployed_donation_count).toFixed(2)}
-          </div>
-        </div>
-        <div className="border border-gray-800 p-4">
-          <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            Status
-          </div>
-          <div className={`text-2xl font-mono ${committee.is_active ? 'text-green-500' : 'text-gray-500'}`}>
-            {committee.is_active ? 'Active' : 'Inactive'}
+          <div className="border border-gray-800 p-4">
+            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Ratio
+            </div>
+            <div className="text-2xl font-mono text-purple-400">
+              {committee.total_unemployed_donations > 0 && committee.total_retired_donations > 0
+                ? (committee.total_retired_donations / committee.total_unemployed_donations).toFixed(1) + 'x'
+                : '-'}
+            </div>
+            <div className="text-xs text-gray-600 mt-1">
+              retired vs unemployed
+            </div>
           </div>
         </div>
       </div>
 
       {/* Warning Callout */}
-      <div className="border-l-4 border-yellow-600 bg-yellow-900/10 p-4 mb-8">
+      <div className={`border-l-4 p-4 mb-8 ${
+        isUnemployedDominant
+          ? 'border-blue-600 bg-blue-900/10'
+          : 'border-red-600 bg-red-900/10'
+      }`}>
         <div className="flex">
           <div className="ml-3">
-            <p className="text-sm text-yellow-400">
-              <strong>Part of the "Unemployed Army" Investigation</strong>
+            <p className={`text-sm ${isUnemployedDominant ? 'text-blue-400' : 'text-red-400'}`}>
+              <strong>Part of the &quot;{isUnemployedDominant ? 'Unemployed' : 'Retired'} Army&quot; Investigation</strong>
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              This committee received {formatNumber(committee.unemployed_donation_count)} donations totaling {formatMoney(committee.total_unemployed_donations)} from individuals reporting "NOT EMPLOYED" status.
+              This committee received donations from both &quot;NOT EMPLOYED&quot; ({formatNumber(committee.unemployed_donation_count)} donations, {formatMoney(committee.total_unemployed_donations)})
+              and &quot;RETIRED&quot; donors ({formatNumber(committee.retired_donation_count)} donations, {formatMoney(committee.total_retired_donations)}).
               These patterns warrant investigation to determine whether they reflect data issues, platform artifacts, or activities requiring regulatory review.
             </p>
           </div>
@@ -216,7 +297,7 @@ export default async function CommitteeDetailPage({
       </div>
 
       {/* External Links */}
-      <div className="flex gap-4 mb-8">
+      <div className="flex flex-wrap gap-4 mb-8">
         {committee.fec_url && (
           <a
             href={committee.fec_url}
@@ -232,9 +313,15 @@ export default async function CommitteeDetailPage({
         )}
         <Link
           href="/investigation/unemployed-army"
-          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-700 hover:border-gray-600 text-gray-300 text-sm rounded transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-blue-700 hover:border-blue-600 text-blue-400 text-sm rounded transition-colors"
         >
-          ← Back to Investigation
+          &#x2190; Unemployed Army
+        </Link>
+        <Link
+          href="/investigation/retired-army"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-red-700 hover:border-red-600 text-red-400 text-sm rounded transition-colors"
+        >
+          &#x2190; Retired Army
         </Link>
       </div>
 
