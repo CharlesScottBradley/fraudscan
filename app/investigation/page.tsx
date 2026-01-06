@@ -121,6 +121,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'columbus-oh-ppp-fraud',
+    title: 'Columbus OH PPP Network',
+    description: '$13.86M PPP across 186 entities - SERC, home health, trucking clusters',
+    href: '/investigation/columbus-oh-ppp-fraud',
+    stats: '186 entities',
+    isNew: true
+  },
+  {
     id: 'unemployed-army',
     title: 'The Unemployed Army',
     description: '$1.75B in anomalous donations from "NOT EMPLOYED" donors',
