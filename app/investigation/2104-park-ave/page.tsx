@@ -224,6 +224,13 @@ export default function ParkAveInvestigationPage() {
         <span className="text-white">2104 Park Ave Cluster</span>
       </div>
 
+      {/* Legal Disclaimer */}
+      <div className="bg-gray-900 border border-gray-700 p-3 mb-6 text-xs text-gray-400">
+        <strong className="text-gray-300">Disclaimer:</strong> This page compiles publicly available government data for transparency purposes.
+        No accusation of wrongdoing is made against any individual or business. If you believe any information is inaccurate,
+        please <Link href="/contact" className="text-green-500 hover:underline">submit a correction request</Link>.
+      </div>
+
       {/* Uninvestigated Lead Banner */}
       <div className="bg-orange-900/20 border border-orange-600 p-4 mb-6">
         <div className="flex items-start gap-3">
@@ -253,9 +260,9 @@ export default function ParkAveInvestigationPage() {
         </div>
       </div>
 
-      {/* The Impossible Math */}
-      <div className="bg-red-900/20 border border-red-600 p-4 mb-8">
-        <h3 className="text-red-400 font-medium mb-3">The Impossible Math</h3>
+      {/* Questions About Scale */}
+      <div className="bg-orange-900/20 border border-orange-600 p-4 mb-8">
+        <h3 className="text-orange-400 font-medium mb-3">Questions About Scale</h3>
         <div className="text-sm text-gray-300 space-y-2">
           <p>
             <span className="text-white font-bold">5 businesses</span> at one small commercial building claim{' '}
@@ -264,8 +271,8 @@ export default function ParkAveInvestigationPage() {
           </p>
           <p>
             Alpha Home Care Provider alone claims <span className="text-white">141 employees</span> and received{' '}
-            <span className="text-white">$9M/year</span> in DHS payments—yet operates from a{' '}
-            <span className="text-red-400">single suite in a shabby commercial building</span>.
+            <span className="text-white">$9M/year</span> in DHS payments while operating from{' '}
+            <span className="text-white">a single suite in this commercial building</span>.
           </p>
           <p className="text-gray-400">
             For context: 141 employees at $64K revenue/employee = $9M, which matches. But where do 141 people
@@ -280,7 +287,8 @@ export default function ParkAveInvestigationPage() {
         <h3 className="text-red-400 font-medium mb-3">Context: Minnesota&apos;s Medicaid Spending Explosion</h3>
         <p className="text-sm text-gray-400 mb-4">
           This address cluster exists within a broader pattern of explosive spending growth in Minnesota&apos;s
-          Medicaid programs—spending that U.S. Attorney Joe Thompson says is <span className="text-white">&quot;half or more&quot; fraudulent</span>.
+          Medicaid programs—spending that U.S. Attorney Andrew Luger characterized as significantly fraud-affected
+          (<a href="https://www.startribune.com/feeding-our-future-fraud-case-minnesota-nonprofit-aimee-bock/600288445/" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline">StarTribune</a>).
         </p>
 
         {/* Spending Charts - Side by Side */}
@@ -672,11 +680,14 @@ export default function ParkAveInvestigationPage() {
         </div>
       </div>
 
-      {/* Comparison to Charged Fraud Cases */}
-      <div className="border border-red-800 p-4 mb-8">
-        <h3 className="text-red-400 font-medium mb-3">Comparison: Charged Fraud Cases vs. This Address</h3>
-        <p className="text-xs text-gray-500 mb-4">
-          How does 2104 Park Ave compare to providers who have been charged with fraud?
+      {/* Minnesota Medicaid Spending Context */}
+      <div className="border border-gray-700 p-4 mb-8">
+        <h3 className="text-white font-medium mb-3">Minnesota Medicaid Spending in Context</h3>
+        <p className="text-xs text-gray-500 mb-2">
+          The table below shows spending across various Minnesota Medicaid-related cases and entities for context.
+        </p>
+        <p className="text-xs text-orange-400 mb-4">
+          ⚠ No accusation of wrongdoing is made against any entity marked &quot;Not investigated.&quot; High payment volumes alone do not indicate fraud.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -741,7 +752,7 @@ export default function ParkAveInvestigationPage() {
           </table>
         </div>
         <p className="text-xs text-gray-500 mt-3">
-          Note: Abdifatah Yusuf was convicted for $7.2M fraud. Alpha Home Care Provider received <span className="text-white">5.8x more</span> in DHS payments with no investigation.
+          Sources: DOJ press releases, MN DHS, OpenTheBooks.com. Payment amounts reflect total program disbursements, not confirmed fraud.
         </p>
       </div>
 
