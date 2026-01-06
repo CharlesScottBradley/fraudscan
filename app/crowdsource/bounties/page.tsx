@@ -18,11 +18,14 @@ interface Bounty {
   notAccepted: string[];
 }
 
+// Bounty program status
+const BOUNTIES_PAUSED = true; // Set to false to reopen bounties
+
 const BOUNTIES: Bounty[] = [
   {
     id: 'state-data-compilation',
     title: 'Complete State Data Compilation',
-    amount: 1000,
+    amount: 500,
     slots: 11,
     claimed: 0,
     status: 'open',
@@ -60,7 +63,7 @@ const BOUNTIES: Bounty[] = [
   {
     id: 'corporate-ownership-map',
     title: 'Corporate Relationship Documentation Project',
-    amount: 1000,
+    amount: 500,
     slots: 3,
     claimed: 1,
     status: 'open',
@@ -96,7 +99,7 @@ const BOUNTIES: Bounty[] = [
   {
     id: 'fake-credential-verification',
     title: 'Fake Credential Documentation',
-    amount: 500,
+    amount: 250,
     slots: 2,
     claimed: 0,
     status: 'open',
@@ -131,7 +134,7 @@ const BOUNTIES: Bounty[] = [
   {
     id: 'impossible-billing-analysis',
     title: 'Impossible Billing Documentation',
-    amount: 500,
+    amount: 250,
     slots: 2,
     claimed: 2,
     status: 'completed',
@@ -190,6 +193,24 @@ export default function BountyBoardPage() {
         Looking for grants instead? See our <Link href="/grants" className="text-green-500 hover:underline">Grants page</Link> for legal cost assistance and storytelling grants.
       </p>
 
+      {/* Paused Banner */}
+      {BOUNTIES_PAUSED && (
+        <div className="border border-yellow-700 bg-yellow-950/30 rounded p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <span className="text-yellow-500 text-xl">⏸</span>
+            <div>
+              <p className="text-yellow-400 font-medium">Bounty Program Temporarily Paused</p>
+              <p className="text-yellow-200/70 text-sm mt-1">
+                We&apos;ve hit our budget for now. Bounties will reopen once we secure additional funding.
+              </p>
+              <p className="text-gray-500 text-xs mt-2">
+                Tips and general submissions are still welcome at <Link href="/tip" className="text-yellow-500 hover:underline">/tip</Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="font-mono text-sm mb-10">
         <p className="text-gray-500">BOUNTY_STATUS</p>
@@ -206,22 +227,22 @@ export default function BountyBoardPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <div>
-              <span className="text-white">Impossible Billing Documentation</span>
-              <span className="text-gray-500 ml-2">— Ruun Family Child Care, WA ($122K impossible payments)</span>
+              <span className="text-white">State Data Compilation</span>
+              <span className="text-gray-500 ml-2">— PA, MA, NY, LA, VA childcare provider data</span>
             </div>
-            <span className="text-green-500 font-mono">$500</span>
+            <span className="text-green-500 font-mono">$5,000</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <div>
               <span className="text-white">Impossible Billing Documentation</span>
-              <span className="text-gray-500 ml-2">— WA Child Care Subsidy Analysis ($778K impossible payments, 3 providers)</span>
+              <span className="text-gray-500 ml-2">— WA Child Care Subsidy Analysis ($778K impossible payments)</span>
             </div>
             <span className="text-green-500 font-mono">$500</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <div>
               <span className="text-white">Corporate Relationship Documentation</span>
-              <span className="text-gray-500 ml-2">— Forest Park Medical Center fraud network (19 entities, 50 connections)</span>
+              <span className="text-gray-500 ml-2">— Forest Park Medical Center fraud network (19 entities)</span>
             </div>
             <span className="text-green-500 font-mono">$1,000</span>
           </div>
@@ -233,6 +254,7 @@ export default function BountyBoardPage() {
         <p className="text-yellow-300 font-medium mb-2">Important Terms</p>
         <ul className="list-disc list-inside space-y-1">
           <li><strong>U.S. residents only</strong> — Bounties are only available to individuals residing in the United States</li>
+          <li><strong>Weekly budget cap</strong> — Maximum ${WEEKLY_BUDGET.toLocaleString()}/week in bounty payments. Submissions queued if budget exhausted.</li>
           <li>Submissions are independently verified before payment</li>
           <li>Site reserves the right to verify, modify, or decline publication</li>
           <li>Submission grants site perpetual license to use, modify, and publish</li>
@@ -329,15 +351,28 @@ export default function BountyBoardPage() {
                   {/* Submit CTA */}
                   {slotsAvailable > 0 && (
                     <div className="pt-4 border-t border-gray-800">
-                      <Link
-                        href="/crowdsource/submit"
-                        className="inline-block px-4 py-2 bg-green-900/30 border border-green-800 rounded text-green-400 text-sm hover:bg-green-900/50 transition-colors"
-                      >
-                        Submit for this Bounty
-                      </Link>
-                      <p className="text-gray-600 text-xs mt-2">
-                        Include &quot;BOUNTY: {bounty.id}&quot; in your submission
-                      </p>
+                      {BOUNTIES_PAUSED ? (
+                        <div>
+                          <span className="inline-block px-4 py-2 bg-gray-800 border border-gray-700 rounded text-gray-500 text-sm cursor-not-allowed">
+                            Submissions Paused
+                          </span>
+                          <p className="text-gray-600 text-xs mt-2">
+                            Check back soon or <Link href="/tip" className="text-gray-400 hover:underline">submit a tip</Link> instead
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <Link
+                            href="/crowdsource/submit"
+                            className="inline-block px-4 py-2 bg-green-900/30 border border-green-800 rounded text-green-400 text-sm hover:bg-green-900/50 transition-colors"
+                          >
+                            Submit for this Bounty
+                          </Link>
+                          <p className="text-gray-600 text-xs mt-2">
+                            Include &quot;BOUNTY: {bounty.id}&quot; in your submission
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

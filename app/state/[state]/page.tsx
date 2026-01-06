@@ -4,6 +4,7 @@ import UnifiedStateMap from '../../components/UnifiedStateMap';
 import StateDataTable from './StateDataTable';
 import BudgetSection from './BudgetSection';
 import EmailSignup from '../../components/EmailSignup';
+import WAChildcareSection from './WAChildcareSection';
 
 // All US states with map centers
 const STATE_INFO: Record<string, { name: string; center: [number, number]; zoom: number }> = {
@@ -575,6 +576,9 @@ export default async function StatePage({ params }: PageProps) {
         initialPPPCount={fundingTotals?.pppCount ?? 0}
         initialGrantCount={fundingTotals?.grantCount ?? 0}
       />
+
+      {/* WA Childcare Section - only for Washington */}
+      {state.toUpperCase() === 'WA' && <WAChildcareSection />}
 
       {/* Budget Documents Section */}
       <BudgetSection
