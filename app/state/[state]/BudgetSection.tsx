@@ -108,25 +108,13 @@ export default function BudgetSection({ stateCode, stateName }: Props) {
     <div className="mt-8">
       <h2 className="text-lg font-bold mb-4">Budget Documents by Jurisdiction</h2>
 
-      {/* Summary stats */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="border border-gray-800 p-3">
-          <p className="text-blue-500 font-mono text-lg font-bold">
-            {formatNumber(totalStats.jurisdictions)}
-          </p>
-          <p className="text-gray-500 text-xs">Counties & Cities</p>
-        </div>
-        <div className="border border-gray-800 p-3">
-          <p className="text-green-500 font-mono text-lg font-bold">
-            {formatNumber(totalStats.orgs)}
-          </p>
-          <p className="text-gray-500 text-xs">Organizations Linked</p>
-        </div>
-        <div className="border border-gray-800 p-3">
-          <p className="text-purple-500 font-mono text-lg font-bold">
-            {formatMoney(totalStats.ppp)}
-          </p>
-          <p className="text-gray-500 text-xs">PPP Loans</p>
+      {/* Summary stats - Terminal Style */}
+      <div className="font-mono text-sm mb-6">
+        <p className="text-gray-500">BUDGET_JURISDICTIONS</p>
+        <div className="mt-2 text-gray-400">
+          <p><span className="text-gray-600">├─</span> counties_cities <span className="text-white ml-4">{formatNumber(totalStats.jurisdictions)}</span></p>
+          <p><span className="text-gray-600">├─</span> organizations_linked <span className="text-white ml-4">{formatNumber(totalStats.orgs)}</span></p>
+          <p><span className="text-gray-600">└─</span> ppp_loan_total <span className="text-green-500 ml-4">{formatMoney(totalStats.ppp)}</span></p>
         </div>
       </div>
 
@@ -201,25 +189,19 @@ export default function BudgetSection({ stateCode, stateName }: Props) {
                       {j.name}
                     </Link>
                   </td>
-                  <td className="p-3">
-                    <span className={`px-2 py-0.5 rounded text-xs ${
-                      j.type === 'county'
-                        ? 'bg-amber-900/40 text-amber-400'
-                        : 'bg-cyan-900/40 text-cyan-400'
-                    }`}>
-                      {j.type}
-                    </span>
+                  <td className="p-3 text-gray-500 text-xs">
+                    {j.type}
                   </td>
                   <td className="p-3 text-right text-gray-400 font-mono">
                     {j.population ? j.population.toLocaleString() : '-'}
                   </td>
-                  <td className="p-3 text-right font-mono text-green-500">
+                  <td className="p-3 text-right font-mono text-white">
                     {formatNumber(j.org_count)}
                   </td>
                   <td className="p-3 text-right font-mono text-gray-400">
                     {formatNumber(j.ppp_loan_count)}
                   </td>
-                  <td className="p-3 text-right font-mono text-purple-400">
+                  <td className="p-3 text-right font-mono text-green-500">
                     {formatMoney(j.ppp_loan_total)}
                   </td>
                 </tr>

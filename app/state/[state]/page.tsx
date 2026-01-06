@@ -468,28 +468,17 @@ export default async function StatePage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <div className="border border-gray-800 p-4">
-          <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(fundingTotals?.totalTracked ?? 0)}
-          </p>
-          <p className="text-gray-500 text-sm">Govt Spending Tracked</p>
+      {/* Stats - Terminal Style */}
+      <div className="font-mono text-sm mb-10">
+        <p className="text-gray-500">{stateInfo.name.toUpperCase().replace(/ /g, '_')}_FUNDING</p>
+        <div className="mt-2 text-gray-400">
+          <p><span className="text-gray-600">├─</span> govt_spending_tracked <span className="text-green-500 ml-4">{formatMoney(fundingTotals?.totalTracked ?? 0)}</span></p>
+          <p><span className="text-gray-600">├─</span> organizations <span className="text-white ml-4">{(orgStats?.total ?? 0).toLocaleString()}</span></p>
+          {(h1bStats?.total ?? 0) > 0 && (
+            <p><span className="text-gray-600">├─</span> h1b_applications <span className="text-white ml-4">{(h1bStats?.total ?? 0).toLocaleString()}</span></p>
+          )}
+          <p><span className="text-gray-600">└─</span> ppp_loans <span className="text-white ml-4">{(fundingTotals?.pppCount ?? 0).toLocaleString()}</span></p>
         </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-blue-500 font-mono text-xl font-bold">
-            {(orgStats?.total ?? 0).toLocaleString()}
-          </p>
-          <p className="text-gray-500 text-sm">Organizations</p>
-        </div>
-        {(h1bStats?.total ?? 0) > 0 && (
-          <div className="border border-gray-800 p-4">
-            <p className="text-purple-500 font-mono text-xl font-bold">
-              {(h1bStats?.total ?? 0).toLocaleString()}
-            </p>
-            <p className="text-gray-500 text-sm">H1B Applications</p>
-          </div>
-        )}
       </div>
 
       {/* Unified Map - show if any geocoded data exists */}
