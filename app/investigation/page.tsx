@@ -129,12 +129,28 @@ const INVESTIGATION_TYPES = [
     isNew: true
   },
   {
+    id: 'retired-army',
+    title: 'The Retired Army',
+    description: '$1.89B from "RETIRED" donors - the partisan mirror',
+    href: '/investigation/retired-army',
+    stats: '18.3M donations',
+    isNew: true
+  },
+  {
     id: 'mn-medicaid-fraud',
     title: 'MN Medicaid Fraud Wave',
     description: '$9B+ in fraud across FOF, housing, and autism programs',
     href: '/investigation/mn-medicaid-fraud',
     stats: '98 charged',
     isNew: false
+  },
+  {
+    id: '2104-park-ave',
+    title: '2104 Park Ave Cluster',
+    description: '5 businesses, $2.1M PPP, $42M DHS payments from single address',
+    href: '/investigation/2104-park-ave',
+    stats: '$44M tracked',
+    isNew: true
   },
   {
     id: 'mn-oh-wa',
