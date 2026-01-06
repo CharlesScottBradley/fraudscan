@@ -1,42 +1,42 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-interface SBALoan {
+interface FederalGrant {
   id: string;
-  sba_loan_number: string;
-  loan_program: string;
-  loan_subprogram: string;
-  borrower_name: string;
-  borrower_address: string;
-  borrower_city: string;
-  borrower_state: string;
-  borrower_zip: string;
-  gross_approval: number;
-  sba_guaranteed_amount: number | null;
-  term_months: number | null;
-  lender_name: string;
-  naics_code: string;
-  naics_description: string;
-  business_type: string;
-  jobs_supported: number | null;
-  approval_date: string;
+  award_id: string;
+  fain: string | null;
+  recipient_name: string;
+  recipient_city: string | null;
+  recipient_state: string;
+  recipient_zip: string | null;
+  recipient_county: string | null;
+  award_amount: number;
+  total_obligation: number | null;
+  award_type: string | null;
+  awarding_agency: string | null;
+  cfda_number: string | null;
+  cfda_title: string | null;
+  award_date: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  award_description: string | null;
   is_fraud_prone_industry: boolean;
   industry_category: string | null;
 }
 
-interface SBASearchResponse {
-  loans: SBALoan[];
+interface GrantSearchResponse {
+  grants: FederalGrant[];
   total: number;
   page: number;
   pageSize: number;
   totalPages: number;
   stats: {
     totalAmount: number;
-    avgLoan: number;
+    avgGrant: number;
     fraudProneCount: number;
-    by7a: number;
-    by504: number;
+    topAgencies: { agency: string; count: number; amount: number }[];
   };
 }
 
@@ -52,6 +52,7 @@ const US_STATES: Record<string, string> = {
   SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont',
   VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
   DC: 'District of Columbia', PR: 'Puerto Rico', VI: 'Virgin Islands', GU: 'Guam',
+  AS: 'American Samoa', MP: 'Northern Mariana Islands',
 };
 
 function formatMoney(amount: number | null): string {
@@ -62,8 +63,14 @@ function formatMoney(amount: number | null): string {
   return `$${amount.toLocaleString()}`;
 }
 
-export default function SBALoansPage() {
-  const [loans, setLoans] = useState<SBALoan[]>([]);
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+export default function FederalGrantsPage() {
+  const [grants, setGrants] = useState<FederalGrant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
@@ -77,18 +84,17 @@ export default function SBALoansPage() {
   const [selectedState, setSelectedState] = useState('');
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
-  const [program, setProgram] = useState('');
+  const [agency, setAgency] = useState('');
   const [fraudProneOnly, setFraudProneOnly] = useState(false);
-  const [sortBy, setSortBy] = useState('gross_approval');
+  const [sortBy, setSortBy] = useState('award_amount');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   // Stats
   const [stats, setStats] = useState({
     totalAmount: 0,
-    avgLoan: 0,
+    avgGrant: 0,
     fraudProneCount: 0,
-    by7a: 0,
-    by504: 0,
+    topAgencies: [] as { agency: string; count: number; amount: number }[],
   });
 
   // Debounce search
@@ -102,11 +108,11 @@ export default function SBALoansPage() {
 
   // Fetch data
   useEffect(() => {
-    fetchLoans();
+    fetchGrants();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, selectedState, minAmount, maxAmount, program, fraudProneOnly, page, pageSize, sortBy, sortDir]);
+  }, [debouncedSearch, selectedState, minAmount, maxAmount, agency, fraudProneOnly, page, pageSize, sortBy, sortDir]);
 
-  const fetchLoans = async () => {
+  const fetchGrants = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -121,29 +127,29 @@ export default function SBALoansPage() {
       if (selectedState) params.set('state', selectedState);
       if (minAmount) params.set('minAmount', minAmount);
       if (maxAmount) params.set('maxAmount', maxAmount);
-      if (program) params.set('program', program);
+      if (agency) params.set('agency', agency);
       if (fraudProneOnly) params.set('fraudProne', 'true');
 
-      const res = await fetch(`/api/sba-loans?${params}`);
+      const res = await fetch(`/api/grants?${params}`);
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
 
-      const data: SBASearchResponse = await res.json();
+      const data: GrantSearchResponse = await res.json();
 
-      if (!data || !data.loans) {
+      if (!data || !data.grants) {
         throw new Error('Invalid response format');
       }
 
-      setLoans(data.loans);
+      setGrants(data.grants);
       setTotalCount(data.total || 0);
       setTotalPages(data.totalPages || 0);
-      setStats(data.stats || { totalAmount: 0, avgLoan: 0, fraudProneCount: 0, by7a: 0, by504: 0 });
+      setStats(data.stats || { totalAmount: 0, avgGrant: 0, fraudProneCount: 0, topAgencies: [] });
     } catch (err) {
-      console.error('Failed to fetch SBA loans:', err);
-      setError('Failed to load SBA loans. Please try again.');
-      setLoans([]);
+      console.error('Failed to fetch federal grants:', err);
+      setError('Failed to load federal grants. Please try again.');
+      setGrants([]);
       setTotalCount(0);
       setTotalPages(0);
     } finally {
@@ -167,22 +173,22 @@ export default function SBALoansPage() {
     setSelectedState('');
     setMinAmount('');
     setMaxAmount('');
-    setProgram('');
+    setAgency('');
     setFraudProneOnly(false);
     setPage(1);
   };
 
-  const hasFilters = searchTerm || selectedState || minAmount || maxAmount || program || fraudProneOnly;
+  const hasFilters = searchTerm || selectedState || minAmount || maxAmount || agency || fraudProneOnly;
 
   return (
     <div>
       {/* Terminal-style stats header */}
       <div className="font-mono text-sm mb-10">
-        <p className="text-gray-500">SBA_LOANS_DATABASE</p>
+        <p className="text-gray-500">FEDERAL_GRANTS_DATABASE</p>
         <div className="mt-2 text-gray-400">
-          <p><span className="text-gray-600">|-</span> loans_tracked <span className="text-white ml-4">1.82M</span></p>
-          <p><span className="text-gray-600">|-</span> programs <span className="text-white ml-4">7(a) / 504</span></p>
-          <p><span className="text-gray-600">|-</span> avg_loan <span className="text-green-500 ml-4">{formatMoney(stats.avgLoan)}</span></p>
+          <p><span className="text-gray-600">|-</span> grants_tracked <span className="text-white ml-4">3.68M</span></p>
+          <p><span className="text-gray-600">|-</span> total_disbursed <span className="text-green-500 ml-4">$1.2T</span></p>
+          <p><span className="text-gray-600">|-</span> awarding_agencies <span className="text-white ml-4">2,847</span></p>
           <p><span className="text-gray-600">|_</span> fraud_prone_industries <span className="text-white ml-4">{stats.fraudProneCount.toLocaleString()}</span></p>
         </div>
       </div>
@@ -191,7 +197,7 @@ export default function SBALoansPage() {
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search by business name, address, or lender..."
+          placeholder="Search by recipient, agency, or program..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-3 bg-black border border-gray-700 rounded text-sm focus:outline-none focus:border-gray-500"
@@ -215,16 +221,14 @@ export default function SBALoansPage() {
         </div>
 
         <div>
-          <label className="block text-gray-500 text-xs mb-1">Program</label>
-          <select
-            value={program}
-            onChange={(e) => { setProgram(e.target.value); setPage(1); }}
-            className="bg-black border border-gray-700 rounded px-3 py-2 focus:outline-none focus:border-gray-500"
-          >
-            <option value="">All Programs</option>
-            <option value="7a">7(a) Loans</option>
-            <option value="504">504 Loans</option>
-          </select>
+          <label className="block text-gray-500 text-xs mb-1">Agency</label>
+          <input
+            type="text"
+            placeholder="e.g. HHS, DOE"
+            value={agency}
+            onChange={(e) => { setAgency(e.target.value); setPage(1); }}
+            className="w-32 px-3 py-2 bg-black border border-gray-700 rounded focus:outline-none focus:border-gray-500"
+          />
         </div>
 
         <div>
@@ -255,7 +259,7 @@ export default function SBALoansPage() {
               type="checkbox"
               checked={fraudProneOnly}
               onChange={(e) => { setFraudProneOnly(e.target.checked); setPage(1); }}
-              className="form-checkbox h-4 w-4 text-amber-500 bg-black border-gray-700 rounded"
+              className="form-checkbox h-4 w-4 text-gray-500 bg-black border-gray-700 rounded"
             />
             <span className="text-gray-400">Fraud-Prone Industries</span>
           </label>
@@ -289,7 +293,7 @@ export default function SBALoansPage() {
       {/* Results Count */}
       <div className="mb-4 flex items-center justify-between text-sm">
         <p className="text-gray-500">
-          {loading ? 'Loading...' : error ? '' : `Showing ${loans.length.toLocaleString()} of ${totalCount.toLocaleString()} results`}
+          {loading ? 'Loading...' : error ? '' : `Showing ${grants.length.toLocaleString()} of ${totalCount.toLocaleString()} results`}
         </p>
         {stats.fraudProneCount > 0 && !loading && !error && (
           <p className="text-gray-500">
@@ -303,7 +307,7 @@ export default function SBALoansPage() {
         <div className="border border-gray-800 p-8 text-center mb-4">
           <p className="text-gray-400">{error}</p>
           <button
-            onClick={fetchLoans}
+            onClick={fetchGrants}
             className="mt-4 px-4 py-2 border border-gray-700 rounded text-sm text-gray-400 hover:text-white"
           >
             Retry
@@ -318,70 +322,74 @@ export default function SBALoansPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-900">
                 <tr>
+                  <th
+                    className="text-left p-3 font-medium text-gray-400 cursor-pointer hover:text-white"
+                    onClick={() => toggleSort('recipient_name')}
+                  >
+                    Recipient {sortBy === 'recipient_name' && (sortDir === 'desc' ? '↓' : '↑')}
+                  </th>
+                  <th className="text-left p-3 font-medium text-gray-400">Location</th>
+                  <th
+                    className="text-right p-3 font-medium text-gray-400 cursor-pointer hover:text-white"
+                    onClick={() => toggleSort('award_amount')}
+                  >
+                    Amount {sortBy === 'award_amount' && (sortDir === 'desc' ? '↓' : '↑')}
+                  </th>
+                  <th className="text-left p-3 font-medium text-gray-400">Agency</th>
                   <th className="text-left p-3 font-medium text-gray-400">Program</th>
                   <th
                     className="text-left p-3 font-medium text-gray-400 cursor-pointer hover:text-white"
-                    onClick={() => toggleSort('borrower_name')}
+                    onClick={() => toggleSort('award_date')}
                   >
-                    Business Name {sortBy === 'borrower_name' && (sortDir === 'desc' ? '↓' : '↑')}
-                  </th>
-                  <th className="text-left p-3 font-medium text-gray-400">City / State</th>
-                  <th
-                    className="text-right p-3 font-medium text-gray-400 cursor-pointer hover:text-white"
-                    onClick={() => toggleSort('gross_approval')}
-                  >
-                    Amount {sortBy === 'gross_approval' && (sortDir === 'desc' ? '↓' : '↑')}
-                  </th>
-                  <th
-                    className="text-right p-3 font-medium text-gray-400 cursor-pointer hover:text-white"
-                    onClick={() => toggleSort('jobs_supported')}
-                  >
-                    Jobs {sortBy === 'jobs_supported' && (sortDir === 'desc' ? '↓' : '↑')}
+                    Date {sortBy === 'award_date' && (sortDir === 'desc' ? '↓' : '↑')}
                   </th>
                   <th className="text-left p-3 font-medium text-gray-400">Industry</th>
-                  <th className="text-left p-3 font-medium text-gray-400">Lender</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="p-12 text-center text-gray-500">
-                      Loading SBA loans...
+                      Loading federal grants...
                     </td>
                   </tr>
-                ) : loans.length === 0 ? (
+                ) : grants.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="p-12 text-center text-gray-500">
-                      No loans found matching your search criteria.
+                      No grants found matching your search criteria.
                     </td>
                   </tr>
                 ) : (
-                  loans.map((loan) => (
-                    <tr key={loan.id} className="hover:bg-gray-900/50">
-                      <td className="p-3 text-gray-400 text-xs">
-                        {loan.loan_program === '7a' ? '7(a)' : '504'}
-                      </td>
+                  grants.map((grant) => (
+                    <tr key={grant.id} className="hover:bg-gray-900/50">
                       <td className="p-3">
-                        <span className="text-white">{loan.borrower_name}</span>
-                        {loan.is_fraud_prone_industry && (
+                        <Link
+                          href={`/federal-grants/${grant.award_id}`}
+                          className="text-white hover:text-green-400"
+                        >
+                          {grant.recipient_name}
+                        </Link>
+                        {grant.is_fraud_prone_industry && (
                           <span className="ml-2 text-gray-500 text-xs">flagged</span>
                         )}
-                        <div className="text-xs text-gray-500 mt-0.5">{loan.business_type}</div>
                       </td>
                       <td className="p-3 text-gray-400">
-                        {loan.borrower_city}, {loan.borrower_state}
+                        {grant.recipient_city ? `${grant.recipient_city}, ` : ''}{grant.recipient_state}
                       </td>
                       <td className="p-3 text-right font-mono text-green-500">
-                        {formatMoney(loan.gross_approval)}
-                      </td>
-                      <td className="p-3 text-right font-mono text-white">
-                        {loan.jobs_supported || '-'}
-                      </td>
-                      <td className="p-3 text-gray-500 text-xs max-w-[200px] truncate">
-                        {loan.naics_description || loan.industry_category || '-'}
+                        {formatMoney(grant.award_amount)}
                       </td>
                       <td className="p-3 text-gray-500 text-xs max-w-[150px] truncate">
-                        {loan.lender_name}
+                        {grant.awarding_agency || '-'}
+                      </td>
+                      <td className="p-3 text-gray-500 text-xs max-w-[200px] truncate">
+                        {grant.cfda_title || grant.award_description || '-'}
+                      </td>
+                      <td className="p-3 text-gray-500 text-xs">
+                        {formatDate(grant.award_date)}
+                      </td>
+                      <td className="p-3 text-gray-500 text-xs">
+                        {grant.industry_category || '-'}
                       </td>
                     </tr>
                   ))
@@ -425,22 +433,40 @@ export default function SBALoansPage() {
 
       {/* Info Section */}
       <div className="mt-8 pt-6 border-t border-gray-800">
-        <p className="text-sm text-gray-500 mb-3">About SBA Loans</p>
+        <p className="text-sm text-gray-500 mb-3">About Federal Grants</p>
         <div className="text-xs text-gray-600 space-y-2">
           <p>
-            <strong className="text-gray-400">7(a) Program:</strong> The SBA&apos;s primary business loan program for general-purpose financing. 
-            Loans up to $5 million for working capital, equipment, real estate, and debt refinancing.
+            This database contains federal grant awards from USASpending.gov, covering direct payments,
+            block grants, project grants, and other assistance programs administered by federal agencies.
           </p>
           <p>
-            <strong className="text-gray-400">504 Program:</strong> Long-term fixed-rate financing for major fixed assets like real estate and equipment. 
-            Typically involves a bank, a CDC (Certified Development Company), and the borrower.
+            <span className="text-gray-400">CFDA numbers</span> identify specific federal assistance programs.
+            Each program has defined eligibility criteria, application procedures, and reporting requirements.
           </p>
           <p className="text-gray-500 mt-4">
-            Note: This data covers standard SBA lending programs, separate from COVID-era PPP loans.
+            Data sourced from USASpending.gov. Updated quarterly.
           </p>
+        </div>
+      </div>
+
+      {/* Related Links */}
+      <div className="mt-8 pt-6 border-t border-gray-800">
+        <p className="text-sm text-gray-500 mb-3">Related Databases</p>
+        <div className="flex gap-3">
+          <Link
+            href="/ppp"
+            className="px-4 py-2 border border-gray-700 rounded text-sm text-gray-400 hover:text-white hover:border-gray-600"
+          >
+            PPP Loans
+          </Link>
+          <Link
+            href="/sba"
+            className="px-4 py-2 border border-gray-700 rounded text-sm text-gray-400 hover:text-white hover:border-gray-600"
+          >
+            SBA Loans
+          </Link>
         </div>
       </div>
     </div>
   );
 }
-
