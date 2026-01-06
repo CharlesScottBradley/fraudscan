@@ -199,12 +199,12 @@ export default function BountyBoardPage() {
           <div className="flex items-start gap-3">
             <span className="text-yellow-500 text-xl">⏸</span>
             <div>
-              <p className="text-yellow-400 font-medium">Bounty Program Temporarily Paused</p>
+              <p className="text-yellow-400 font-medium">Bounty Payments Temporarily Paused</p>
               <p className="text-yellow-200/70 text-sm mt-1">
-                We&apos;ve hit our budget for now. Bounties will reopen once we secure additional funding.
+                We&apos;re still accepting submissions, but bounty payments are on hold until we secure additional funding.
               </p>
               <p className="text-gray-500 text-xs mt-2">
-                Tips and general submissions are still welcome at <Link href="/tip" className="text-yellow-500 hover:underline">/tip</Link>
+                Quality submissions will still be reviewed and may be eligible for payment when funding resumes.
               </p>
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function BountyBoardPage() {
         <p className="text-yellow-300 font-medium mb-2">Important Terms</p>
         <ul className="list-disc list-inside space-y-1">
           <li><strong>U.S. residents only</strong> — Bounties are only available to individuals residing in the United States</li>
-          <li><strong>Weekly budget cap</strong> — Maximum ${WEEKLY_BUDGET.toLocaleString()}/week in bounty payments. Submissions queued if budget exhausted.</li>
+          <li><strong>Subject to funding</strong> — Bounty program may pause when budget is exhausted</li>
           <li>Submissions are independently verified before payment</li>
           <li>Site reserves the right to verify, modify, or decline publication</li>
           <li>Submission grants site perpetual license to use, modify, and publish</li>
@@ -351,28 +351,20 @@ export default function BountyBoardPage() {
                   {/* Submit CTA */}
                   {slotsAvailable > 0 && (
                     <div className="pt-4 border-t border-gray-800">
-                      {BOUNTIES_PAUSED ? (
-                        <div>
-                          <span className="inline-block px-4 py-2 bg-gray-800 border border-gray-700 rounded text-gray-500 text-sm cursor-not-allowed">
-                            Submissions Paused
-                          </span>
-                          <p className="text-gray-600 text-xs mt-2">
-                            Check back soon or <Link href="/tip" className="text-gray-400 hover:underline">submit a tip</Link> instead
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <Link
-                            href="/crowdsource/submit"
-                            className="inline-block px-4 py-2 bg-green-900/30 border border-green-800 rounded text-green-400 text-sm hover:bg-green-900/50 transition-colors"
-                          >
-                            Submit for this Bounty
-                          </Link>
-                          <p className="text-gray-600 text-xs mt-2">
-                            Include &quot;BOUNTY: {bounty.id}&quot; in your submission
-                          </p>
-                        </div>
-                      )}
+                      <Link
+                        href="/crowdsource/submit"
+                        className={`inline-block px-4 py-2 rounded text-sm transition-colors ${
+                          BOUNTIES_PAUSED
+                            ? 'bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700'
+                            : 'bg-green-900/30 border border-green-800 text-green-400 hover:bg-green-900/50'
+                        }`}
+                      >
+                        Submit for this Bounty
+                      </Link>
+                      <p className="text-gray-600 text-xs mt-2">
+                        Include &quot;BOUNTY: {bounty.id}&quot; in your submission
+                        {BOUNTIES_PAUSED && <span className="text-yellow-600"> · Payment pending funding</span>}
+                      </p>
                     </div>
                   )}
                 </div>
