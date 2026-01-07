@@ -115,7 +115,7 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
       <div className="text-sm text-gray-500 mb-6">
         <Link href="/investigation" className="hover:text-gray-300">Investigations</Link>
         <span className="mx-2">/</span>
-        <span className="text-white">Columbus OH PPP Fraud Network</span>
+        <span className="text-white">Columbus OH Fraud Network</span>
       </div>
 
       {/* Breaking News Banner */}
@@ -154,7 +154,7 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
       {/* Header */}
       <div className="mb-8">
         <p className="text-gray-500 text-sm uppercase tracking-wide mb-2">Investigation</p>
-        <h1 className="text-3xl font-bold mb-2">Columbus OH PPP Fraud Network</h1>
+        <h1 className="text-3xl font-bold mb-2">Columbus OH Fraud Network</h1>
         <p className="text-gray-400">Multi-cluster analysis connecting PPP fraud, daycare fraud, and SERC shell organization</p>
       </div>
 

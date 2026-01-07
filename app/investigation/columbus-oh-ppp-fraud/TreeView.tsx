@@ -95,13 +95,13 @@ export default function TreeView({ entities, daycares, onSelectEntity }: TreeVie
     // Root node
     nodeData.push({
       id: nodeId,
-      label: 'Columbus OH\nPPP Network',
+      label: 'Columbus OH\nFraud Network',
       level: 0,
       color: { background: '#1f2937', border: '#4b5563' },
       shape: 'box',
       size: 30,
       font: { color: '#ffffff', size: 14, face: 'monospace' },
-      title: 'Columbus OH PPP Fraud Network\n$13.86M across 186 entities'
+      title: 'Columbus OH Fraud Network\n$13.86M PPP + $14M daycare subsidies'
     });
     const rootId = nodeId++;
 
@@ -434,7 +434,7 @@ export default function TreeView({ entities, daycares, onSelectEntity }: TreeVie
         const clickedNodeId = params.nodes[0];
         // Find the entity by matching the node
         const clickedNode = nodeData.find(n => n.id === clickedNodeId);
-        if (clickedNode && clickedNode.label !== 'Columbus OH\nPPP Network') {
+        if (clickedNode && clickedNode.label !== 'Columbus OH\nFraud Network') {
           const entity = entities.find(e =>
             e.entity_name === clickedNode.label ||
             e.entity_name.startsWith(clickedNode.label.replace('...', ''))
