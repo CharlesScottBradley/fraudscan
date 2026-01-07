@@ -297,11 +297,11 @@ export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
     const options = {
       layout: {
         hierarchical: {
-          direction: 'UD', // Up-Down
+          direction: 'LR', // Left-Right (flows vertically down the page)
           sortMethod: 'directed',
-          levelSeparation: 120,
-          nodeSpacing: 150,
-          treeSpacing: 200,
+          levelSeparation: 200,
+          nodeSpacing: 80,
+          treeSpacing: 100,
           blockShifting: true,
           edgeMinimization: true,
           parentCentralization: true,
@@ -314,8 +314,8 @@ export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
       edges: {
         smooth: {
           type: 'cubicBezier',
-          forceDirection: 'vertical',
-          roundness: 0.4
+          forceDirection: 'horizontal',
+          roundness: 0.5
         },
         color: {
           inherit: false,
@@ -385,7 +385,7 @@ export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
         )}
         <div
           ref={containerRef}
-          className="w-full h-[650px] border border-gray-800 bg-gray-950"
+          className="w-full h-[800px] border border-gray-800 bg-gray-950"
         />
       </div>
 
