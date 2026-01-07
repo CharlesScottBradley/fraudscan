@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useGlobalSearch } from './GlobalSearchProvider';
 
 interface NavChild {
   label: string;
@@ -190,6 +191,27 @@ function NavDropdown({ item, isActive }: { item: NavItem; isActive: boolean }) {
   );
 }
 
+function MobileSearchButton({ onClose }: { onClose: () => void }) {
+  const { open } = useGlobalSearch();
+
+  return (
+    <button
+      onClick={() => {
+        onClose();
+        // Small delay to let mobile menu close first
+        setTimeout(open, 100);
+      }}
+      className="w-full flex items-center gap-3 px-3 py-2.5 text-gray-400 hover:text-white bg-gray-900 border border-gray-800 rounded-md hover:border-gray-700 transition-colors"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <span>Search</span>
+      <kbd className="ml-auto px-1.5 py-0.5 text-xs bg-gray-800 rounded text-gray-500">⌘K</kbd>
+    </button>
+  );
+}
+
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const pathname = usePathname();
@@ -216,6 +238,8 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         </button>
 
         <nav className="mt-12 flex flex-col gap-2">
+          {/* Search Button */}
+          <MobileSearchButton onClose={onClose} />
           {navItems.map((item) => {
             if (item.href) {
               const isActive = pathname === item.href;
@@ -343,6 +367,33 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   );
 }
 
+function SearchButton() {
+  const { open } = useGlobalSearch();
+
+  return (
+    <button
+      onClick={open}
+      className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-300 bg-gray-900 border border-gray-800 rounded-md hover:border-gray-700 transition-colors"
+    >
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
+      </svg>
+      <span className="hidden xl:inline">Search</span>
+      <kbd className="hidden xl:inline px-1.5 py-0.5 text-xs bg-gray-800 rounded text-gray-500">⌘K</kbd>
+    </button>
+  );
+}
+
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -378,8 +429,9 @@ export default function Navigation() {
 
           return <NavDropdown key={item.label} item={item} isActive={isActive} />;
         })}
-        <Link 
-          href="/support" 
+        <SearchButton />
+        <Link
+          href="/support"
           className="px-4 py-1.5 border border-orange-500 text-orange-500 hover:bg-orange-500/10 rounded text-sm"
         >
           Support Us

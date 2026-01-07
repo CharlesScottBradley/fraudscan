@@ -6,6 +6,8 @@ import "./globals.css";
 import Navigation from "./components/Navigation";
 import EmailSignup from "./components/EmailSignup";
 import WelcomeBanner from "./components/WelcomeBanner";
+import { GlobalSearchProvider } from "./components/GlobalSearchProvider";
+import GlobalSearch from "./components/GlobalSearch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased bg-black text-white`}>
+        <GlobalSearchProvider>
         <WelcomeBanner />
         <div className="min-h-screen flex flex-col">
           <header className="py-6 px-6 flex items-center justify-between max-w-6xl mx-auto w-full">
@@ -95,6 +98,8 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
+        <GlobalSearch />
+        </GlobalSearchProvider>
         <Analytics />
       </body>
     </html>
