@@ -99,6 +99,49 @@ const LAWSUITS = [
   },
 ];
 
+// Scrubbed Names from Rose Lake Capital Website (Sept-Oct 2024)
+const SCRUBBED_NAMES = [
+  { name: 'Adam Ereli', role: 'Former US Ambassador to Bahrain (Obama admin)', status: 'REMOVED' },
+  { name: 'Max Baucus', role: 'Former US Senator, Ambassador to China (Obama admin)', status: 'REMOVED' },
+  { name: 'William Derrough', role: 'Former DNC Treasurer (2017-2021), Moelis & Co MD', status: 'REMOVED' },
+  { name: 'Keith Mestrich', role: 'Former CEO, Amalgamated Bank', status: 'REMOVED' },
+  { name: 'Alex Hoffman', role: 'DNC Finance Chair associate', status: 'REMOVED' },
+  { name: 'Sheila Healy', role: 'Unknown role', status: 'REMOVED' },
+  { name: 'Justin Pratt', role: 'Unknown role', status: 'REMOVED' },
+];
+
+// Financial Disclosure vs Reality (Court Documents)
+const DISCLOSURE_DISCREPANCIES = [
+  {
+    entity: 'Rose Lake Capital LLC',
+    disclosure_2023: '$1 - $1,000',
+    court_docs_2024: '$42.44',
+    disclosure_2024: '$5M - $25M',
+    change: '5,000x to 25,000,000x'
+  },
+  {
+    entity: 'eStCru LLC (Winery)',
+    disclosure_2023: '$15,001 - $50,000',
+    court_docs_2024: '$650',
+    disclosure_2024: '$1M - $5M',
+    change: '~100x'
+  },
+  {
+    entity: 'eSt Ventures LLC',
+    disclosure_2023: 'Not listed',
+    court_docs_2024: '$0.05',
+    disclosure_2024: 'Not listed',
+    change: 'N/A'
+  },
+  {
+    entity: 'Rose Lake Inc.',
+    disclosure_2023: 'Not listed',
+    court_docs_2024: '$10',
+    disclosure_2024: 'Not listed',
+    change: 'N/A'
+  },
+];
+
 // Timeline
 const TIMELINE = [
   { date: 'July 2018', event: 'E Street Group LLC formed in Washington, DC', type: 'formation' },
@@ -116,8 +159,12 @@ const TIMELINE = [
   { date: 'Early 2023', event: 'eStCru winemaker Erica Stancliff stops getting paid', type: 'financial' },
   { date: 'January 2023', event: 'Rose Lake Inc. formed in Delaware', type: 'formation' },
   { date: 'Fall 2023', event: 'Naeem Mohd sues eStCru in California for $780K', type: 'lawsuit' },
+  { date: 'Feb 2024', event: 'Court docs show Rose Lake Capital has $42.44, eStCru has $650 in bank', type: 'financial' },
   { date: 'August 2024', event: 'Hailer settles SD cannabis lawsuit for $1.2M (confession of judgment)', type: 'lawsuit' },
+  { date: 'Sept-Oct 2024', event: '9 names scrubbed from Rose Lake Capital website (incl. Derrough, Ereli, Baucus)', type: 'scrubbing' },
+  { date: 'Oct 2024', event: '8 more individuals arrested in MN $9B welfare fraud case', type: 'fraud' },
   { date: 'November 2024', event: 'Mohd v. eStCru settled (amount undisclosed)', type: 'lawsuit' },
+  { date: 'May 2025', event: 'Omar files disclosure showing $6-30M household net worth', type: 'disclosure' },
 ];
 
 export const revalidate = 3600;
@@ -142,11 +189,11 @@ export default function RoseLakeCapitalPage() {
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">├─</span> e_street_group_fec_payments <span className="text-green-500 ml-4">{formatMoney(totalDisbursements)}</span></p>
           <p><span className="text-gray-600">├─</span> omar_campaign_share <span className="text-yellow-400 ml-4">{omarPercentage}%</span></p>
-          <p><span className="text-gray-600">├─</span> payment_count <span className="text-white ml-4">{totalPayments}</span></p>
-          <p><span className="text-gray-600">├─</span> delaware_entities <span className="text-white ml-4">3</span></p>
-          <p><span className="text-gray-600">├─</span> hailer_investment_funds <span className="text-white ml-4">5</span></p>
+          <p><span className="text-gray-600">├─</span> disclosed_net_worth_2024 <span className="text-green-500 ml-4">$6M - $30M</span></p>
+          <p><span className="text-gray-600">├─</span> actual_bank_balance_feb_2024 <span className="text-red-400 ml-4">$706.49 (court docs)</span></p>
+          <p><span className="text-gray-600">├─</span> names_scrubbed_from_website <span className="text-orange-400 ml-4">9 (Sept-Oct 2024)</span></p>
+          <p><span className="text-gray-600">├─</span> sec_registration <span className="text-red-400 ml-4">NOT FOUND ($60B AUM claimed)</span></p>
           <p><span className="text-gray-600">├─</span> lawsuits_settled <span className="text-red-400 ml-4">2 ($1.98M+ in claims)</span></p>
-          <p><span className="text-gray-600">├─</span> shared_office <span className="text-white ml-4">80 M St SE (WeWork)</span></p>
           <p><span className="text-gray-600">└─</span> ppp_loan <span className="text-green-500 ml-4">$134,800 (forgiven)</span></p>
         </div>
       </div>
@@ -321,6 +368,112 @@ export default function RoseLakeCapitalPage() {
         <p className="text-xs text-gray-500 mt-4">
           <strong>Note:</strong> Campaign payments to a spouse&apos;s company are legal if disclosed and at market rate.
           This structure raises governance questions, not allegations of illegality.
+        </p>
+      </div>
+
+      {/* CRITICAL: Financial Disclosure vs Court Documents */}
+      <div className="bg-red-900/20 border border-red-800 p-4 mb-8">
+        <h3 className="text-red-400 font-medium mb-2">Financial Disclosure vs. Court Documents</h3>
+        <p className="text-sm text-gray-400 mb-4">
+          Omar&apos;s congressional financial disclosures show dramatic asset value increases that contradict
+          bank balances revealed in February 2024 court filings from the Hailer fraud lawsuits.
+        </p>
+        <div className="border border-red-900/50 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-900">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-400">Entity</th>
+                <th className="text-right p-3 font-medium text-gray-400">2023 Disclosure</th>
+                <th className="text-right p-3 font-medium text-red-400">Court Docs (Feb 2024)</th>
+                <th className="text-right p-3 font-medium text-gray-400">2024 Disclosure</th>
+                <th className="text-right p-3 font-medium text-gray-400">Change</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {DISCLOSURE_DISCREPANCIES.map((d, idx) => (
+                <tr key={idx} className="hover:bg-gray-900/50">
+                  <td className="p-3 text-white">{d.entity}</td>
+                  <td className="p-3 text-right font-mono text-gray-400">{d.disclosure_2023}</td>
+                  <td className="p-3 text-right font-mono text-red-400 font-bold">{d.court_docs_2024}</td>
+                  <td className="p-3 text-right font-mono text-green-400">{d.disclosure_2024}</td>
+                  <td className="p-3 text-right font-mono text-yellow-400">{d.change}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 p-3 bg-gray-900/50 rounded">
+          <p className="text-sm text-gray-400">
+            <strong className="text-red-400">Key Question:</strong> How do companies with a combined <strong className="text-red-400">$706.49</strong> in
+            their bank accounts become worth <strong className="text-green-400">$6-30 million</strong> within months?
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            Additionally, Omar reported <strong>$0 income</strong> from Rose Lake Capital in 2024 despite its $5-25M valuation,
+            down from $15K-$50K income in 2023 when it was valued at just $1-$1,000.
+          </p>
+        </div>
+        <p className="text-xs text-gray-500 mt-3">
+          Source: House Clerk Financial Disclosures (2023, 2024) and Dakota Natural Growers v. Hailer court filings.
+        </p>
+      </div>
+
+      {/* SEC Registration Alert */}
+      <div className="bg-orange-900/20 border border-orange-800 p-4 mb-8">
+        <h3 className="text-orange-400 font-medium mb-2">SEC Registration Status</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p className="text-gray-500 text-xs mb-2">WEBSITE CLAIMS</p>
+            <p className="text-2xl font-mono text-orange-400">$60B AUM</p>
+            <p className="text-sm text-gray-400 mt-1">&quot;Assets Under Management&quot;</p>
+          </div>
+          <div>
+            <p className="text-gray-500 text-xs mb-2">SEC IAPD DATABASE</p>
+            <p className="text-2xl font-mono text-red-400">NOT FOUND</p>
+            <p className="text-sm text-gray-400 mt-1">No Form ADV, No CRD Number</p>
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-4">
+          Investment advisers managing over $100M are generally required to register with the SEC.
+          Rose Lake Capital does not appear in the SEC&apos;s Investment Adviser Public Disclosure (IAPD) database.
+          The firm may operate under an exemption, but the $60B AUM claim combined with no SEC registration raises questions.
+        </p>
+      </div>
+
+      {/* Website Scrubbing Alert */}
+      <div className="bg-orange-900/20 border border-orange-800 p-4 mb-8">
+        <h3 className="text-orange-400 font-medium mb-2">Names Scrubbed from Website (Sept-Oct 2024)</h3>
+        <p className="text-sm text-gray-400 mb-4">
+          Between September and October 2024, Rose Lake Capital removed all team member names and bios from its website.
+          This occurred simultaneously with new arrests in Minnesota&apos;s $9 billion welfare fraud investigation.
+        </p>
+        <div className="border border-orange-900/50 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-900">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-400">Name</th>
+                <th className="text-left p-3 font-medium text-gray-400">Role</th>
+                <th className="text-left p-3 font-medium text-gray-400">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {SCRUBBED_NAMES.map((person, idx) => (
+                <tr key={idx} className="hover:bg-gray-900/50">
+                  <td className="p-3 text-white">{person.name}</td>
+                  <td className="p-3 text-gray-400">{person.role}</td>
+                  <td className="p-3">
+                    <span className="text-xs px-2 py-0.5 rounded bg-orange-900/30 text-orange-400">
+                      {person.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-gray-500 mt-3">
+          <strong>Note:</strong> None of these individuals have been charged with any crime. The timing of the removal
+          coinciding with Minnesota fraud arrests may be coincidental. However, the scrubbing of a former DNC Treasurer,
+          two Obama-era ambassadors, and a former bank CEO from a venture capital website is notable.
         </p>
       </div>
 
@@ -549,6 +702,9 @@ export default function RoseLakeCapitalPage() {
                 item.type === 'property' ? 'text-blue-400' :
                 item.type === 'lawsuit' ? 'text-red-400' :
                 item.type === 'formation' ? 'text-purple-400' :
+                item.type === 'scrubbing' ? 'text-orange-400' :
+                item.type === 'fraud' ? 'text-red-500' :
+                item.type === 'disclosure' ? 'text-cyan-400' :
                 'text-gray-400'
               }`}>{item.event}</span>
             </div>
@@ -588,6 +744,20 @@ export default function RoseLakeCapitalPage() {
             Both investment vehicles ended up nearly empty. The relationship between political consulting revenue
             and investment fund operations remains unclear.</p>
           </div>
+          <div>
+            <p className="text-gray-500 mb-1">6. THE $706 → $30M MYSTERY</p>
+            <p>Court documents from February 2024 show combined bank balances of $706.49 across all Mynett/Hailer entities.
+            Yet Omar&apos;s May 2025 disclosure values these same entities at $6-30 million. No explanation is provided for
+            how near-empty companies gained tens of millions in value. Additionally, she reports $0 income from Rose Lake
+            Capital despite its $5-25M valuation.</p>
+          </div>
+          <div>
+            <p className="text-gray-500 mb-1">7. COORDINATED WEBSITE SCRUBBING</p>
+            <p>Between September and October 2024, Rose Lake Capital removed 9 names from its website, including a former
+            DNC Treasurer, two Obama ambassadors, and a former bank CEO. This occurred simultaneously with new arrests in
+            Minnesota&apos;s $9 billion welfare fraud investigation. While no direct connection is established, the timing
+            raises questions about why prominent Democratic operatives distanced themselves from the firm.</p>
+          </div>
         </div>
       </div>
 
@@ -606,6 +776,12 @@ export default function RoseLakeCapitalPage() {
       <div className="border border-gray-800 p-4 mb-8">
         <h3 className="text-white font-medium mb-3">Data Sources</h3>
         <ul className="text-sm text-gray-400 space-y-2">
+          <li>
+            <span className="text-gray-500">House Clerk Financial Disclosures:</span> Omar 2023 &amp; 2024 annual reports
+          </li>
+          <li>
+            <span className="text-gray-500">SEC IAPD Database:</span> Investment adviser search (Rose Lake Capital not found)
+          </li>
           <li>
             <span className="text-gray-500">DC CorpOnline:</span> E Street Group LLC registration (File #L00006033509)
           </li>
@@ -634,10 +810,13 @@ export default function RoseLakeCapitalPage() {
             <span className="text-gray-500">Hennepin County GIS:</span> No property under target names
           </li>
           <li>
-            <span className="text-gray-500">Hennepin County Court Records:</span> Dakota Natural Growers v. Hailer settlement (Aug 2024)
+            <span className="text-gray-500">Hennepin County Court Records:</span> Dakota Natural Growers v. Hailer court filings (bank balances)
           </li>
           <li>
-            <span className="text-gray-500">News Sources:</span> Washingtonian, South Dakota Standard, Wine Industry Advisor
+            <span className="text-gray-500">Rose Lake Capital Website:</span> Current vs archived versions (names removed Sept-Oct 2024)
+          </li>
+          <li>
+            <span className="text-gray-500">News Sources:</span> Fox News, Mediaite, Washingtonian, South Dakota Standard, Investigative Economics
           </li>
         </ul>
         <p className="text-xs text-gray-500 mt-4">
