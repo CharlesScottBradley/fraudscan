@@ -252,10 +252,11 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
         <div className="mb-10">
           <TreeView
             entities={data.entities}
+            daycares={data.daycares}
             onSelectEntity={setSelectedEntity}
           />
           <p className="text-gray-600 text-xs mt-2">
-            Hierarchical view showing key figures, clusters, and top entities. Click any node to view details.
+            Hierarchical view showing key figures, clusters, daycares, and top entities. Click any node to view details.
           </p>
         </div>
       )}

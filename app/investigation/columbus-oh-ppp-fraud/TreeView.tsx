@@ -20,8 +20,28 @@ interface Entity {
   state_funding?: number;
 }
 
+interface Daycare {
+  name: string;
+  address: string;
+  zip: string;
+  status: string;
+  ppp_amount: number | null;
+  notes: string;
+}
+
+interface DaycaresData {
+  summary: {
+    total_identified: number;
+    ppp_recipients: number;
+    total_ppp_amount: number;
+    corridor: string;
+  };
+  daycares_list: Daycare[];
+}
+
 interface TreeViewProps {
   entities: Entity[];
+  daycares?: DaycaresData;
   onSelectEntity: (entity: Entity | null) => void;
 }
 
@@ -53,7 +73,7 @@ function formatMoney(amount: number): string {
   return `$${amount.toLocaleString()}`;
 }
 
-export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
+export default function TreeView({ entities, daycares, onSelectEntity }: TreeViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const networkRef = useRef<Network | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -289,6 +309,75 @@ export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
       });
     }
 
+    // Add Daycares branch (connected to root, as SERC umbrella)
+    if (daycares && daycares.daycares_list.length > 0) {
+      const daycareColor = '#a855f7'; // purple for daycares
+
+      // Daycare header node
+      nodeData.push({
+        id: nodeId,
+        label: `SERC Daycares\n(${daycares.summary.total_identified})`,
+        level: 2,
+        color: { background: daycareColor + '40', border: daycareColor },
+        shape: 'box',
+        size: 25,
+        font: { color: daycareColor, size: 11, face: 'monospace' },
+        title: `SERC-Connected Daycare Network\n${daycares.summary.total_identified} daycares identified\nPPP: ${formatMoney(daycares.summary.total_ppp_amount)}`
+      });
+      edgeData.push({ from: rootId, to: nodeId, color: daycareColor + '60' });
+      const daycareHeaderId = nodeId++;
+
+      // Sort daycares: PPP recipients first, then by name
+      const sortedDaycares = [...daycares.daycares_list].sort((a, b) => {
+        if (a.ppp_amount && !b.ppp_amount) return -1;
+        if (!a.ppp_amount && b.ppp_amount) return 1;
+        if (a.ppp_amount && b.ppp_amount) return b.ppp_amount - a.ppp_amount;
+        return a.name.localeCompare(b.name);
+      });
+
+      // Show top 8 daycares (prioritizing PPP recipients)
+      sortedDaycares.slice(0, 8).forEach(daycare => {
+        const hasPPP = daycare.ppp_amount && daycare.ppp_amount > 0;
+        nodeData.push({
+          id: nodeId,
+          label: daycare.name.length > 18
+            ? daycare.name.substring(0, 18) + '...'
+            : daycare.name,
+          level: 3,
+          color: {
+            background: hasPPP ? '#22c55e' : daycareColor,
+            border: hasPPP ? '#22c55e' : daycareColor
+          },
+          shape: 'ellipse',
+          size: hasPPP ? 22 : 18,
+          font: { color: '#ffffff', size: 9 },
+          title: `${daycare.name}\n${daycare.address}\n${hasPPP ? 'PPP: ' + formatMoney(daycare.ppp_amount!) : 'No PPP'}\n${daycare.notes}`
+        });
+        edgeData.push({
+          from: daycareHeaderId,
+          to: nodeId,
+          color: hasPPP ? '#22c55e80' : daycareColor + '80'
+        });
+        nodeId++;
+      });
+
+      // Add "more" node if there are additional daycares
+      if (daycares.daycares_list.length > 8) {
+        nodeData.push({
+          id: nodeId,
+          label: `+${daycares.daycares_list.length - 8} more`,
+          level: 3,
+          color: { background: '#374151', border: '#4b5563' },
+          shape: 'box',
+          size: 15,
+          font: { color: '#9ca3af', size: 9 },
+          title: `${daycares.daycares_list.length - 8} additional daycares in network`
+        });
+        edgeData.push({ from: daycareHeaderId, to: nodeId, color: '#4b556340' });
+        nodeId++;
+      }
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const nodes = new DataSet(nodeData as any);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -371,7 +460,7 @@ export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
     return () => {
       network.destroy();
     };
-  }, [entities, onSelectEntity]);
+  }, [entities, daycares, onSelectEntity]);
 
   return (
     <div>
@@ -413,6 +502,10 @@ export default function TreeView({ entities, onSelectEntity }: TreeViewProps) {
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-green-500"></span>
               <span className="text-gray-400">Individual</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-2 rounded-full bg-purple-500"></span>
+              <span className="text-gray-400">Daycare</span>
             </span>
           </div>
         </div>
