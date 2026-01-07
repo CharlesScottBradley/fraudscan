@@ -58,6 +58,18 @@ interface Daycare {
   status: string;
   ppp_amount: number | null;
   notes: string;
+  file_number?: string;
+  formed?: string;
+  registered_agent?: string;
+  agent_address?: string;
+}
+
+interface OwnershipPattern {
+  pattern: string;
+  entities: string[];
+  agents: string[];
+  combined_ppp?: number;
+  note?: string;
 }
 
 interface DaycaresData {
@@ -66,7 +78,9 @@ interface DaycaresData {
     ppp_recipients: number;
     total_ppp_amount: number;
     corridor: string;
+    ownership_source?: string;
   };
+  ownership_patterns?: OwnershipPattern[];
   daycares_list: Daycare[];
 }
 
@@ -301,25 +315,65 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
             </div>
           </div>
 
+          {/* Ownership Patterns */}
+          {data.daycares.ownership_patterns && data.daycares.ownership_patterns.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-sm font-medium text-gray-400 mb-3">Ownership Patterns (Ohio SOS)</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {data.daycares.ownership_patterns.map((pattern, idx) => (
+                  <div key={idx} className="border border-gray-800 p-3 bg-gray-900/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-yellow-400 font-medium text-sm">{pattern.pattern}</span>
+                      {pattern.combined_ppp && (
+                        <span className="text-green-500 font-mono text-xs">{formatMoney(pattern.combined_ppp)} PPP</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 mb-1">
+                      <span className="text-gray-500">Entities:</span> {pattern.entities.join(', ')}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      <span className="text-gray-500">Agents:</span> {pattern.agents.join(', ')}
+                    </p>
+                    {pattern.note && (
+                      <p className="text-xs text-red-400 mt-1">{pattern.note}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Daycares Table */}
           <div className="border border-gray-800 overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-900">
                 <tr>
                   <th className="text-left p-3 font-medium text-gray-400">Daycare Name</th>
-                  <th className="text-left p-3 font-medium text-gray-400">Address</th>
-                  <th className="text-left p-3 font-medium text-gray-400">ZIP</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Registered Agent</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Formed</th>
                   <th className="text-right p-3 font-medium text-gray-400">PPP</th>
-                  <th className="text-left p-3 font-medium text-gray-400">Status</th>
                   <th className="text-left p-3 font-medium text-gray-400">Notes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
                 {data.daycares.daycares_list.map((daycare, idx) => (
                   <tr key={idx} className="hover:bg-gray-900/50">
-                    <td className="p-3 text-white font-medium">{daycare.name}</td>
-                    <td className="p-3 text-gray-400 text-xs">{daycare.address}</td>
-                    <td className="p-3 text-gray-400">{daycare.zip}</td>
+                    <td className="p-3">
+                      <div className="text-white font-medium">{daycare.name}</div>
+                      <div className="text-gray-500 text-xs">{daycare.address}</div>
+                    </td>
+                    <td className="p-3">
+                      <div className="text-yellow-400 text-sm">{daycare.registered_agent || '-'}</div>
+                      {daycare.agent_address && (
+                        <div className="text-gray-600 text-xs">{daycare.agent_address}</div>
+                      )}
+                    </td>
+                    <td className="p-3 text-gray-400 text-xs">
+                      {daycare.formed || '-'}
+                      {daycare.file_number && (
+                        <div className="text-gray-600">#{daycare.file_number}</div>
+                      )}
+                    </td>
                     <td className="p-3 text-right font-mono">
                       {daycare.ppp_amount ? (
                         <span className="text-green-500">{formatMoney(daycare.ppp_amount)}</span>
@@ -327,14 +381,7 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
                         <span className="text-gray-600">-</span>
                       )}
                     </td>
-                    <td className="p-3">
-                      <span className={`px-2 py-0.5 rounded text-xs ${
-                        daycare.status.includes('Active') ? 'bg-green-900/30 text-green-400' : 'bg-gray-800 text-gray-400'
-                      }`}>
-                        {daycare.status}
-                      </span>
-                    </td>
-                    <td className="p-3 text-gray-500 text-xs max-w-[200px] truncate" title={daycare.notes}>
+                    <td className="p-3 text-gray-500 text-xs max-w-[200px]" title={daycare.notes}>
                       {daycare.notes}
                     </td>
                   </tr>
@@ -343,7 +390,7 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
             </table>
           </div>
           <p className="text-gray-600 text-xs mt-2">
-            Data from Ohio childcare licensing database. Includes daycares on Dublin Granville Rd corridor and those with Somali naming patterns.
+            Ownership data from Ohio Secretary of State via Bizapedia. PPP data from SBA.
           </p>
         </div>
       )}
