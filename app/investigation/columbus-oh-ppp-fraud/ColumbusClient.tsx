@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import ColumbusNetworkGraph from './ColumbusNetworkGraph';
+import TreeView from './TreeView';
 import EntitySidebar from './EntitySidebar';
 
 interface Entity {
@@ -72,7 +73,7 @@ function formatMoney(amount: number): string {
 
 export default function ColumbusClient({ data }: ColumbusClientProps) {
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
-  const [activeTab, setActiveTab] = useState<'network' | 'clusters' | 'patterns'>('network');
+  const [activeTab, setActiveTab] = useState<'tree' | 'network' | 'clusters' | 'patterns'>('tree');
 
   // Count entities with red flags
   const flaggedEntities = data.entities.filter(e => e.red_flags && e.red_flags.length > 0).length;
@@ -142,6 +143,12 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
       {/* Tab Navigation */}
       <div className="flex items-center gap-6 mb-6 border-b border-gray-800 pb-4">
         <button
+          onClick={() => setActiveTab('tree')}
+          className={activeTab === 'tree' ? 'text-white font-medium' : 'text-gray-500 hover:text-gray-300'}
+        >
+          Tree View
+        </button>
+        <button
           onClick={() => setActiveTab('network')}
           className={activeTab === 'network' ? 'text-white font-medium' : 'text-gray-500 hover:text-gray-300'}
         >
@@ -160,6 +167,19 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
           Fraud Patterns
         </button>
       </div>
+
+      {/* Tree View Tab */}
+      {activeTab === 'tree' && (
+        <div className="mb-10">
+          <TreeView
+            entities={data.entities}
+            onSelectEntity={setSelectedEntity}
+          />
+          <p className="text-gray-600 text-xs mt-2">
+            Hierarchical view showing key figures, clusters, and top entities. Click any node to view details.
+          </p>
+        </div>
+      )}
 
       {/* Network Graph Tab */}
       {activeTab === 'network' && (
