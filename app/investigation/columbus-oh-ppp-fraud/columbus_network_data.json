@@ -7,11 +7,31 @@
     "total_jobs_claimed": 2494,
     "clusters_identified": 5,
     "primary_nexus": "SERC - Somali Education and Resource Center",
+    "daycare_subsidy_claimed": 14000000,
+    "daycares_under_serc": 40,
+    "federal_funds_status": "SUSPENDED",
     "data_sources": [
       "SBA PPP Loan Database (accessed January 6, 2026)",
       "Ohio Secretary of State Business Filings",
       "Bizapedia Business Records",
-      "Ohio Department of Education Vendor Payments"
+      "Ohio Department of Education Vendor Payments",
+      "News Reports (ABC6, NBC4, Newsweek)"
+    ]
+  },
+  "breaking_news": {
+    "date": "2026-01-06",
+    "headline": "SERC Identified as Defunct Shell Organization",
+    "details": [
+      "Federal childcare subsidies SUSPENDED by Trump administration",
+      "40+ daycares opened on exact same day under SERC umbrella",
+      "House Oversight Committee hearings scheduled (Jan 7, Feb 10)",
+      "Ohio could face significant impacts in 8-10 weeks if funds remain frozen",
+      "Somali Deputy PM Abdisalam Ali owns Ohio healthcare businesses"
+    ],
+    "sources": [
+      {"name": "ABC6 Columbus", "url": "https://abc6onyourside.com/news/local/withheld-federal-funds-prompted-somali-daycare-fraud-claims-could-impact-ohio-in-8-10-weeks-mike-dewine-columbus"},
+      {"name": "The New American", "url": "https://thenewamerican.com/us/crime/report-somali-deputy-p-m-owns-healthcare-biz-in-ohio-house-panel-to-investigate-somali-daycare-scandal/"},
+      {"name": "Townhall", "url": "https://townhall.com/tipsheet/mattvespa/2026/01/01/so-are-we-going-to-investigate-these-daycare-centers-opened-under-a-somali-shell-corp-in-ohio-n2668722"}
     ]
   },
   "clusters": [

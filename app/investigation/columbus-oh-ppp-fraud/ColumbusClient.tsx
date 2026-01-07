@@ -44,6 +44,13 @@ interface Pattern {
   severity: string;
 }
 
+interface BreakingNews {
+  date: string;
+  headline: string;
+  details: string[];
+  sources: { name: string; url: string }[];
+}
+
 interface NetworkData {
   network_metadata: {
     title: string;
@@ -53,8 +60,12 @@ interface NetworkData {
     total_jobs_claimed: number;
     clusters_identified: number;
     primary_nexus: string;
+    daycare_subsidy_claimed?: number;
+    daycares_under_serc?: number;
+    federal_funds_status?: string;
     data_sources: string[];
   };
+  breaking_news?: BreakingNews;
   clusters: Cluster[];
   entities: Entity[];
   patterns: Pattern[];
@@ -87,11 +98,44 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
         <span className="text-white">Columbus OH PPP Fraud Network</span>
       </div>
 
+      {/* Breaking News Banner */}
+      {data.breaking_news && (
+        <div className="bg-red-900/30 border border-red-700 p-4 mb-6 animate-pulse-slow">
+          <div className="flex items-start gap-3">
+            <span className="text-red-500 text-xl font-bold">BREAKING</span>
+            <div>
+              <h2 className="text-red-400 font-bold mb-2">{data.breaking_news.headline}</h2>
+              <ul className="text-sm text-gray-300 space-y-1 mb-3">
+                {data.breaking_news.details.map((detail, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-red-500">-</span>
+                    <span>{detail}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap gap-3 text-xs">
+                {data.breaking_news.sources.map((source, idx) => (
+                  <a
+                    key={idx}
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-red-400"
+                  >
+                    [{source.name}]
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <p className="text-gray-500 text-sm uppercase tracking-wide mb-2">Investigation</p>
         <h1 className="text-3xl font-bold mb-2">Columbus OH PPP Fraud Network</h1>
-        <p className="text-gray-400">Multi-cluster analysis of potential PPP fraud centered on SERC</p>
+        <p className="text-gray-400">Multi-cluster analysis connecting PPP fraud, daycare fraud, and SERC shell organization</p>
       </div>
 
       {/* Terminal-style stats */}
@@ -99,12 +143,21 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
         <p className="text-gray-500">INVESTIGATION_SUMMARY</p>
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">+-</span> total_ppp_exposure <span className="text-green-500 ml-4">{formatMoney(data.network_metadata.total_ppp_exposure)}</span></p>
+          {data.network_metadata.daycare_subsidy_claimed && (
+            <p><span className="text-gray-600">+-</span> daycare_subsidies_claimed <span className="text-green-500 ml-4">{formatMoney(data.network_metadata.daycare_subsidy_claimed)}</span></p>
+          )}
           <p><span className="text-gray-600">+-</span> total_entities <span className="text-white ml-4">{data.network_metadata.total_entities}</span></p>
+          {data.network_metadata.daycares_under_serc && (
+            <p><span className="text-gray-600">+-</span> daycares_under_serc <span className="text-white ml-4">{data.network_metadata.daycares_under_serc}+</span></p>
+          )}
           <p><span className="text-gray-600">+-</span> total_jobs_claimed <span className="text-white ml-4">{data.network_metadata.total_jobs_claimed.toLocaleString()}</span></p>
           <p><span className="text-gray-600">+-</span> clusters_identified <span className="text-white ml-4">{data.network_metadata.clusters_identified}</span></p>
           <p><span className="text-gray-600">+-</span> entities_with_red_flags <span className="text-red-400 ml-4">{flaggedEntities}</span></p>
           <p><span className="text-gray-600">+-</span> primary_nexus <span className="text-yellow-400 ml-4">{data.network_metadata.primary_nexus}</span></p>
-          <p><span className="text-gray-600">L-</span> status <span className="text-gray-400 ml-4">Under Investigation</span></p>
+          {data.network_metadata.federal_funds_status && (
+            <p><span className="text-gray-600">+-</span> federal_funds_status <span className="text-red-500 ml-4">{data.network_metadata.federal_funds_status}</span></p>
+          )}
+          <p><span className="text-gray-600">L-</span> status <span className="text-gray-400 ml-4">Federal &amp; State Investigation</span></p>
         </div>
       </div>
 
@@ -115,7 +168,7 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
           <div>
             <h2 className="text-yellow-400 font-medium mb-1">Cross-State Connection Identified</h2>
             <p className="text-sm text-gray-400">
-              H&H Barakad Accounting, which audits SERC, was sanctioned by Ohio for conducting audits
+              H&amp;H Barakad Accounting, which audits SERC, was sanctioned by Ohio for conducting audits
               before being legally authorized. The same firm audits MAK Community Enrichment Services
               in Minnesota, which is <span className="text-yellow-400">under federal investigation</span> for
               daycare fraud similar to Feeding Our Future.
