@@ -40,6 +40,24 @@ export interface OrganizationSearchResponse {
   };
 }
 
+// RPC response type from search_organizations function
+interface SearchOrgResult {
+  id: string;
+  legal_name: string;
+  name_normalized: string;
+  state: string | null;
+  city: string | null;
+  naics_code: string | null;
+  naics_description: string | null;
+  total_government_funding: number;
+  first_funding_date: string | null;
+  last_funding_date: string | null;
+  is_ppp_recipient: boolean;
+  is_fraud_prone_industry: boolean;
+  fraud_prone_category: string | null;
+  total_count: number;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
@@ -65,75 +83,25 @@ export async function GET(request: Request) {
   const sortDir = searchParams.get('sortDir') || 'desc';
 
   try {
-    // Query organizations table
-    let query = supabase
-      .from('organizations')
-      .select(`
-        id,
-        legal_name,
-        name_normalized,
-        state,
-        city,
-        naics_code,
-        naics_description,
-        total_government_funding,
-        first_funding_date,
-        last_funding_date,
-        is_ppp_recipient,
-        is_fraud_prone_industry,
-        fraud_prone_category
-      `, { count: 'estimated' });
+    // Use optimized RPC function for search (uses full-text search index)
+    const { data, error } = await supabase.rpc('search_organizations', {
+      search_term: search || null,
+      state_filter: state ? state.toUpperCase() : null,
+      min_funding: minFunding ? parseFloat(minFunding) : null,
+      max_funding: maxFunding ? parseFloat(maxFunding) : null,
+      fraud_prone_only: fraudProne === 'true',
+      ppp_only: orgType === 'ppp_recipient',
+      page_num: page,
+      page_size: pageSize,
+      sort_by: sortBy === 'legal_name' ? 'legal_name' : 'total_government_funding',
+      sort_dir: sortDir === 'asc' ? 'asc' : 'desc'
+    });
 
-    // Apply filters
-    if (search) {
-      // Use full-text search if available, otherwise ilike
-      query = query.or(`legal_name.ilike.%${search}%,name_normalized.ilike.%${search}%,city.ilike.%${search}%`);
-    }
+    // Cast to typed array
+    const orgs = (data || []) as SearchOrgResult[];
 
-    if (state) {
-      query = query.eq('state', state.toUpperCase());
-    }
-
-    if (minFunding) {
-      query = query.gte('total_government_funding', parseFloat(minFunding));
-    }
-
-    if (maxFunding) {
-      query = query.lte('total_government_funding', parseFloat(maxFunding));
-    }
-
-    if (naicsCode) {
-      query = query.eq('naics_code', naicsCode);
-    }
-
-    // industry_sector filter removed - column doesn't exist on base table
-
-    if (fraudProne === 'true') {
-      query = query.eq('is_fraud_prone_industry', true);
-    } else if (fraudProne === 'false') {
-      query = query.eq('is_fraud_prone_industry', false);
-    }
-
-    if (orgType === 'ppp_recipient') {
-      query = query.eq('is_ppp_recipient', true);
-    } else if (orgType === 'childcare') {
-      query = query.eq('naics_code', '624410');
-    }
-    // eidl_only filter disabled - data_source not in schema cache
-
-    // dataSource filter disabled - column not in Supabase schema cache
-
-    // minClusterSize filter disabled - column not in Supabase schema cache
-
-    // Sorting (address_cluster_size disabled - not in schema cache)
-    const validSortColumns = ['total_government_funding', 'legal_name'];
-    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'total_government_funding';
-    query = query.order(sortColumn, { ascending: sortDir === 'asc' });
-
-    // Pagination
-    query = query.range(offset, offset + pageSize - 1);
-
-    const { data: orgs, error, count } = await query;
+    // Get count from first result (included in RPC response)
+    const count = orgs.length > 0 ? Number(orgs[0].total_count) : 0;
 
     if (error) {
       console.error('Organizations query error:', JSON.stringify(error, null, 2));
@@ -144,7 +112,7 @@ export async function GET(request: Request) {
     }
 
     // Get org IDs to fetch loan status summaries
-    const orgIds = (orgs || []).map(o => o.id);
+    const orgIds = orgs.map(o => o.id);
 
     // Fetch PPP and EIDL loans for these orgs to get status summary
     let loanStatusMap: Record<string, { forgiven: number; chargedOff: number; paidInFull: number; pppTotal: number; eidlTotal: number }> = {};
@@ -190,7 +158,7 @@ export async function GET(request: Request) {
     }
 
     // Transform to response format
-    const organizations = (orgs || []).map(org => {
+    const organizations = orgs.map(org => {
       const loanStatus = loanStatusMap[org.id] || { forgiven: 0, chargedOff: 0, paidInFull: 0, pppTotal: 0, eidlTotal: 0 };
       return {
         id: org.id,
