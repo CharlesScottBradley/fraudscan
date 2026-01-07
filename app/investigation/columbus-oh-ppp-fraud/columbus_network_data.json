@@ -594,6 +594,42 @@
       "red_flags": ["Cross-state connection"]
     }
   ],
+  "daycares": {
+    "summary": {
+      "total_identified": 28,
+      "ppp_recipients": 3,
+      "total_ppp_amount": 156778.24,
+      "corridor": "E Dublin Granville Rd / Cleveland Ave"
+    },
+    "daycares_list": [
+      {"name": "161 CHILD CARE, LLC", "address": "2400 E DUBLIN GRANVILLE RD", "zip": "43231", "status": "Active (SUTQ 0)", "ppp_amount": null, "notes": "Dublin Granville corridor"},
+      {"name": "A BETTER CHOICE DAYCARE & LEARNING CENTER", "address": "2960 E. DUBLIN GRANVILLE RD", "zip": "43231", "status": "Active (SUTQ 3)", "ppp_amount": null, "notes": "Dublin Granville corridor"},
+      {"name": "ALL STAR ACADEMY CHILD CARE CENTER", "address": "1672 E. DUBLIN GRANVILLE", "zip": "43229", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Dublin Granville corridor"},
+      {"name": "BINATI CHILDCARE TWO, LLC", "address": "3629 CLEVELAND AVE", "zip": "43224", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Somali name - Cleveland Ave"},
+      {"name": "BINATI LEARNING CENTER, LLC", "address": "4661 CLEVELAND AVE", "zip": "43231", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Somali name - Cleveland Ave"},
+      {"name": "EARLY FOUNDATIONS LEARNING CENTER", "address": "1521 E. DUBLIN GRANVILLE RD", "zip": "43229", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Dublin Granville corridor"},
+      {"name": "GREAT MINDS LEARNING ACADEMY", "address": "2909 E 5TH AVE", "zip": "43219", "status": "Active (SUTQ 3)", "ppp_amount": null, "notes": "Identified in news reports as SERC-connected"},
+      {"name": "IFTIIN ACADEMY, INC.", "address": "3296 WESTERVILLE RD", "zip": "43224", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Somali name (Iftiin = light)"},
+      {"name": "IQRA LEARNING CENTER", "address": "1611 WOODLAND AVE", "zip": "43219", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Somali/Arabic name (Iqra = read)"},
+      {"name": "JUBBA DAYCARE INC", "address": "4428 WALFORD ST", "zip": "43224", "status": "Active (SUTQ 2)", "ppp_amount": null, "notes": "Somali name (Jubba = river in Somalia)"},
+      {"name": "JUBBA DAYCARE WEST INC", "address": "3770 WEST BROAD ST #70", "zip": "43228", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Somali name - West Columbus location"},
+      {"name": "KAAH CHILD CARE LLC", "address": "2635 E DUBLIN GRANVILLE RD", "zip": "43231", "status": "Active (SUTQ 1)", "ppp_amount": 35197.36, "notes": "PPP recipient - Dublin Granville"},
+      {"name": "KAMAS DAYCARE CENTER", "address": "3651 CLEVELAND AVE", "zip": "43224", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Cleveland Ave corridor"},
+      {"name": "LADAN LEARNING CENTER, LLC", "address": "6028 CLEVELAND AVE", "zip": "43231", "status": "Active (SUTQ 1)", "ppp_amount": 80652.75, "notes": "PPP recipient - 24 jobs claimed"},
+      {"name": "LITTLE SPROUTS EARLY CHILDCARE EDUCATION CENTER", "address": "1620 EAST DUBLIN GRANVILLE RD", "zip": "43229", "status": "Active (SUTQ 3)", "ppp_amount": null, "notes": "Dublin Granville corridor"},
+      {"name": "LOVE AND CARE ACADEMY (Unit B)", "address": "2040 E. DUBLIN GRANVILLE RD UNIT B", "zip": "43229", "status": "Active (SUTQ 0)", "ppp_amount": null, "notes": "Dublin Granville corridor - 2 units"},
+      {"name": "LOVE AND CARE ACADEMY (Unit D)", "address": "2040 E. DUBLIN GRANVILLE RD UNIT D", "zip": "43229", "status": "Active (SUTQ 0)", "ppp_amount": null, "notes": "Dublin Granville corridor - 2 units"},
+      {"name": "MAANDEEQ CHILDCARE LEARNING CENTER LLC", "address": "1997 E. DUBLIN GRANVILLE ROAD", "zip": "43229", "status": "Active (SUTQ 0)", "ppp_amount": null, "notes": "Somali name - Dublin Granville"},
+      {"name": "MOONLIGHT CHILD CARE", "address": "4656 W. BROAD ST", "zip": "43228", "status": "Active (SUTQ 2)", "ppp_amount": null, "notes": "West Columbus location"},
+      {"name": "MORNING STAR LEARNING ACADEMY LLC", "address": "1586 E DUBLIN GRANVILLE ROAD", "zip": "43229", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Dublin Granville corridor"},
+      {"name": "NATHA DAY CARE CENTER, LLC", "address": "1882 TAMARACK CIR S", "zip": "43229", "status": "Active (SUTQ 1)", "ppp_amount": null, "notes": "Near Dublin Granville corridor"},
+      {"name": "NEW DIMENSION CHILD CARE CENTER, LLC", "address": "2899 E. DUBLIN GRANVILLE ROAD", "zip": "43231", "status": "Active (SUTQ 3)", "ppp_amount": null, "notes": "Dublin Granville - near SERC address"},
+      {"name": "RAHMAH CHILDHOOD CENTER, LLC", "address": "1900 E DUBLIN GRANVILLE RD SUITE 101", "zip": "43229", "status": "Active (SUTQ 0)", "ppp_amount": null, "notes": "Somali/Arabic name (Rahmah = mercy)"},
+      {"name": "SAHAL LLC", "address": "2615 E DUBLIN GRANVILLE RD", "zip": "43231", "status": "Active (SUTQ 0)", "ppp_amount": null, "notes": "Somali name - Dublin Granville"},
+      {"name": "TARBIYA LEARNING CENTER", "address": "3163 CLEVELAND AVE", "zip": "43224", "status": "Active (SUTQ 2)", "ppp_amount": 40928.13, "notes": "PPP recipient - Somali/Arabic name (Tarbiya = education)"},
+      {"name": "WAISS LEARNING CENTER LLC", "address": "2200 E. DUBLIN GRANVILLE RD", "zip": "43229", "status": "Active (SUTQ 3)", "ppp_amount": null, "notes": "Somali name - Dublin Granville"}
+    ]
+  },
   "patterns": [
     {
       "pattern": "Address Laundering",

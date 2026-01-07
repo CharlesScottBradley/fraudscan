@@ -51,6 +51,25 @@ interface BreakingNews {
   sources: { name: string; url: string }[];
 }
 
+interface Daycare {
+  name: string;
+  address: string;
+  zip: string;
+  status: string;
+  ppp_amount: number | null;
+  notes: string;
+}
+
+interface DaycaresData {
+  summary: {
+    total_identified: number;
+    ppp_recipients: number;
+    total_ppp_amount: number;
+    corridor: string;
+  };
+  daycares_list: Daycare[];
+}
+
 interface NetworkData {
   network_metadata: {
     title: string;
@@ -68,6 +87,7 @@ interface NetworkData {
   breaking_news?: BreakingNews;
   clusters: Cluster[];
   entities: Entity[];
+  daycares?: DaycaresData;
   patterns: Pattern[];
   red_flag_summary: Record<string, number>;
 }
@@ -84,7 +104,7 @@ function formatMoney(amount: number): string {
 
 export default function ColumbusClient({ data }: ColumbusClientProps) {
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
-  const [activeTab, setActiveTab] = useState<'tree' | 'network' | 'clusters' | 'patterns'>('tree');
+  const [activeTab, setActiveTab] = useState<'tree' | 'network' | 'daycares' | 'clusters' | 'patterns'>('tree');
 
   // Count entities with red flags
   const flaggedEntities = data.entities.filter(e => e.red_flags && e.red_flags.length > 0).length;
@@ -208,6 +228,12 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
           Network Graph
         </button>
         <button
+          onClick={() => setActiveTab('daycares')}
+          className={activeTab === 'daycares' ? 'text-white font-medium' : 'text-gray-500 hover:text-gray-300'}
+        >
+          Daycares ({data.daycares?.summary.total_identified || 0})
+        </button>
+        <button
           onClick={() => setActiveTab('clusters')}
           className={activeTab === 'clusters' ? 'text-white font-medium' : 'text-gray-500 hover:text-gray-300'}
         >
@@ -244,6 +270,79 @@ export default function ColumbusClient({ data }: ColumbusClientProps) {
           />
           <p className="text-gray-600 text-xs mt-2">
             Click on a node to view entity details. Use cluster buttons to filter. Drag to reposition nodes.
+          </p>
+        </div>
+      )}
+
+      {/* Daycares Tab */}
+      {activeTab === 'daycares' && data.daycares && (
+        <div className="mb-10">
+          {/* Daycares Summary */}
+          <div className="bg-purple-900/20 border border-purple-800 p-4 mb-6">
+            <h3 className="text-purple-400 font-medium mb-3">SERC-Connected Daycare Network</h3>
+            <div className="grid grid-cols-4 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-mono text-purple-400">{data.daycares.summary.total_identified}</p>
+                <p className="text-xs text-gray-500">Daycares Identified</p>
+              </div>
+              <div>
+                <p className="text-2xl font-mono text-green-500">{formatMoney(data.daycares.summary.total_ppp_amount)}</p>
+                <p className="text-xs text-gray-500">PPP Received</p>
+              </div>
+              <div>
+                <p className="text-2xl font-mono text-white">{data.daycares.summary.ppp_recipients}</p>
+                <p className="text-xs text-gray-500">PPP Recipients</p>
+              </div>
+              <div>
+                <p className="text-lg font-mono text-gray-400">{data.daycares.summary.corridor}</p>
+                <p className="text-xs text-gray-500">Primary Corridor</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Daycares Table */}
+          <div className="border border-gray-800 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-400">Daycare Name</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Address</th>
+                  <th className="text-left p-3 font-medium text-gray-400">ZIP</th>
+                  <th className="text-right p-3 font-medium text-gray-400">PPP</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Status</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {data.daycares.daycares_list.map((daycare, idx) => (
+                  <tr key={idx} className="hover:bg-gray-900/50">
+                    <td className="p-3 text-white font-medium">{daycare.name}</td>
+                    <td className="p-3 text-gray-400 text-xs">{daycare.address}</td>
+                    <td className="p-3 text-gray-400">{daycare.zip}</td>
+                    <td className="p-3 text-right font-mono">
+                      {daycare.ppp_amount ? (
+                        <span className="text-green-500">{formatMoney(daycare.ppp_amount)}</span>
+                      ) : (
+                        <span className="text-gray-600">-</span>
+                      )}
+                    </td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        daycare.status.includes('Active') ? 'bg-green-900/30 text-green-400' : 'bg-gray-800 text-gray-400'
+                      }`}>
+                        {daycare.status}
+                      </span>
+                    </td>
+                    <td className="p-3 text-gray-500 text-xs max-w-[200px] truncate" title={daycare.notes}>
+                      {daycare.notes}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-gray-600 text-xs mt-2">
+            Data from Ohio childcare licensing database. Includes daycares on Dublin Granville Rd corridor and those with Somali naming patterns.
           </p>
         </div>
       )}
