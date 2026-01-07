@@ -121,6 +121,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'rose-lake-capital',
+    title: 'Rose Lake Capital / E Street Group',
+    description: '$2.9M from Omar campaign to husband\'s firm - political finance network analysis',
+    href: '/investigation/rose-lake-capital',
+    stats: '$3.67M tracked',
+    isNew: true
+  },
+  {
     id: 'columbus-oh-ppp-fraud',
     title: 'Columbus OH PPP Network',
     description: '$13.86M PPP across 186 entities - SERC, home health, trucking clusters',
@@ -371,4 +379,5 @@ export default async function InvestigationsPage() {
     </div>
   );
 }
+
 
