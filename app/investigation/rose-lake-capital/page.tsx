@@ -64,6 +64,41 @@ const DELAWARE_ENTITIES = [
   { name: 'Rose Lake Inc.', file_num: '7246289', formed: '2023-01-19', agent: 'UNASSIGNED AGENT', status: 'Unknown' },
 ];
 
+// Investment Fund Entities (Hailer/Mynett)
+const INVESTMENT_ENTITIES = [
+  { name: 'eStCru LLC', state: 'CA', file_num: '202018810577', formed: '2020-07-02', status: 'Active', type: 'Winery', bank_balance: '$650 (2023)' },
+  { name: 'eSt Ventures LLC', state: 'NE', file_num: 'Unknown', formed: '2020', status: 'INACTIVE', type: 'Venture Capital', bank_balance: '$0.05 (Feb 2024)' },
+  { name: 'Badlands Fund GP LLC', state: 'Unknown', file_num: 'Unknown', formed: '2020', status: 'Unknown', type: 'Investment Fund', bank_balance: 'Unknown' },
+  { name: 'Badlands Ventures LLC', state: 'Unknown', file_num: 'Unknown', formed: '2020', status: 'Unknown', type: 'Investment Fund', bank_balance: 'Unknown' },
+  { name: 'Born to Run GP LLC', state: 'Unknown', file_num: 'Unknown', formed: 'Unknown', status: 'Unknown', type: 'Investment Fund ($50M purported)', bank_balance: 'Unknown' },
+];
+
+// Lawsuits and Settlements
+const LAWSUITS = [
+  {
+    name: 'Naeem Mohd v. eStCru',
+    court: 'California',
+    filed: 'Fall 2023',
+    plaintiff: 'Naeem Mohd (DC restaurant owner - La Vie, Provision No. 14)',
+    defendants: 'Will Hailer (Tim Mynett mentioned but not named)',
+    allegation: 'Fraud - invested $300K with promise of 200% return in 18 months',
+    amount_sought: 780000,
+    outcome: 'Settled November 2024 (amount undisclosed)',
+    status: 'Settled'
+  },
+  {
+    name: 'Dakota Natural Growers v. Hailer',
+    court: 'Hennepin County, MN',
+    filed: 'December 2022',
+    plaintiff: 'Dakota Natural Growers, 605 Cannabis + 24 investors',
+    defendants: 'Will Hailer, eSt Ventures LLC, Badlands Fund GP LLC, Badlands Ventures LLC',
+    allegation: 'Fraud - raised $3.54M, promised $7.5M additional investment',
+    amount_sought: 1700000,
+    outcome: 'Settled $1.2M (August 2024) - Hailer signed confession of judgment',
+    status: 'Settled'
+  },
+];
+
 // Timeline
 const TIMELINE = [
   { date: 'July 2018', event: 'E Street Group LLC formed in Washington, DC', type: 'formation' },
@@ -71,10 +106,18 @@ const TIMELINE = [
   { date: 'August 2019', event: 'Beth Mynett files for divorce, alleging Tim\'s affair with Ilhan Omar', type: 'personal' },
   { date: 'December 2019', event: 'Mynett divorce finalized', type: 'personal' },
   { date: 'March 2020', event: 'Tim Mynett marries Ilhan Omar', type: 'personal' },
+  { date: 'July 2020', event: 'eStCru LLC (winery) and eSt Ventures LLC formed', type: 'formation' },
   { date: 'July 2020', event: 'Property at 4616 15th St NW transferred to Beth Jordan (ex-wife)', type: 'property' },
+  { date: 'Fall 2021', event: 'Naeem Mohd invests $300K in eStCru with 200% return promise', type: 'financial' },
+  { date: 'Early 2022', event: 'Mynett claims he "withdrew" from eSt Ventures', type: 'personal' },
   { date: 'June 2022', event: 'Rose Lake Holdings LLC formed in Delaware', type: 'formation' },
   { date: 'August 2022', event: 'Rose Lake Capital LLC formed in Delaware', type: 'formation' },
+  { date: 'December 2022', event: 'South Dakota cannabis companies sue Hailer for $1.7M fraud', type: 'lawsuit' },
+  { date: 'Early 2023', event: 'eStCru winemaker Erica Stancliff stops getting paid', type: 'financial' },
   { date: 'January 2023', event: 'Rose Lake Inc. formed in Delaware', type: 'formation' },
+  { date: 'Fall 2023', event: 'Naeem Mohd sues eStCru in California for $780K', type: 'lawsuit' },
+  { date: 'August 2024', event: 'Hailer settles SD cannabis lawsuit for $1.2M (confession of judgment)', type: 'lawsuit' },
+  { date: 'November 2024', event: 'Mohd v. eStCru settled (amount undisclosed)', type: 'lawsuit' },
 ];
 
 export const revalidate = 3600;
@@ -101,6 +144,8 @@ export default function RoseLakeCapitalPage() {
           <p><span className="text-gray-600">├─</span> omar_campaign_share <span className="text-yellow-400 ml-4">{omarPercentage}%</span></p>
           <p><span className="text-gray-600">├─</span> payment_count <span className="text-white ml-4">{totalPayments}</span></p>
           <p><span className="text-gray-600">├─</span> delaware_entities <span className="text-white ml-4">3</span></p>
+          <p><span className="text-gray-600">├─</span> hailer_investment_funds <span className="text-white ml-4">5</span></p>
+          <p><span className="text-gray-600">├─</span> lawsuits_settled <span className="text-red-400 ml-4">2 ($1.98M+ in claims)</span></p>
           <p><span className="text-gray-600">├─</span> shared_office <span className="text-white ml-4">80 M St SE (WeWork)</span></p>
           <p><span className="text-gray-600">└─</span> ppp_loan <span className="text-green-500 ml-4">$134,800 (forgiven)</span></p>
         </div>
@@ -340,6 +385,132 @@ export default function RoseLakeCapitalPage() {
         </p>
       </div>
 
+      {/* Hailer Investment Entities */}
+      <div className="mb-8">
+        <h3 className="text-sm font-medium text-gray-400 mb-1">Hailer/Mynett Investment Entities</h3>
+        <p className="text-xs text-gray-600 mb-4">Related investment vehicles operated by William Hailer and/or Tim Mynett</p>
+        <div className="border border-gray-800 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-900">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-400">Entity</th>
+                <th className="text-left p-3 font-medium text-gray-400">State</th>
+                <th className="text-left p-3 font-medium text-gray-400">Type</th>
+                <th className="text-left p-3 font-medium text-gray-400">Formed</th>
+                <th className="text-left p-3 font-medium text-gray-400">Status</th>
+                <th className="text-right p-3 font-medium text-gray-400">Bank Balance</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {INVESTMENT_ENTITIES.map((entity, idx) => (
+                <tr key={idx} className="hover:bg-gray-900/50">
+                  <td className="p-3 text-white">{entity.name}</td>
+                  <td className="p-3 font-mono text-gray-400">{entity.state}</td>
+                  <td className="p-3 text-gray-400">{entity.type}</td>
+                  <td className="p-3 text-gray-400">{entity.formed}</td>
+                  <td className="p-3">
+                    <span className={`text-xs px-2 py-0.5 rounded ${
+                      entity.status === 'Active'
+                        ? 'bg-green-900/30 text-green-400'
+                        : entity.status === 'INACTIVE'
+                        ? 'bg-red-900/30 text-red-400'
+                        : 'bg-gray-900/30 text-gray-400'
+                    }`}>
+                      {entity.status}
+                    </span>
+                  </td>
+                  <td className="p-3 text-right font-mono text-yellow-400">{entity.bank_balance}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Bank balance data from lawsuit filings. eStCru reported $650 in 2023; eSt Ventures had $0.05 by Feb 2024.
+        </p>
+      </div>
+
+      {/* Lawsuits and Settlements */}
+      <div className="mb-8">
+        <h3 className="text-sm font-medium text-gray-400 mb-1">Lawsuits & Settlements</h3>
+        <p className="text-xs text-gray-600 mb-4">Fraud allegations and civil litigation involving Hailer investment entities</p>
+        <div className="space-y-4">
+          {LAWSUITS.map((lawsuit, idx) => (
+            <div key={idx} className="border border-red-900/50 bg-red-900/10 p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h4 className="text-white font-medium">{lawsuit.name}</h4>
+                  <p className="text-xs text-gray-500">{lawsuit.court} • Filed {lawsuit.filed}</p>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded ${
+                  lawsuit.status === 'Settled'
+                    ? 'bg-yellow-900/30 text-yellow-400'
+                    : 'bg-red-900/30 text-red-400'
+                }`}>
+                  {lawsuit.status}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-500 text-xs mb-1">PLAINTIFF</p>
+                  <p className="text-gray-400">{lawsuit.plaintiff}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs mb-1">DEFENDANTS</p>
+                  <p className="text-gray-400">{lawsuit.defendants}</p>
+                </div>
+              </div>
+              <div className="mt-3">
+                <p className="text-gray-500 text-xs mb-1">ALLEGATION</p>
+                <p className="text-gray-400 text-sm">{lawsuit.allegation}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-3">
+                <div>
+                  <p className="text-gray-500 text-xs mb-1">AMOUNT SOUGHT</p>
+                  <p className="text-red-400 font-mono">{formatMoney(lawsuit.amount_sought)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs mb-1">OUTCOME</p>
+                  <p className="text-yellow-400 text-sm">{lawsuit.outcome}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-gray-500 mt-4">
+          <strong>Note:</strong> These are civil allegations, not criminal charges. Both cases settled before trial.
+          Settlements do not constitute admission of wrongdoing. Tim Mynett was mentioned but not named as defendant in the eStCru case.
+        </p>
+      </div>
+
+      {/* eStCru Detail Box */}
+      <div className="bg-purple-900/20 border border-purple-800 p-4 mb-8">
+        <h3 className="text-purple-400 font-medium mb-2">eStCru LLC - Winery Investment</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-gray-500 text-xs mb-2">CALIFORNIA REGISTRATION</p>
+            <div className="space-y-1">
+              <p><span className="text-gray-500">File Number:</span> <span className="text-white font-mono">202018810577</span></p>
+              <p><span className="text-gray-500">Formed:</span> <span className="text-white">July 2, 2020</span></p>
+              <p><span className="text-gray-500">Status:</span> <span className="text-green-400">Active</span></p>
+              <p><span className="text-gray-500">Agent:</span> <span className="text-white">William R Hailer</span></p>
+            </div>
+          </div>
+          <div>
+            <p className="text-gray-500 text-xs mb-2">BUSINESS DETAILS</p>
+            <div className="space-y-1">
+              <p><span className="text-gray-500">Type:</span> <span className="text-white">Boutique Wine Label</span></p>
+              <p><span className="text-gray-500">Winemaker:</span> <span className="text-white">Erica Stancliff (stopped getting paid early 2023)</span></p>
+              <p><span className="text-gray-500">Bank Balance:</span> <span className="text-yellow-400">$650 (per 2023 lawsuit filing)</span></p>
+              <p><span className="text-gray-500">Investor:</span> <span className="text-white">Naeem Mohd ($300K)</span></p>
+            </div>
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-4">
+          Mohd was promised 200% return in 18 months per lawsuit filing. The investment was allegedly misrepresented.
+        </p>
+      </div>
+
       {/* Property Investigation */}
       <div className="bg-gray-900/30 border border-gray-800 p-4 mb-8">
         <h3 className="text-white font-medium mb-3">Property Investigation Finding</h3>
@@ -376,6 +547,8 @@ export default function RoseLakeCapitalPage() {
                 item.type === 'financial' ? 'text-green-400' :
                 item.type === 'personal' ? 'text-yellow-400' :
                 item.type === 'property' ? 'text-blue-400' :
+                item.type === 'lawsuit' ? 'text-red-400' :
+                item.type === 'formation' ? 'text-purple-400' :
                 'text-gray-400'
               }`}>{item.event}</span>
             </div>
@@ -402,6 +575,19 @@ export default function RoseLakeCapitalPage() {
             <p>Delaware LLCs, WeWork addresses, and holding company structures provide limited public visibility.
             Neither Omar nor Mynett appear to own property in their names in DC or MN.</p>
           </div>
+          <div>
+            <p className="text-gray-500 mb-1">4. PATTERN OF FAILED INVESTMENTS</p>
+            <p>Two separate investor lawsuits (totaling $2.48M in claims) against Hailer-operated entities, both settling
+            rather than going to trial. eStCru winery had $650 in the bank; eSt Ventures had $0.05. Promised returns
+            of 200%+ allegedly not delivered. Tim Mynett was mentioned in the eStCru lawsuit but not named as defendant.</p>
+          </div>
+          <div>
+            <p className="text-gray-500 mb-1">5. CAPITAL FLOW QUESTIONS</p>
+            <p>Between 2018-2024, E Street Group received $3.67M from Democratic campaigns (79% from Omar&apos;s).
+            During this same period, Hailer was raising investor funds for eSt Ventures and eStCru.
+            Both investment vehicles ended up nearly empty. The relationship between political consulting revenue
+            and investment fund operations remains unclear.</p>
+          </div>
         </div>
       </div>
 
@@ -427,6 +613,9 @@ export default function RoseLakeCapitalPage() {
             <span className="text-gray-500">Delaware Division of Corporations:</span> Rose Lake entities
           </li>
           <li>
+            <span className="text-gray-500">California Secretary of State:</span> eStCru LLC registration (File #202018810577)
+          </li>
+          <li>
             <span className="text-gray-500">FEC Bulk Data (2020-2024):</span> 310 operating expenditure records
           </li>
           <li>
@@ -443,6 +632,12 @@ export default function RoseLakeCapitalPage() {
           </li>
           <li>
             <span className="text-gray-500">Hennepin County GIS:</span> No property under target names
+          </li>
+          <li>
+            <span className="text-gray-500">Hennepin County Court Records:</span> Dakota Natural Growers v. Hailer settlement (Aug 2024)
+          </li>
+          <li>
+            <span className="text-gray-500">News Sources:</span> Washingtonian, South Dakota Standard, Wine Industry Advisor
           </li>
         </ul>
         <p className="text-xs text-gray-500 mt-4">

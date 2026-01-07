@@ -123,9 +123,9 @@ const INVESTIGATION_TYPES = [
   {
     id: 'rose-lake-capital',
     title: 'Rose Lake Capital / E Street Group',
-    description: '$2.9M from Omar campaign to husband\'s firm - political finance network analysis',
+    description: '$2.9M from Omar campaign to husband\'s firm, plus $1.2M settled fraud lawsuit against business partner',
     href: '/investigation/rose-lake-capital',
-    stats: '$3.67M tracked',
+    stats: '2 lawsuits settled',
     isNew: true
   },
   {
