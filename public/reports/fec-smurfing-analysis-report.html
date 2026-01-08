@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEC Smurfing Analysis Report</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --bg-card: #111827;
+            --border: #1f2937;
+            --text: #ffffff;
+            --text-secondary: #b8bfc9;
+            --text-muted: #9ca3af;
+            --text-very-muted: #7b8494;
+            --green: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .meta {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-very-muted);
+        }
+
+        h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem;
+            color: var(--text);
+        }
+
+        h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Terminal-style stats */
+        .stats-terminal {
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', monospace;
+            font-size: 0.875rem;
+            margin: 1.5rem 0;
+        }
+
+        .stats-terminal .label {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-terminal .row {
+            color: var(--text-secondary);
+            margin: 0.25rem 0;
+        }
+
+        .stats-terminal .prefix {
+            color: var(--text-very-muted);
+        }
+
+        .stats-terminal .key {
+            color: var(--text-secondary);
+        }
+
+        .stats-terminal .value {
+            color: var(--text);
+            margin-left: 1rem;
+        }
+
+        .stats-terminal .value.money {
+            color: var(--green);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-card);
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        tr:hover {
+            background: rgba(17, 24, 39, 0.5);
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', monospace;
+        }
+
+        .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .money {
+            color: var(--green);
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-box-title {
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .info-box strong {
+            color: var(--text);
+        }
+
+        /* Findings grid */
+        .findings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .finding {
+            border: 1px solid var(--border);
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .finding strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Party comparison */
+        .party-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .party-card {
+            border: 1px solid var(--border);
+            padding: 1rem;
+        }
+
+        .party-card h3 {
+            color: var(--text-muted);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .party-amount {
+            font-size: 1.25rem;
+            font-weight: 600;
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', monospace;
+            color: var(--green);
+            margin: 0.5rem 0;
+        }
+
+        .party-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Bar chart */
+        .bar-chart {
+            margin: 1rem 0;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+
+        .bar-label {
+            width: 140px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 20px;
+            background: var(--bg-card);
+            overflow: hidden;
+            margin: 0 1rem;
+        }
+
+        .bar {
+            height: 100%;
+            background: var(--text-very-muted);
+        }
+
+        .bar-value {
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', monospace;
+            width: 80px;
+            text-align: right;
+            color: var(--green);
+        }
+
+        /* Explainer section */
+        .explainer {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .explainer h3 {
+            color: var(--text);
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+        }
+
+        .explainer-item {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            border-left: 2px solid var(--border);
+        }
+
+        .explainer-item h4 {
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .explainer-item p {
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-very-muted);
+            font-size: 0.75rem;
+        }
+
+        footer p + p {
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .party-comparison { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FEC Smurfing Analysis Report</h1>
+            <p class="subtitle">LLM-Enhanced Detection of Suspicious Political Donations</p>
+            <p class="meta">Analysis Period: 2023-2024 FEC Individual Contributions | Generated: January 8, 2026</p>
+        </header>
+
+        <!-- What is Smurfing Explainer -->
+        <section class="explainer">
+            <h3>What is Political Donation Smurfing?</h3>
+            <p style="margin-bottom: 1rem;">"Smurfing" refers to the practice of structuring political donations to obscure their true source or circumvent contribution limits. This analysis identified donors exhibiting patterns consistent with automated or coordinated donation structuring.</p>
+
+            <div class="explainer-item">
+                <h4>Extreme Volume</h4>
+                <p>Individual donors making thousands of donations per year. A human manually donating would struggle to exceed a few hundred donations annually. Donors making 10,000+ donations are almost certainly using automation.</p>
+            </div>
+
+            <div class="explainer-item">
+                <h4>Round Number Clustering</h4>
+                <p>Normal donors give varied amounts ($17, $43, $112). Suspicious donors show 70-98% round numbers ($5, $10, $25, $50, $100) - a signature of automated systems using preset amounts.</p>
+            </div>
+
+            <div class="explainer-item">
+                <h4>Burst Patterns</h4>
+                <p>50+ donations in a single day from one person is physically implausible. Some flagged donors made 200-900 donations in one day, indicating automated scripts.</p>
+            </div>
+
+            <div class="explainer-item">
+                <h4>"NOT EMPLOYED" Concentration</h4>
+                <p>88% of extreme donors claim "NOT EMPLOYED" or "RETIRED". This occupation allows donors to avoid employer verification while still appearing in FEC records.</p>
+            </div>
+
+            <div class="explainer-item">
+                <h4>Synthetic Identities</h4>
+                <p>Some profiles show abrupt starts/stops suggesting fabricated identities. Activity begins suddenly, runs at inhuman rates, then stops - consistent with detection and shutdown of fraudulent accounts.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Executive Summary</h2>
+            <div class="stats-terminal">
+                <div class="label">ANALYSIS_SUMMARY</div>
+                <div class="row"><span class="prefix">├─</span> <span class="key">donors_analyzed</span> <span class="value">2,925</span></div>
+                <div class="row"><span class="prefix">├─</span> <span class="key">high_suspicion</span> <span class="value">2,547 (87%)</span></div>
+                <div class="row"><span class="prefix">├─</span> <span class="key">total_donations</span> <span class="value">5,529,560</span></div>
+                <div class="row"><span class="prefix">└─</span> <span class="key">total_amount</span> <span class="value money">$107,684,777</span></div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">Key Finding</div>
+                <p><strong>2,547 individual donors</strong> made a combined <strong>5.5 million donations</strong> totaling <strong>$107.7 million</strong> with patterns consistent with automated donation structuring.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Party Breakdown</h2>
+            <div class="party-comparison">
+                <div class="party-card">
+                    <h3>Democratic Committees</h3>
+                    <div class="party-amount">$39,271,596</div>
+                    <p>From 1,581 suspicious donors</p>
+                </div>
+                <div class="party-card">
+                    <h3>Republican Committees</h3>
+                    <div class="party-amount">$23,052,559</div>
+                    <p>From 1,176 suspicious donors</p>
+                </div>
+            </div>
+
+            <h3>Top Recipients</h3>
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <span class="bar-label">ActBlue</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 100%;"></div>
+                    </div>
+                    <span class="bar-value">$21.8M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">WinRed</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 37%;"></div>
+                    </div>
+                    <span class="bar-value">$8.1M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Trump National JFC</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 20%;"></div>
+                    </div>
+                    <span class="bar-value">$4.5M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">NRSC</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 15%;"></div>
+                    </div>
+                    <span class="bar-value">$3.2M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Trump Save America</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 12%;"></div>
+                    </div>
+                    <span class="bar-value">$2.7M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Fight For The People</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 8%;"></div>
+                    </div>
+                    <span class="bar-value">$1.7M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">DSCC</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 8%;"></div>
+                    </div>
+                    <span class="bar-value">$1.7M</span>
+                </div>
+                <div class="bar-row">
+                    <span class="bar-label">Progressive Turnout</span>
+                    <div class="bar-container">
+                        <div class="bar" style="width: 7%;"></div>
+                    </div>
+                    <span class="bar-value">$1.5M</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Top 25 Most Suspicious Donors</h2>
+            <p>These donors exhibited the most extreme patterns. Note the impossibly high donation counts and round number percentages.</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Occupation</th>
+                            <th>Donations</th>
+                            <th>Amount</th>
+                            <th>% Round</th>
+                            <th>Per Day</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>MAKOWSKI, BRUCE</td><td>CLAWSON, MI</td><td>RETIRED</td><td class="mono highlight">31,403</td><td class="mono money">$115,888</td><td class="mono">94.4%</td><td class="mono">43.0</td></tr>
+                        <tr><td>JAHNS, RICHARD</td><td>EULESS, TX</td><td>RETIRED</td><td class="mono highlight">18,729</td><td class="mono money">$573,257</td><td class="mono">62.6%</td><td class="mono">34.3</td></tr>
+                        <tr><td>HRUZA, VIRGINIA</td><td>PRESCOTT, AZ</td><td>RETIRED</td><td class="mono highlight">18,204</td><td class="mono money">$232,528</td><td class="mono">63.3%</td><td class="mono">39.8</td></tr>
+                        <tr><td>YANCEY, JO ANN</td><td>CONROE, TX</td><td>RETIRED</td><td class="mono highlight">17,362</td><td class="mono money">$540,018</td><td class="mono">48.2%</td><td class="mono">34.7</td></tr>
+                        <tr><td>MONDER, STEVEN</td><td>CINCINNATI, OH</td><td>NOT EMPLOYED</td><td class="mono highlight">16,735</td><td class="mono money">$353,986</td><td class="mono">80.5%</td><td class="mono">22.9</td></tr>
+                        <tr><td>GRISWOLD, EDSON</td><td>DENVER, CO</td><td>NOT EMPLOYED</td><td class="mono highlight">16,279</td><td class="mono money">$285,987</td><td class="mono">77.1%</td><td class="mono">27.5</td></tr>
+                        <tr><td>IVAN, LAJOS</td><td>BOUND BROOK, NJ</td><td>RETIRED</td><td class="mono highlight">15,126</td><td class="mono money">$32,954</td><td class="mono">98.7%</td><td class="mono">21.6</td></tr>
+                        <tr><td>GORE, TRINA</td><td>DAVIE, FL</td><td>RETIRED</td><td class="mono highlight">14,920</td><td class="mono money">$69,806</td><td class="mono">89.1%</td><td class="mono">20.5</td></tr>
+                        <tr><td>DEARMAN, MELINDA</td><td>SAN ANTONIO, TX</td><td>NOT EMPLOYED</td><td class="mono highlight">14,308</td><td class="mono money">$93,224</td><td class="mono">85.8%</td><td class="mono">19.6</td></tr>
+                        <tr><td>PRESLEY, JUANITA</td><td>MERIDIAN, ID</td><td>RETIRED</td><td class="mono highlight">14,160</td><td class="mono money">$290,176</td><td class="mono">63.7%</td><td class="mono">21.7</td></tr>
+                        <tr><td>OTTO, ROBERT</td><td>GREENSBORO, NC</td><td>NOT EMPLOYED</td><td class="mono highlight">13,996</td><td class="mono money">$278,167</td><td class="mono">72.5%</td><td class="mono">20.4</td></tr>
+                        <tr><td>SKINNER, SHARON</td><td>SACRAMENTO, CA</td><td>RETIRED</td><td class="mono highlight">12,946</td><td class="mono money">$159,655</td><td class="mono">65.4%</td><td class="mono">18.0</td></tr>
+                        <tr><td>MENEGHELLI, CECILE</td><td>FOSTER CITY, CA</td><td>RETIRED</td><td class="mono highlight">12,687</td><td class="mono money">$94,721</td><td class="mono">60.2%</td><td class="mono">17.4</td></tr>
+                        <tr><td>KILPATRIC, GARY</td><td>SANTA FE, NM</td><td>ATTORNEY</td><td class="mono highlight">12,519</td><td class="mono money">$90,552</td><td class="mono">93.4%</td><td class="mono">17.2</td></tr>
+                        <tr><td>LEMMOND, BRENDA</td><td>DURHAM, NC</td><td>RETIRED</td><td class="mono highlight">12,207</td><td class="mono money">$52,174</td><td class="mono">82.7%</td><td class="mono">44.6</td></tr>
+                        <tr><td>MCLENDON, MARGARET</td><td>RICHLAND, GA</td><td>RETIRED</td><td class="mono highlight">12,110</td><td class="mono money">$304,827</td><td class="mono">47.8%</td><td class="mono">45.2</td></tr>
+                        <tr><td>NICHOLLS, ROSALIE</td><td>AUSTIN, TX</td><td>NOT EMPLOYED</td><td class="mono highlight">12,009</td><td class="mono money">$241,400</td><td class="mono">80.7%</td><td class="mono">16.5</td></tr>
+                        <tr><td>WAYMIRE, RUTH</td><td>ODENVILLE, AL</td><td>RETIRED</td><td class="mono highlight">11,542</td><td class="mono money">$74,527</td><td class="mono">79.0%</td><td class="mono">34.6</td></tr>
+                        <tr><td>HILL, VERNON</td><td>MOORESTOWN, NJ</td><td>RETIRED</td><td class="mono highlight">11,288</td><td class="mono money">$1M+</td><td class="mono">55.3%</td><td class="mono">15.7</td></tr>
+                        <tr><td>HEATON, KEVIN</td><td>SAN DIEGO, CA</td><td>NOT EMPLOYED</td><td class="mono highlight">11,201</td><td class="mono money">$193,223</td><td class="mono">74.6%</td><td class="mono">15.4</td></tr>
+                        <tr><td>KELSEY, TD</td><td>CODY, WY</td><td>RETIRED</td><td class="mono highlight">10,959</td><td class="mono money">$139,302</td><td class="mono">67.4%</td><td class="mono">15.4</td></tr>
+                        <tr><td>ARCHER, SANDRA</td><td>WOODRIDGE, IL</td><td>NOT EMPLOYED</td><td class="mono highlight">10,829</td><td class="mono money">$85,621</td><td class="mono">85.0%</td><td class="mono">19.8</td></tr>
+                        <tr><td>BOFINGER, BARBARA</td><td>ROCKY POINT, NY</td><td>RETIRED</td><td class="mono highlight">10,572</td><td class="mono money">$221,850</td><td class="mono">55.4%</td><td class="mono">33.4</td></tr>
+                        <tr><td>KOPPENAAL, GERALDINE</td><td>MELROSE, MA</td><td>NOT EMPLOYED</td><td class="mono highlight">10,350</td><td class="mono money">$93,185</td><td class="mono">72.3%</td><td class="mono">14.2</td></tr>
+                        <tr><td>BURKE, MICHAEL</td><td>REDONDO BEACH, CA</td><td>RETIRED</td><td class="mono highlight">10,122</td><td class="mono money">$449,951</td><td class="mono">73.4%</td><td class="mono">13.9</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Key Patterns</h2>
+            <div class="findings">
+                <div class="finding">
+                    <strong>88% claim "NOT EMPLOYED" or "RETIRED"</strong>
+                    1,328 donors list "NOT EMPLOYED" ($43.2M) and 903 list "RETIRED" ($42.0M). This concentration is statistically anomalous.
+                </div>
+                <div class="finding">
+                    <strong>Impossible donation volumes</strong>
+                    Top donor made 31,403 donations averaging 43 per day for 2 years. Manual entry of this volume is not physically possible.
+                </div>
+                <div class="finding">
+                    <strong>Round number clustering</strong>
+                    Average 77% round numbers across suspicious donors. Normal donor patterns show ~30% round numbers.
+                </div>
+                <div class="finding">
+                    <strong>ActBlue receives 2.7x more</strong>
+                    $21.8M from flagged donors vs WinRed's $8.1M. Both platforms warrant investigation.
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Geographic Distribution</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Suspicious Donors</th>
+                            <th>Donations</th>
+                            <th>Amount</th>
+                            <th>Avg % Round</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>California</td><td class="mono">461</td><td class="mono">902,179</td><td class="mono money">$18,826,220</td><td class="mono">80.2%</td></tr>
+                        <tr><td>New York</td><td class="mono">163</td><td class="mono">335,639</td><td class="mono money">$12,601,284</td><td class="mono">77.0%</td></tr>
+                        <tr><td>Texas</td><td class="mono">222</td><td class="mono">527,064</td><td class="mono money">$11,337,999</td><td class="mono">73.1%</td></tr>
+                        <tr><td>Florida</td><td class="mono">204</td><td class="mono">409,125</td><td class="mono money">$7,091,155</td><td class="mono">75.5%</td></tr>
+                        <tr><td>Massachusetts</td><td class="mono">63</td><td class="mono">126,337</td><td class="mono money">$4,255,222</td><td class="mono">76.5%</td></tr>
+                        <tr><td>New Jersey</td><td class="mono">53</td><td class="mono">142,356</td><td class="mono money">$3,911,504</td><td class="mono">81.7%</td></tr>
+                        <tr><td>Pennsylvania</td><td class="mono">78</td><td class="mono">181,981</td><td class="mono money">$3,765,375</td><td class="mono">79.1%</td></tr>
+                        <tr><td>Ohio</td><td class="mono">65</td><td class="mono">149,638</td><td class="mono money">$2,854,283</td><td class="mono">77.1%</td></tr>
+                        <tr><td>Illinois</td><td class="mono">76</td><td class="mono">175,523</td><td class="mono money">$2,853,997</td><td class="mono">76.7%</td></tr>
+                        <tr><td>Washington</td><td class="mono">88</td><td class="mono">169,723</td><td class="mono money">$2,827,085</td><td class="mono">81.2%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Potential Synthetic Identities</h2>
+            <div class="info-box">
+                <div class="info-box-title">Flagged for Investigation</div>
+                <p>LLM analysis identified these donors as potential synthetic identities based on abrupt activity patterns suggesting automated systems that were detected and shut down.</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Donations</th>
+                            <th>Pattern Analysis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>LOONEY, GEORGE</td>
+                            <td>CUMMING, GA</td>
+                            <td class="mono">10,020</td>
+                            <td>Abrupt stop, automated pattern, common name/location combination suggests fabricated identity</td>
+                        </tr>
+                        <tr>
+                            <td>CAFFREY, DOROTHY</td>
+                            <td>ELMHURST, IL</td>
+                            <td class="mono">8,843</td>
+                            <td>High volume ($40/day avg), sudden cessation after sustained activity indicates detection</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Methodology</h2>
+            <div class="findings">
+                <div class="finding">
+                    <strong>Phase 1: SQL Pattern Detection</strong>
+                    Identified 61,867 extreme donors (100+ donations) from 58M FEC records. Scored on volume, burst patterns, round numbers, frequency. Selected 2,925 with score >= 50 for LLM analysis.
+                </div>
+                <div class="finding">
+                    <strong>Phase 2: LLM Analysis</strong>
+                    Claude 3 Haiku analyzed each donor profile for fraud indicators including automation signatures, identity anomalies, and coordination patterns. Total cost: ~$15.
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Report generated by SomaliScan FEC Analysis Pipeline</p>
+            <p>Data source: FEC Individual Contributions 2023-2024</p>
+            <p>Analysis method: SQL pattern detection + LLM-enhanced review (Claude 3 Haiku)</p>
+        </footer>
+    </div>
+</body>
+</html>

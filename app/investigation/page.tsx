@@ -121,6 +121,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'fec-smurfing',
+    title: 'FEC Smurfing Analysis',
+    description: 'LLM-enhanced detection of 2,547 extreme donors making 5.5M donations with automation signatures',
+    href: '/investigation/fec-smurfing',
+    stats: '$107.7M flagged',
+    isNew: true
+  },
+  {
     id: 'rose-lake-capital',
     title: 'Rose Lake Capital / E Street Group',
     description: '$2.9M from Omar campaign to husband\'s firm, plus $1.2M settled fraud lawsuit against business partner',
