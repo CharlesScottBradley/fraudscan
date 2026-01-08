@@ -121,6 +121,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'nursing-home-donors',
+    title: 'Nursing Home Owner Donors',
+    description: '86 nursing home owners making suspicious donations - $5.3M from operators of 244 facilities',
+    href: '/investigation/nursing-home-donors',
+    stats: '28,611 beds',
+    isNew: true
+  },
+  {
     id: 'fec-smurfing',
     title: 'FEC Smurfing Analysis',
     description: 'LLM-enhanced detection of 2,547 extreme donors making 5.5M donations with automation signatures',

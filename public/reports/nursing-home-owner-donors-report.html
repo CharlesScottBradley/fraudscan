@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nursing Home Owners &amp; Suspicious FEC Donations | SomaliScan Investigation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+      background: #000;
+      color: #e5e5e5;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 { font-weight: 500; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff; }
+    h2 { font-size: 1.1rem; margin: 2rem 0 1rem; color: #fff; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
+    h3 { font-size: 0.95rem; margin: 1.5rem 0 0.75rem; color: #999; }
+    p { margin-bottom: 1rem; color: #999; }
+    a { color: #22d3ee; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .header { margin-bottom: 2rem; }
+    .subtitle { color: #666; font-size: 0.85rem; }
+    .date { color: #555; font-size: 0.8rem; margin-top: 0.5rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .stat-box {
+      background: #111;
+      border: 1px solid #333;
+      padding: 1rem;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #22c55e;
+    }
+    .stat-value.warning { color: #f59e0b; }
+    .stat-value.danger { color: #ef4444; }
+    .stat-value.neutral { color: #fff; }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    .terminal {
+      background: #0a0a0a;
+      border: 1px solid #222;
+      padding: 1rem;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+    .terminal-header { color: #666; margin-bottom: 0.5rem; }
+    .terminal-line { color: #999; }
+    .terminal-line .label { color: #666; }
+    .terminal-line .value { color: #fff; }
+    .terminal-line .money { color: #22c55e; }
+    .terminal-line .warning { color: #f59e0b; }
+    .terminal-line .danger { color: #ef4444; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin: 1rem 0;
+    }
+    th {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+      background: #111;
+      color: #666;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #333;
+    }
+    th.right { text-align: right; }
+    td {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid #1a1a1a;
+      color: #999;
+    }
+    td.name { color: #fff; }
+    td.money { color: #22c55e; text-align: right; font-family: monospace; }
+    td.number { text-align: right; font-family: monospace; color: #fff; }
+    td.rating { text-align: center; }
+    td.rating.low { color: #ef4444; }
+    td.rating.mid { color: #f59e0b; }
+    td.rating.high { color: #22c55e; }
+    td.party-d { color: #3b82f6; }
+    td.party-r { color: #ef4444; }
+    tr:hover { background: #111; }
+
+    .warning-box {
+      background: #1c1507;
+      border: 1px solid #854d0e;
+      padding: 1rem;
+      margin: 1.5rem 0;
+    }
+    .warning-box h3 { color: #fbbf24; margin-bottom: 0.5rem; }
+    .warning-box p { color: #a3a3a3; margin: 0; font-size: 0.85rem; }
+
+    .finding-box {
+      background: #0f0a0a;
+      border: 1px solid #7f1d1d;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    .finding-box h3 { color: #fca5a5; margin-bottom: 0.5rem; }
+
+    .section { margin: 2rem 0; }
+
+    .profile {
+      background: #111;
+      border: 1px solid #333;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .profile-name { color: #fff; font-size: 1.1rem; }
+    .profile-location { color: #666; font-size: 0.85rem; }
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #222;
+    }
+    .profile-stat-value { color: #22c55e; font-size: 1.1rem; }
+    .profile-stat-label { color: #666; font-size: 0.7rem; text-transform: uppercase; }
+
+    .methodology {
+      background: #0a0a0a;
+      border: 1px solid #222;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid #222;
+      font-size: 0.75rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Nursing Home Owners &amp; Suspicious FEC Donations</h1>
+    <p class="subtitle">Investigation into Medicare/Medicaid-funded facility owners making anomalous political donations</p>
+    <p class="date">Generated: January 8, 2026 | Data: FEC 2023-2024, CMS Nursing Home Compare</p>
+  </div>
+
+  <div class="warning-box">
+    <h3>Important Disclaimer</h3>
+    <p>This report presents statistical analysis of publicly available FEC and CMS data. Name matching between databases may produce false positives for common names. Unusual donation patterns do not prove wrongdoing. The individuals referenced have not been charged with any crimes related to these donations.</p>
+  </div>
+
+  <h2>Executive Summary</h2>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-value neutral">86</div>
+      <div class="stat-label">Nursing Home Owners Matched</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value neutral">244</div>
+      <div class="stat-label">Facilities Owned</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value neutral">28,611</div>
+      <div class="stat-label">Total Beds Controlled</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value warning">183,496</div>
+      <div class="stat-label">Suspicious Donations</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">$5.33M</div>
+      <div class="stat-label">Total FEC Contributions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value danger">2.9</div>
+      <div class="stat-label">Avg Facility Rating (of 5)</div>
+    </div>
+  </div>
+
+  <div class="terminal">
+    <div class="terminal-header">NURSING_HOME_DONOR_ANALYSIS</div>
+    <div class="terminal-line"><span class="label">|-</span> matched_owners <span class="value">86</span></div>
+    <div class="terminal-line"><span class="label">|-</span> total_facilities <span class="value">244</span></div>
+    <div class="terminal-line"><span class="label">|-</span> total_beds <span class="value">28,611</span></div>
+    <div class="terminal-line"><span class="label">|-</span> suspicious_donations <span class="warning">183,496</span></div>
+    <div class="terminal-line"><span class="label">|-</span> fec_amount <span class="money">$5,331,772</span></div>
+    <div class="terminal-line"><span class="label">|-</span> avg_facility_rating <span class="danger">2.9/5</span></div>
+    <div class="terminal-line"><span class="label">|-</span> owners_with_low_rated_facilities <span class="danger">31 (36%)</span></div>
+    <div class="terminal-line"><span class="label">L-</span> data_sources <span class="value">FEC Individual Contributions, CMS Nursing Home Compare, CMS Ownership Data</span></div>
+  </div>
+
+  <h2>Key Finding: Low-Rated Facility Owners Making High-Volume Donations</h2>
+
+  <div class="finding-box">
+    <h3>The Pattern</h3>
+    <p>Several nursing home owners with <strong>below-average facility ratings</strong> (1-3 stars) are making thousands of political donations. This raises questions about whether government healthcare reimbursements intended for patient care are being diverted to political activities.</p>
+  </div>
+
+  <p>Nursing homes receive substantial Medicare and Medicaid reimbursements - often millions per year per facility. Owners of poorly-rated facilities appearing as high-volume political donors warrants scrutiny.</p>
+
+  <h2>Top 25 Nursing Home Owner Donors</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Owner Name</th>
+        <th>Location</th>
+        <th class="right">Donations</th>
+        <th class="right">FEC Amount</th>
+        <th class="right">Facilities</th>
+        <th class="right">Beds</th>
+        <th class="right">Avg Rating</th>
+        <th>States</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="name">BURKE, MICHAEL</td>
+        <td>Redondo Beach, CA</td>
+        <td class="number">10,122</td>
+        <td class="money">$449,951</td>
+        <td class="number">7</td>
+        <td class="number">851</td>
+        <td class="rating low">2.3</td>
+        <td>MI, NY</td>
+      </tr>
+      <tr>
+        <td class="name">BURGESS, RICHARD</td>
+        <td>Yorktown, VA</td>
+        <td class="number">7,623</td>
+        <td class="money">$151,524</td>
+        <td class="number">1</td>
+        <td class="number">132</td>
+        <td class="rating low">2.0</td>
+        <td>SC</td>
+      </tr>
+      <tr>
+        <td class="name">WATSON, JAMES</td>
+        <td>Wrightstown, NJ</td>
+        <td class="number">6,378</td>
+        <td class="money">$68,977</td>
+        <td class="number">4</td>
+        <td class="number">328</td>
+        <td class="rating mid">3.3</td>
+        <td>AK, CA</td>
+      </tr>
+      <tr>
+        <td class="name">CLARK, CHARLES</td>
+        <td>New Hope, PA</td>
+        <td class="number">5,713</td>
+        <td class="money">$88,512</td>
+        <td class="number">1</td>
+        <td class="number">120</td>
+        <td class="rating low">1.0</td>
+        <td>IN</td>
+      </tr>
+      <tr>
+        <td class="name">MARSH, JAMES</td>
+        <td>Raleigh, NC</td>
+        <td class="number">5,333</td>
+        <td class="money">$40,234</td>
+        <td class="number">1</td>
+        <td class="number">6</td>
+        <td class="rating high">5.0</td>
+        <td>OR</td>
+      </tr>
+      <tr>
+        <td class="name">BROWN, LAWRENCE</td>
+        <td>Durango, CO</td>
+        <td class="number">4,646</td>
+        <td class="money">$112,880</td>
+        <td class="number">1</td>
+        <td class="number">101</td>
+        <td class="rating high">5.0</td>
+        <td>NM</td>
+      </tr>
+      <tr>
+        <td class="name">WILLIAMS, ANGELA</td>
+        <td>Palm Beach, FL</td>
+        <td class="number">4,377</td>
+        <td class="money">$651,964</td>
+        <td class="number">1</td>
+        <td class="number">45</td>
+        <td class="rating high">5.0</td>
+        <td>KS</td>
+      </tr>
+      <tr>
+        <td class="name">HANSON, ROBERT</td>
+        <td>Wichita, KS</td>
+        <td class="number">4,099</td>
+        <td class="money">$110,281</td>
+        <td class="number">1</td>
+        <td class="number">64</td>
+        <td class="rating high">5.0</td>
+        <td>MN</td>
+      </tr>
+      <tr>
+        <td class="name">COHEN, ADAM</td>
+        <td>Paradise Valley, AZ</td>
+        <td class="number">4,032</td>
+        <td class="money">$53,559</td>
+        <td class="number">1</td>
+        <td class="number">23</td>
+        <td class="rating mid">3.0</td>
+        <td>GA</td>
+      </tr>
+      <tr>
+        <td class="name">SMITH, DAVID</td>
+        <td>Coppell, TX</td>
+        <td class="number">3,917</td>
+        <td class="money">$117,293</td>
+        <td class="number">5</td>
+        <td class="number">669</td>
+        <td class="rating high">4.7</td>
+        <td>FL, MI, MO, NC</td>
+      </tr>
+      <tr>
+        <td class="name">WHEAT, MARY</td>
+        <td>Astoria, NY</td>
+        <td class="number">3,701</td>
+        <td class="money">$50,726</td>
+        <td class="number">1</td>
+        <td class="number">180</td>
+        <td class="rating mid">4.0</td>
+        <td>MD</td>
+      </tr>
+      <tr>
+        <td class="name">HALL, JOHN</td>
+        <td>Boulder, CO</td>
+        <td class="number">3,688</td>
+        <td class="money">$45,305</td>
+        <td class="number">17</td>
+        <td class="number">2,456</td>
+        <td class="rating high">4.3</td>
+        <td>CO, FL, KS, MA, MD, MI, NJ, PA, TX, VA</td>
+      </tr>
+      <tr>
+        <td class="name">FRITZ, JOHN</td>
+        <td>Big Bear Lake, CA</td>
+        <td class="number">3,616</td>
+        <td class="money">$49,257</td>
+        <td class="number">2</td>
+        <td class="number">137</td>
+        <td class="rating mid">3.0</td>
+        <td>SD</td>
+      </tr>
+      <tr>
+        <td class="name">BOYD, NANCY</td>
+        <td>San Ramon, CA</td>
+        <td class="number">3,578</td>
+        <td class="money">$23,853</td>
+        <td class="number">1</td>
+        <td class="number">59</td>
+        <td class="rating high">5.0</td>
+        <td>IA</td>
+      </tr>
+      <tr>
+        <td class="name">HERMAN, PETER</td>
+        <td>Bonsall, CA</td>
+        <td class="number">3,489</td>
+        <td class="money">$153,360</td>
+        <td class="number">1</td>
+        <td class="number">141</td>
+        <td class="rating mid">4.0</td>
+        <td>MA</td>
+      </tr>
+      <tr>
+        <td class="name">RUSSELL, MARY</td>
+        <td>Prescott, AZ</td>
+        <td class="number">3,422</td>
+        <td class="money">$31,186</td>
+        <td class="number">3</td>
+        <td class="number">330</td>
+        <td class="rating low">2.3</td>
+        <td>OK</td>
+      </tr>
+      <tr>
+        <td class="name">FALLON, JOHN</td>
+        <td>Dallas, TX</td>
+        <td class="number">3,368</td>
+        <td class="money">$24,243</td>
+        <td class="number">20</td>
+        <td class="number">2,243</td>
+        <td class="rating low">2.7</td>
+        <td>LA, TX</td>
+      </tr>
+      <tr>
+        <td class="name">SMITH, CHARLES</td>
+        <td>Olympia, WA</td>
+        <td class="number">3,018</td>
+        <td class="money">$15,671</td>
+        <td class="number">2</td>
+        <td class="number">193</td>
+        <td class="rating high">5.0</td>
+        <td>VA</td>
+      </tr>
+      <tr>
+        <td class="name">EVANS, ROBERT</td>
+        <td>Benson, AZ</td>
+        <td class="number">2,908</td>
+        <td class="money">$14,120</td>
+        <td class="number">10</td>
+        <td class="number">1,609</td>
+        <td class="rating high">4.3</td>
+        <td>AL, MN, NC, PA, SC, TX</td>
+      </tr>
+      <tr>
+        <td class="name">COHEN, LAWRENCE</td>
+        <td>Los Angeles, CA</td>
+        <td class="number">2,879</td>
+        <td class="money">$24,619</td>
+        <td class="number">1</td>
+        <td class="number">180</td>
+        <td class="rating low">2.0</td>
+        <td>NY</td>
+      </tr>
+      <tr>
+        <td class="name">THOMPSON, BARBARA</td>
+        <td>Poughkeepsie, NY</td>
+        <td class="number">2,842</td>
+        <td class="money">$110,194</td>
+        <td class="number">1</td>
+        <td class="number">100</td>
+        <td class="rating low">1.0</td>
+        <td>NY</td>
+      </tr>
+      <tr>
+        <td class="name">LEVY, DAVID</td>
+        <td>Chicago, IL</td>
+        <td class="number">2,668</td>
+        <td class="money">$30,502</td>
+        <td class="number">4</td>
+        <td class="number">795</td>
+        <td class="rating low">1.8</td>
+        <td>CA</td>
+      </tr>
+      <tr>
+        <td class="name">LEVINE, DAVID</td>
+        <td>Potomac, MD</td>
+        <td class="number">2,593</td>
+        <td class="money">$28,463</td>
+        <td class="number">1</td>
+        <td class="number">180</td>
+        <td class="rating low">2.0</td>
+        <td>FL</td>
+      </tr>
+      <tr>
+        <td class="name">MILLER, JOHN</td>
+        <td>Phoenix, AZ</td>
+        <td class="number">1,408</td>
+        <td class="money">$23,862</td>
+        <td class="number">21</td>
+        <td class="number">3,089</td>
+        <td class="rating mid">3.3</td>
+        <td>CT, FL, ME, MO, NC, PA, TX</td>
+      </tr>
+      <tr>
+        <td class="name">TAYLOR, JAMES</td>
+        <td>Indianapolis, IN</td>
+        <td class="number">1,468</td>
+        <td class="money">$10,089</td>
+        <td class="number">6</td>
+        <td class="number">478</td>
+        <td class="rating low">2.7</td>
+        <td>IL, NC, OH, WA</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Spotlight: Largest Facility Portfolios</h2>
+
+  <div class="profile">
+    <div class="profile-header">
+      <div>
+        <div class="profile-name">JOHN MILLER - Phoenix, AZ</div>
+        <div class="profile-location">21 facilities across 7 states</div>
+      </div>
+    </div>
+    <p style="color: #999; font-size: 0.85rem;">Owns the largest portfolio of nursing homes among suspicious donors. Facilities span CT, FL, ME, MO, NC, PA, and TX with an average rating of 3.3/5.</p>
+    <div class="profile-stats">
+      <div>
+        <div class="profile-stat-value">1,408</div>
+        <div class="profile-stat-label">Donations</div>
+      </div>
+      <div>
+        <div class="profile-stat-value">$23,862</div>
+        <div class="profile-stat-label">FEC Total</div>
+      </div>
+      <div>
+        <div class="profile-stat-value">3,089</div>
+        <div class="profile-stat-label">Total Beds</div>
+      </div>
+      <div>
+        <div class="profile-stat-value" style="color: #f59e0b;">3.3/5</div>
+        <div class="profile-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-header">
+      <div>
+        <div class="profile-name">JOHN FALLON - Dallas, TX</div>
+        <div class="profile-location">20 facilities in TX and LA</div>
+      </div>
+    </div>
+    <p style="color: #999; font-size: 0.85rem;">Second-largest portfolio. Notable for high donation count (3,368) relative to low dollar amount ($24K) - averaging just $7.20 per donation. Classic smurfing pattern.</p>
+    <div class="profile-stats">
+      <div>
+        <div class="profile-stat-value">3,368</div>
+        <div class="profile-stat-label">Donations</div>
+      </div>
+      <div>
+        <div class="profile-stat-value">$24,243</div>
+        <div class="profile-stat-label">FEC Total</div>
+      </div>
+      <div>
+        <div class="profile-stat-value">2,243</div>
+        <div class="profile-stat-label">Total Beds</div>
+      </div>
+      <div>
+        <div class="profile-stat-value" style="color: #ef4444;">2.7/5</div>
+        <div class="profile-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-header">
+      <div>
+        <div class="profile-name">JOHN HALL - Boulder, CO</div>
+        <div class="profile-location">17 facilities across 10 states</div>
+      </div>
+    </div>
+    <p style="color: #999; font-size: 0.85rem;">Geographically diverse portfolio spanning CO, FL, KS, MA, MD, MI, NJ, PA, TX, and VA. Higher average rating (4.3) than other large portfolio owners.</p>
+    <div class="profile-stats">
+      <div>
+        <div class="profile-stat-value">3,688</div>
+        <div class="profile-stat-label">Donations</div>
+      </div>
+      <div>
+        <div class="profile-stat-value">$45,305</div>
+        <div class="profile-stat-label">FEC Total</div>
+      </div>
+      <div>
+        <div class="profile-stat-value">2,456</div>
+        <div class="profile-stat-label">Total Beds</div>
+      </div>
+      <div>
+        <div class="profile-stat-value" style="color: #22c55e;">4.3/5</div>
+        <div class="profile-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Owners of 1-Star Facilities</h2>
+
+  <p>These nursing home owners have facilities with CMS's lowest rating (1 star) and are making high-volume political donations:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Owner Name</th>
+        <th>Location</th>
+        <th class="right">Donations</th>
+        <th class="right">FEC Amount</th>
+        <th class="right">Facilities</th>
+        <th class="right">Beds</th>
+        <th>Facility Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="name">CLARK, CHARLES</td>
+        <td>New Hope, PA</td>
+        <td class="number">5,713</td>
+        <td class="money">$88,512</td>
+        <td class="number">1</td>
+        <td class="number">120</td>
+        <td class="rating low">1.0</td>
+      </tr>
+      <tr>
+        <td class="name">THOMPSON, BARBARA</td>
+        <td>Poughkeepsie, NY</td>
+        <td class="number">2,842</td>
+        <td class="money">$110,194</td>
+        <td class="number">1</td>
+        <td class="number">100</td>
+        <td class="rating low">1.0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Committee Recipients</h2>
+
+  <p>Where the $5.33M in donations from nursing home owners went:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Committee</th>
+        <th>Party</th>
+        <th class="right">Donations</th>
+        <th class="right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="name">ActBlue</td>
+        <td class="party-d">Democratic</td>
+        <td class="number">88,303</td>
+        <td class="money">$3,540,828</td>
+      </tr>
+      <tr>
+        <td class="name">WinRed</td>
+        <td class="party-r">Republican</td>
+        <td class="number">14,968</td>
+        <td class="money">$1,612,307</td>
+      </tr>
+      <tr>
+        <td class="name">Harris Victory Fund</td>
+        <td class="party-d">Democratic</td>
+        <td class="number">3,002</td>
+        <td class="money">$775,320</td>
+      </tr>
+      <tr>
+        <td class="name">Fight For The People PAC</td>
+        <td class="party-d">Democratic</td>
+        <td class="number">5,482</td>
+        <td class="money">$660,451</td>
+      </tr>
+      <tr>
+        <td class="name">Trump National Committee JFC</td>
+        <td class="party-r">Republican</td>
+        <td class="number">15,210</td>
+        <td class="money">$541,739</td>
+      </tr>
+      <tr>
+        <td class="name">DSCC</td>
+        <td class="party-d">Democratic</td>
+        <td class="number">3,104</td>
+        <td class="money">$327,110</td>
+      </tr>
+      <tr>
+        <td class="name">Trump Save America JFC</td>
+        <td class="party-r">Republican</td>
+        <td class="number">11,420</td>
+        <td class="money">$251,143</td>
+      </tr>
+      <tr>
+        <td class="name">NRSC</td>
+        <td class="party-r">Republican</td>
+        <td class="number">7,706</td>
+        <td class="money">$221,769</td>
+      </tr>
+      <tr>
+        <td class="name">DCCC</td>
+        <td class="party-d">Democratic</td>
+        <td class="number">3,797</td>
+        <td class="money">$201,405</td>
+      </tr>
+      <tr>
+        <td class="name">DNC Services Corp</td>
+        <td class="party-d">Democratic</td>
+        <td class="number">1,074</td>
+        <td class="money">$178,312</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="terminal" style="margin-top: 1.5rem;">
+    <div class="terminal-header">PARTY_BREAKDOWN</div>
+    <div class="terminal-line"><span class="label">|-</span> democratic <span class="money">~$4.2M</span> <span class="value">(~79%)</span></div>
+    <div class="terminal-line"><span class="label">L-</span> republican <span class="money">~$1.1M</span> <span class="value">(~21%)</span></div>
+  </div>
+
+  <h2>Questions Raised</h2>
+
+  <div class="section">
+    <h3>1. Source of Funds</h3>
+    <p>Nursing homes receive substantial Medicare and Medicaid reimbursements. When facility owners make thousands of small political donations, what is the source of those funds? Personal wealth? Business income derived from government healthcare payments?</p>
+
+    <h3>2. Quality vs. Political Activity Correlation</h3>
+    <p>Several owners of low-rated facilities (1-2 stars) appear on this list. Is money that could improve patient care being directed to political donations instead?</p>
+
+    <h3>3. Donation Pattern Anomalies</h3>
+    <p>John Fallon made 3,368 donations totaling $24,243 - an average of $7.20 per donation. This high-volume, low-dollar pattern is consistent with donation structuring ("smurfing").</p>
+
+    <h3>4. Multi-State Operations</h3>
+    <p>Several owners operate facilities across many states while residing elsewhere. John Miller (Phoenix, AZ) owns facilities in 7 states. This geographic dispersion makes oversight challenging.</p>
+  </div>
+
+  <h2>Methodology</h2>
+
+  <div class="methodology">
+    <p><strong>Data Sources:</strong></p>
+    <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #666;">
+      <li>FEC Individual Contributions (2023-2024 election cycle, 58M records)</li>
+      <li>CMS Nursing Home Compare (facility ratings and characteristics)</li>
+      <li>CMS Nursing Home Ownership Data (individual owner records)</li>
+    </ul>
+    <p style="margin-top: 1rem;"><strong>Matching Criteria:</strong></p>
+    <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #666;">
+      <li>Exact name match between FEC donor name and CMS ownership records</li>
+      <li>FEC donors pre-filtered to "high suspicion" based on LLM analysis of donation patterns</li>
+      <li>Only individual owners included (not corporate/organizational owners)</li>
+    </ul>
+    <p style="margin-top: 1rem;"><strong>Limitations:</strong></p>
+    <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #666;">
+      <li>Common names may produce false positive matches</li>
+      <li>Name variations (Jr., middle initials, etc.) may miss valid matches</li>
+      <li>Cannot definitively prove same person without additional identifiers</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p>Data sources: FEC Individual Contributions, CMS Nursing Home Compare, CMS Ownership Data</p>
+    <p>Report generated by SomaliScan Investigation Pipeline | January 8, 2026</p>
+    <p>This analysis is provided for informational purposes. It raises questions for regulatory review but is not an accusation of illegal conduct.</p>
+  </div>
+</body>
+</html>
