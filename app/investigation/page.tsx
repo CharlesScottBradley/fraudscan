@@ -177,6 +177,14 @@ const INVESTIGATION_TYPES = [
     isNew: false
   },
   {
+    id: 'george-floyd-switcharoo',
+    title: 'The George Floyd Switcharoo',
+    description: '89 fraud-prone businesses occupy riot corridor - daycares and home health claiming $27.7M PPP',
+    href: '/investigation/george-floyd-switcharoo',
+    stats: '$27.7M PPP',
+    isNew: true
+  },
+  {
     id: '2104-park-ave',
     title: '2104 Park Ave Cluster',
     description: '5 businesses, $2.1M PPP, $42M DHS payments from single address',
@@ -395,5 +403,6 @@ export default async function InvestigationsPage() {
     </div>
   );
 }
+
 
 
