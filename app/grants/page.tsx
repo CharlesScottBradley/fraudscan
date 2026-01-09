@@ -22,7 +22,7 @@ const GRANTS: Grant[] = [
     title: 'Provider Accountability Grant',
     amount: 20000,
     slots: 1,
-    claimed: 0,
+    claimed: 1,
     description: 'Legal cost assistance for legitimate service providers pursuing competitive injury claims against fraudulent operators who harmed their business.',
     eligibility: [
       'Licensed provider in childcare, HCBS, autism care, senior care, PCA, or related Medicaid-funded services',
@@ -42,7 +42,7 @@ const GRANTS: Grant[] = [
     title: 'Beneficiary Storytelling Grant',
     amount: 2500,
     slots: 2,
-    claimed: 0,
+    claimed: 2,
     description: 'Funding for individuals whose benefits were cut, denied, or delayed to share their story publicly and advocate for stronger fraud prevention and program accountability.',
     eligibility: [
       'Personally experienced benefit reduction, denial, or delay (childcare subsidies, Medicaid, SNAP, etc.)',
