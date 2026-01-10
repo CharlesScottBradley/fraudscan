@@ -4,10 +4,12 @@ import { verifyAdminAuth, unauthorizedResponse } from '@/lib/adminAuth';
 import nodemailer from 'nodemailer';
 import Imap from 'imap';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 // SMTP transporter for sending emails
 const transporter = nodemailer.createTransport({
@@ -126,6 +128,7 @@ export async function GET(
   }
 
   const { id } = await params;
+  const supabase = getSupabase();
 
   try {
     const { data: email, error } = await supabase
@@ -163,6 +166,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
+  const supabase = getSupabase();
 
   try {
     const updateData: Record<string, unknown> = {
@@ -221,6 +225,7 @@ export async function DELETE(
   }
 
   const { id } = await params;
+  const supabase = getSupabase();
 
   try {
     const { error } = await supabase
@@ -253,6 +258,7 @@ export async function POST(
   }
 
   const { id } = await params;
+  const supabase = getSupabase();
 
   try {
     // Get the email record
