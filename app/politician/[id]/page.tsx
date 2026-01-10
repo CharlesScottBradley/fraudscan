@@ -154,8 +154,8 @@ async function getPoliticalConnections(politicianId: string): Promise<PoliticalC
 }
 
 async function getContributions(politicianId: string): Promise<Contribution[]> {
-  // Use internal API route which we know works
-  const url = `https://www.somaliscan.com/api/debug/politician-contributions?id=${politicianId}&full=true`;
+  // Use internal API route for reliable data fetching in server components
+  const url = `https://www.somaliscan.com/api/politicians/${politicianId}/contributions`;
 
   try {
     const response = await fetch(url, { cache: 'no-store' });
