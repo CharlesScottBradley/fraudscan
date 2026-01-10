@@ -3,12 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-// Create a direct client for contributions to avoid any caching issues
-const contributionsClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 interface Politician {
   id: string;
   full_name: string | null;
@@ -161,8 +155,14 @@ async function getPoliticalConnections(politicianId: string): Promise<PoliticalC
 }
 
 async function getContributions(politicianId: string): Promise<Contribution[]> {
-  // Get FEC contributions linked to this politician using direct client
-  const { data, error } = await contributionsClient
+  // Create client inside function to ensure env vars are available
+  const client = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  // Get FEC contributions linked to this politician
+  const { data, error } = await client
     .from('fec_contributions')
     .select('id, name, transaction_amt, transaction_dt, employer, occupation, city, state, is_fraud_linked')
     .eq('linked_politician_id', politicianId)
