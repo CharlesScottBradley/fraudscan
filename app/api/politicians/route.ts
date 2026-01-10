@@ -66,7 +66,101 @@ export async function GET(request: Request) {
   const sortDir = searchParams.get('sortDir') || 'desc';
 
   try {
-    // Build query with explicit columns to ensure full_name is included
+    // When sorting by contributions, use the materialized view (already sorted correctly)
+    if (sortBy === 'contributions') {
+      let mvQuery = supabase
+        .from('top_politicians_by_contributions')
+        .select('*', { count: 'exact' });
+
+      // Apply filters to materialized view
+      if (state) {
+        mvQuery = mvQuery.eq('state', state.toUpperCase());
+      }
+      if (party) {
+        const partyUpper = party.toUpperCase();
+        if (partyUpper === 'D' || partyUpper === 'DEMOCRAT' || partyUpper === 'DEMOCRATIC') {
+          mvQuery = mvQuery.or('party.ilike.%democrat%,party.eq.D');
+        } else if (partyUpper === 'R' || partyUpper === 'REPUBLICAN') {
+          mvQuery = mvQuery.or('party.ilike.%republican%,party.eq.R');
+        } else if (partyUpper === 'I' || partyUpper === 'INDEPENDENT') {
+          mvQuery = mvQuery.or('party.ilike.%independent%,party.eq.I');
+        } else {
+          mvQuery = mvQuery.ilike('party', `%${party}%`);
+        }
+      }
+      if (office) {
+        mvQuery = mvQuery.eq('office_type', office.toLowerCase());
+      }
+      if (search) {
+        mvQuery = mvQuery.or(`full_name.ilike.%${search}%,state.ilike.%${search}%`);
+      }
+
+      // Sort and paginate
+      mvQuery = mvQuery.order('total_amount', { ascending: sortDir === 'asc' });
+      mvQuery = mvQuery.range(offset, offset + pageSize - 1);
+
+      const { data: topPoliticians, error: mvError, count } = await mvQuery;
+
+      if (mvError) {
+        console.error('Materialized view query error:', mvError);
+        return NextResponse.json(
+          { error: 'Database query failed', details: mvError.message },
+          { status: 500 }
+        );
+      }
+
+      // Transform materialized view data to Politician format
+      const partyBreakdown: Record<string, number> = {};
+      const officeBreakdown: Record<string, number> = {};
+      let totalContributions = 0;
+      let totalContributionAmount = 0;
+
+      const politicians: Politician[] = (topPoliticians || []).map((p) => {
+        if (p.party) partyBreakdown[p.party] = (partyBreakdown[p.party] || 0) + 1;
+        if (p.office_type) officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
+        totalContributions += Number(p.contribution_count) || 0;
+        totalContributionAmount += Number(p.total_amount) || 0;
+
+        return {
+          id: p.politician_id,
+          person_id: null,
+          name: p.full_name,
+          office_type: p.office_type,
+          office_title: p.office_title,
+          state: p.state,
+          district: null,
+          party: p.party,
+          current_term_start: null,
+          current_term_end: null,
+          is_current: null,
+          fec_candidate_id: null,
+          bioguide_id: null,
+          opensecrets_id: null,
+          photo_url: null,
+          website: null,
+          contribution_count: Number(p.contribution_count) || 0,
+          total_contributions: Number(p.total_amount) || 0,
+        };
+      });
+
+      return NextResponse.json({
+        data: politicians,
+        total: count || 0,
+        page,
+        pageSize,
+        totalPages: Math.ceil((count || 0) / pageSize),
+        stats: {
+          partyBreakdown,
+          officeBreakdown,
+          totalContributions,
+          totalContributionAmount,
+        },
+        _version: 'v4-mv-sort',
+        _source: 'materialized_view'
+      });
+    }
+
+    // For other sort options, use the regular politicians table
     let query = supabase
       .from('politicians')
       .select(`
@@ -81,7 +175,6 @@ export async function GET(request: Request) {
     }
 
     if (party) {
-      // Support single letter or full party name
       const partyUpper = party.toUpperCase();
       if (partyUpper === 'D' || partyUpper === 'DEMOCRAT' || partyUpper === 'DEMOCRATIC') {
         query = query.or('party.ilike.%democrat%,party.eq.D');
@@ -98,11 +191,9 @@ export async function GET(request: Request) {
       query = query.eq('office_type', office.toLowerCase());
     }
 
-    // Note: is_current filter removed - column may not exist in actual table
-
-    // Sorting - use only columns that are likely to exist
-    const validSortColumns = ['state', 'party', 'office_type', 'created_at'];
-    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at';
+    // Sorting for non-contribution sorts
+    const validSortColumns = ['state', 'party', 'office_type', 'full_name'];
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'state';
     query = query.order(sortColumn, { ascending: sortDir === 'asc', nullsFirst: false });
 
     // Pagination
@@ -116,20 +207,6 @@ export async function GET(request: Request) {
         { error: 'Database query failed', details: error.message },
         { status: 500 }
       );
-    }
-
-    // Debug: Check if full_name is being returned
-    if (searchParams.get('debug') === 'true') {
-      return NextResponse.json({
-        sample: (politicians || []).slice(0, 5).map(p => ({
-          id: p.id,
-          full_name: p.full_name,
-          person_id: p.person_id,
-          office_type: p.office_type
-        })),
-        hasFullName: (politicians || []).some(p => p.full_name),
-        columns: politicians?.[0] ? Object.keys(politicians[0]) : []
-      });
     }
 
     // Get contribution stats for these politicians using RPC function
@@ -171,21 +248,14 @@ export async function GET(request: Request) {
     let totalContributionAmount = 0;
 
     const enrichedPoliticians: Politician[] = (politicians || []).map((p) => {
-      // Get name from people lookup
       const peopleName = p.person_id ? personNames[p.person_id] || null : null;
-
       const contribData = contributionStats[p.id] || { count: 0, amount: 0 };
 
-      if (p.party) {
-        partyBreakdown[p.party] = (partyBreakdown[p.party] || 0) + 1;
-      }
-      if (p.office_type) {
-        officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
-      }
+      if (p.party) partyBreakdown[p.party] = (partyBreakdown[p.party] || 0) + 1;
+      if (p.office_type) officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
       totalContributions += contribData.count;
       totalContributionAmount += contribData.amount;
 
-      // Use full_name from politicians table, fall back to people table
       const name = p.full_name || peopleName || null;
 
       return {
@@ -210,7 +280,7 @@ export async function GET(request: Request) {
       };
     });
 
-    // Filter out politicians without names (don't show "Unknown" entries)
+    // Filter out politicians without names
     let filteredPoliticians = enrichedPoliticians.filter(p => p.name && p.name.trim() !== '');
 
     // Filter by search (on processed name)
@@ -223,21 +293,7 @@ export async function GET(request: Request) {
       );
     }
 
-    // Sort by contributions (default) or other fields
-    if (sortBy === 'contributions') {
-      filteredPoliticians.sort((a, b) => {
-        const diff = b.total_contributions - a.total_contributions;
-        return sortDir === 'desc' ? diff : -diff;
-      });
-    } else if (sortBy === 'name') {
-      filteredPoliticians.sort((a, b) => {
-        const cmp = (a.name || '').localeCompare(b.name || '');
-        return sortDir === 'desc' ? -cmp : cmp;
-      });
-    }
-    // For state/party/office, DB already sorted
-
-    const response: PoliticiansSearchResponse = {
+    return NextResponse.json({
       data: filteredPoliticians,
       total: count || 0,
       page,
@@ -249,16 +305,8 @@ export async function GET(request: Request) {
         totalContributions,
         totalContributionAmount,
       },
-    };
-
-    // Add version marker and debug info
-    return NextResponse.json({
-      ...response,
-      _version: 'v3-fullname-fix',
-      _debug: {
-        rawSampleFullNames: (politicians || []).slice(0, 3).map(p => p.full_name),
-        hasPoliticians: (politicians || []).length > 0
-      }
+      _version: 'v4-table-sort',
+      _source: 'politicians_table'
     });
 
   } catch (error) {
