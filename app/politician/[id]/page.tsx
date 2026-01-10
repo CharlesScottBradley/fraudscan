@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase';
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -155,25 +154,29 @@ async function getPoliticalConnections(politicianId: string): Promise<PoliticalC
 }
 
 async function getContributions(politicianId: string): Promise<Contribution[]> {
-  // Create client inside function to ensure env vars are available
-  const client = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  // Use direct fetch with no-store to bypass Next.js caching
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/fec_contributions?linked_politician_id=eq.${politicianId}&select=id,name,transaction_amt,transaction_dt,employer,occupation,city,state,is_fraud_linked&order=transaction_amt.desc&limit=100`;
 
-  // Get FEC contributions linked to this politician
-  const { data, error } = await client
-    .from('fec_contributions')
-    .select('id, name, transaction_amt, transaction_dt, employer, occupation, city, state, is_fraud_linked')
-    .eq('linked_politician_id', politicianId)
-    .order('transaction_amt', { ascending: false })
-    .limit(100);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+      },
+      cache: 'no-store',
+    });
 
-  if (error) {
-    console.error('[getContributions] Error:', error.message);
+    if (!response.ok) {
+      console.error('[getContributions] Fetch error:', response.status, response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error('[getContributions] Error:', error);
     return [];
   }
-  return data || [];
 }
 
 async function getNewsArticles(politicianName: string): Promise<NewsArticle[]> {
