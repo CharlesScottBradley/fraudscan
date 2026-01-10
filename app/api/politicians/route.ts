@@ -170,10 +170,13 @@ export async function GET(request: Request) {
         fraudLinkedCount++;
       }
 
+      // Use full_name from politicians table, fall back to people table
+      const name = p.full_name || peopleName || null;
+
       return {
         id: p.id,
         person_id: p.person_id,
-        name: peopleName,
+        name,
         office_type: p.office_type,
         office_title: p.office_title,
         state: p.state,
@@ -192,11 +195,13 @@ export async function GET(request: Request) {
       };
     });
 
+    // Filter out politicians without names (don't show "Unknown" entries)
+    let filteredPoliticians = enrichedPoliticians.filter(p => p.name && p.name.trim() !== '');
+
     // Filter by search (on processed name)
-    let filteredPoliticians = enrichedPoliticians;
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredPoliticians = enrichedPoliticians.filter(p =>
+      filteredPoliticians = filteredPoliticians.filter(p =>
         p.name?.toLowerCase().includes(searchLower) ||
         p.state?.toLowerCase().includes(searchLower) ||
         p.office_title?.toLowerCase().includes(searchLower)
