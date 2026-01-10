@@ -28,8 +28,8 @@ interface Politician {
   opensecrets_id: string | null;
   photo_url: string | null;
   website: string | null;
-  fraud_connection_count: number;
-  total_fraud_linked_amount: number;
+  contribution_count: number;
+  total_contributions: number;
 }
 
 interface PoliticiansResponse {
@@ -41,7 +41,8 @@ interface PoliticiansResponse {
   stats: {
     partyBreakdown: Record<string, number>;
     officeBreakdown: Record<string, number>;
-    fraudLinkedCount: number;
+    totalContributions: number;
+    totalContributionAmount: number;
   };
 }
 
@@ -158,13 +159,12 @@ export default function PoliticiansPage() {
   const [party, setParty] = useState('');
   const [state, setState] = useState('');
   const [office, setOffice] = useState('');
-  const [hasFraudLinks, setHasFraudLinks] = useState<string>('');
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     fetchPoliticians();
-  }, [page, party, state, office, hasFraudLinks, search]);
+  }, [page, party, state, office, search]);
 
   useEffect(() => {
     fetchContributionStats();
@@ -207,7 +207,6 @@ export default function PoliticiansPage() {
       if (party) params.set('party', party);
       if (state) params.set('state', state);
       if (office) params.set('office', office);
-      if (hasFraudLinks) params.set('hasFraudLinks', hasFraudLinks);
       if (search) params.set('search', search);
 
       const res = await fetch(`/api/politicians?${params}`);
@@ -233,9 +232,9 @@ export default function PoliticiansPage() {
     setPage(1);
   };
 
-  // Calculate fraud connection stats
-  const fraudLinkedPoliticians = politicians.filter(p => p.fraud_connection_count > 0);
-  const totalFraudLinkedAmount = fraudLinkedPoliticians.reduce((sum, p) => sum + p.total_fraud_linked_amount, 0);
+  // Calculate contribution stats for current page
+  const pageContributionCount = politicians.reduce((sum, p) => sum + p.contribution_count, 0);
+  const pageContributionAmount = politicians.reduce((sum, p) => sum + p.total_contributions, 0);
 
   // Top recipients chart data
   const topRecipientsChartData = contributionStats?.topRecipients?.slice(0, 10).map(r => ({
@@ -251,8 +250,8 @@ export default function PoliticiansPage() {
         <p className="text-gray-500">POLITICIANS_DATABASE</p>
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">├─</span> total_tracked <span className="text-white ml-4">{total.toLocaleString()}</span></p>
-          <p><span className="text-gray-600">├─</span> fraud_linked <span className="text-red-500 ml-4">{stats?.fraudLinkedCount || 0}</span></p>
-          <p><span className="text-gray-600">├─</span> fraud_amount <span className="text-green-500 ml-4">{formatMoney(totalFraudLinkedAmount)}</span></p>
+          <p><span className="text-gray-600">├─</span> contributions <span className="text-green-500 ml-4">{(stats?.totalContributions || 0).toLocaleString()}</span></p>
+          <p><span className="text-gray-600">├─</span> total_raised <span className="text-green-500 ml-4">{formatMoney(stats?.totalContributionAmount || 0)}</span></p>
           <p><span className="text-gray-600">└─</span> parties <span className="text-white ml-4">{Object.keys(stats?.partyBreakdown || {}).length}</span></p>
         </div>
       </div>
@@ -320,28 +319,13 @@ export default function PoliticiansPage() {
             </select>
           </div>
 
-          {/* Fraud connection filter */}
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Fraud Links</label>
-            <select
-              value={hasFraudLinks}
-              onChange={(e) => { setHasFraudLinks(e.target.value); setPage(1); }}
-              className="bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
-            >
-              <option value="">All</option>
-              <option value="true">Has fraud connections</option>
-              <option value="false">No fraud connections</option>
-            </select>
-          </div>
-
           {/* Clear filters */}
-          {(party || state || office || hasFraudLinks || search) && (
+          {(party || state || office || search) && (
             <button
               onClick={() => {
                 setParty('');
                 setState('');
                 setOffice('');
-                setHasFraudLinks('');
                 setSearch('');
                 setSearchInput('');
                 setPage(1);
@@ -443,17 +427,15 @@ export default function PoliticiansPage() {
                   <th className="text-left p-3 font-medium text-gray-400">Party</th>
                   <th className="text-left p-3 font-medium text-gray-400">Office</th>
                   <th className="text-center p-3 font-medium text-gray-400">State</th>
-                  <th className="text-right p-3 font-medium text-gray-400">Fraud Links</th>
-                  <th className="text-right p-3 font-medium text-gray-400">Fraud Amount</th>
+                  <th className="text-right p-3 font-medium text-gray-400">Contributions</th>
+                  <th className="text-right p-3 font-medium text-gray-400">Total Raised</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
                 {politicians.map((p) => (
                   <tr
                     key={p.id}
-                    className={`hover:bg-gray-900/50 ${
-                      p.fraud_connection_count > 0 ? 'bg-red-950/20' : ''
-                    }`}
+                    className="hover:bg-gray-900/50"
                   >
                     <td className="p-3">
                       <Link
@@ -478,15 +460,15 @@ export default function PoliticiansPage() {
                       {p.state || '-'}
                     </td>
                     <td className="p-3 text-right">
-                      {p.fraud_connection_count > 0 ? (
-                        <span className="text-red-400 font-mono">{p.fraud_connection_count}</span>
+                      {p.contribution_count > 0 ? (
+                        <span className="text-green-400 font-mono">{p.contribution_count.toLocaleString()}</span>
                       ) : (
                         <span className="text-gray-600">0</span>
                       )}
                     </td>
                     <td className="p-3 text-right font-mono">
-                      {p.total_fraud_linked_amount > 0 ? (
-                        <span className="text-red-400">{formatMoney(p.total_fraud_linked_amount)}</span>
+                      {p.total_contributions > 0 ? (
+                        <span className="text-green-400">{formatMoney(p.total_contributions)}</span>
                       ) : (
                         <span className="text-gray-600">-</span>
                       )}
@@ -535,42 +517,6 @@ export default function PoliticiansPage() {
             </div>
           )}
         </>
-      )}
-
-      {/* 7.5: ActBlue section - highlighting for ActBlue contributions */}
-      {fraudLinkedPoliticians.length > 0 && (
-        <div className="mt-12 border-t border-gray-800 pt-8">
-          <h2 className="text-lg font-bold mb-4">Fraud-Connected Politicians</h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Politicians with connections to fraud cases through campaign contributions or political committees.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {fraudLinkedPoliticians.slice(0, 6).map((p) => (
-              <div
-                key={p.id}
-                className="border border-red-900/50 bg-red-950/20 p-4"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`px-2 py-0.5 rounded text-xs border ${getPartyBgClass(p.party)}`}>
-                    {p.party || '-'}
-                  </span>
-                  <span className="text-gray-500 text-xs">{p.state}</span>
-                </div>
-                <Link
-                  href={`/politician/${p.id}`}
-                  className="font-medium text-white hover:text-green-400 block mb-1"
-                >
-                  {p.name || 'Unknown'}
-                </Link>
-                <p className="text-gray-500 text-xs mb-3">{p.office_title || p.office_type || '-'}</p>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">{p.fraud_connection_count} connection{p.fraud_connection_count !== 1 ? 's' : ''}</span>
-                  <span className="text-red-400 font-mono">{formatMoney(p.total_fraud_linked_amount)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       )}
 
       {/* Legend */}

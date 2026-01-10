@@ -18,8 +18,8 @@ export interface Politician {
   opensecrets_id: string | null;
   photo_url: string | null;
   website: string | null;
-  fraud_connection_count: number;
-  total_fraud_linked_amount: number;
+  contribution_count: number;
+  total_contributions: number;
 }
 
 export interface PoliticiansSearchResponse {
@@ -31,7 +31,8 @@ export interface PoliticiansSearchResponse {
   stats: {
     partyBreakdown: Record<string, number>;
     officeBreakdown: Record<string, number>;
-    fraudLinkedCount: number;
+    totalContributions: number;
+    totalContributionAmount: number;
   };
 }
 
@@ -59,7 +60,7 @@ export async function GET(request: Request) {
   const state = searchParams.get('state');
   const party = searchParams.get('party');
   const office = searchParams.get('office');
-  const hasFraudLinks = searchParams.get('hasFraudLinks');
+  // hasFraudLinks filter removed - no longer tracking fraud connections
   const isCurrent = searchParams.get('isCurrent');
   const sortBy = searchParams.get('sortBy') || 'state';
   const sortDir = searchParams.get('sortDir') || 'asc';
@@ -131,23 +132,20 @@ export async function GET(request: Request) {
       });
     }
 
-    // Get political connections (fraud links) for these politicians
+    // Get contribution stats for these politicians using RPC function
     const politicianIds = (politicians || []).map(p => p.id);
-    let fraudConnections: Record<string, { count: number; amount: number }> = {};
+    let contributionStats: Record<string, { count: number; amount: number }> = {};
 
     if (politicianIds.length > 0) {
-      const { data: connections } = await supabase
-        .from('political_connections')
-        .select('politician_id, total_amount, case_id')
-        .in('politician_id', politicianIds)
-        .not('case_id', 'is', null);
+      const { data: stats } = await supabase.rpc('get_politicians_contribution_stats', {
+        politician_ids: politicianIds
+      });
 
-      connections?.forEach(c => {
-        if (!fraudConnections[c.politician_id]) {
-          fraudConnections[c.politician_id] = { count: 0, amount: 0 };
-        }
-        fraudConnections[c.politician_id].count++;
-        fraudConnections[c.politician_id].amount += c.total_amount || 0;
+      stats?.forEach((s: { politician_id: string; contribution_count: number; total_amount: number }) => {
+        contributionStats[s.politician_id] = {
+          count: Number(s.contribution_count) || 0,
+          amount: Number(s.total_amount) || 0
+        };
       });
     }
 
@@ -169,13 +167,14 @@ export async function GET(request: Request) {
     // Process results
     const partyBreakdown: Record<string, number> = {};
     const officeBreakdown: Record<string, number> = {};
-    let fraudLinkedCount = 0;
+    let totalContributions = 0;
+    let totalContributionAmount = 0;
 
     const enrichedPoliticians: Politician[] = (politicians || []).map((p) => {
       // Get name from people lookup
       const peopleName = p.person_id ? personNames[p.person_id] || null : null;
 
-      const fraudData = fraudConnections[p.id] || { count: 0, amount: 0 };
+      const contribData = contributionStats[p.id] || { count: 0, amount: 0 };
 
       if (p.party) {
         partyBreakdown[p.party] = (partyBreakdown[p.party] || 0) + 1;
@@ -183,9 +182,8 @@ export async function GET(request: Request) {
       if (p.office_type) {
         officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
       }
-      if (fraudData.count > 0) {
-        fraudLinkedCount++;
-      }
+      totalContributions += contribData.count;
+      totalContributionAmount += contribData.amount;
 
       // Use full_name from politicians table, fall back to people table
       const name = p.full_name || peopleName || null;
@@ -207,8 +205,8 @@ export async function GET(request: Request) {
         opensecrets_id: p.opensecrets_id,
         photo_url: p.photo_url,
         website: p.website,
-        fraud_connection_count: fraudData.count,
-        total_fraud_linked_amount: fraudData.amount,
+        contribution_count: contribData.count,
+        total_contributions: contribData.amount,
       };
     });
 
@@ -225,13 +223,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Filter by fraud links
-    if (hasFraudLinks === 'true') {
-      filteredPoliticians = filteredPoliticians.filter(p => p.fraud_connection_count > 0);
-    } else if (hasFraudLinks === 'false') {
-      filteredPoliticians = filteredPoliticians.filter(p => p.fraud_connection_count === 0);
-    }
-
     const response: PoliticiansSearchResponse = {
       data: filteredPoliticians,
       total: count || 0,
@@ -241,7 +232,8 @@ export async function GET(request: Request) {
       stats: {
         partyBreakdown,
         officeBreakdown,
-        fraudLinkedCount,
+        totalContributions,
+        totalContributionAmount,
       },
     };
 
