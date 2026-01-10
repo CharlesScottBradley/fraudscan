@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 interface Politician {
   id: string;
+  full_name: string | null;
   person_id: string | null;
   office_type: string | null;
   office_title: string | null;
@@ -42,10 +43,13 @@ interface PoliticalConnection {
 
 interface Contribution {
   id: string;
-  contributor_name: string | null;
-  amount: number;
-  receipt_date: string | null;
-  recipient_name: string | null;
+  name: string | null;  // contributor name
+  transaction_amt: number | null;
+  transaction_dt: string | null;
+  employer: string | null;
+  occupation: string | null;
+  city: string | null;
+  state: string | null;
   is_fraud_linked: boolean | null;
 }
 
@@ -149,14 +153,14 @@ async function getPoliticalConnections(politicianId: string): Promise<PoliticalC
   })) as PoliticalConnection[];
 }
 
-async function getContributions(politicianName: string): Promise<Contribution[]> {
-  // Get contributions where this politician is the recipient
+async function getContributions(politicianId: string): Promise<Contribution[]> {
+  // Get FEC contributions linked to this politician
   const { data, error } = await supabase
-    .from('political_donations')
-    .select('id, contributor_name, amount, receipt_date, recipient_name, is_fraud_linked')
-    .ilike('recipient_name', `%${politicianName}%`)
-    .order('amount', { ascending: false })
-    .limit(50);
+    .from('fec_contributions')
+    .select('id, name, transaction_amt, transaction_dt, employer, occupation, city, state, is_fraud_linked')
+    .eq('linked_politician_id', politicianId)
+    .order('transaction_amt', { ascending: false })
+    .limit(100);
 
   if (error) return [];
   return data || [];
@@ -195,30 +199,30 @@ export default async function PoliticianDetailPage({
     getPoliticalConnections(id),
   ]);
 
-  const name = person?.full_name || 'Unknown Politician';
+  const name = politician.full_name || person?.full_name || 'Unknown Politician';
 
-  // Then fetch contributions and news (which need the name)
+  // Fetch contributions by politician ID and news by name
   const [contributions, newsArticles] = await Promise.all([
-    name !== 'Unknown Politician' ? getContributions(name) : Promise.resolve([]),
+    getContributions(id),
     name !== 'Unknown Politician' ? getNewsArticles(name) : Promise.resolve([]),
   ]);
   const photoUrl = politician.photo_url || person?.photo_url;
 
   // Calculate fraud stats
   const fraudLinkedContributions = contributions.filter(c => c.is_fraud_linked);
-  const totalContributions = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
-  const fraudLinkedAmount = fraudLinkedContributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+  const totalContributions = contributions.reduce((sum, c) => sum + (c.transaction_amt || 0), 0);
+  const fraudLinkedAmount = fraudLinkedContributions.reduce((sum, c) => sum + (c.transaction_amt || 0), 0);
   const connectedCasesAmount = connections.reduce((sum, c) => sum + (c.total_amount || 0), 0);
 
   // Group contributions by year for timeline
   const contributionsByYear: Record<string, { count: number; amount: number; fraudLinked: number }> = {};
   contributions.forEach(c => {
-    const year = c.receipt_date ? new Date(c.receipt_date).getFullYear().toString() : 'Unknown';
+    const year = c.transaction_dt ? new Date(c.transaction_dt).getFullYear().toString() : 'Unknown';
     if (!contributionsByYear[year]) {
       contributionsByYear[year] = { count: 0, amount: 0, fraudLinked: 0 };
     }
     contributionsByYear[year].count++;
-    contributionsByYear[year].amount += c.amount || 0;
+    contributionsByYear[year].amount += c.transaction_amt || 0;
     if (c.is_fraud_linked) contributionsByYear[year].fraudLinked++;
   });
 
@@ -379,14 +383,19 @@ export default async function PoliticianDetailPage({
                   >
                     <td className="p-3">
                       <span className="font-medium text-white">
-                        {c.contributor_name || 'Unknown'}
+                        {c.name || 'Unknown'}
                       </span>
+                      {(c.employer || c.occupation) && (
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {[c.occupation, c.employer].filter(Boolean).join(' @ ')}
+                        </p>
+                      )}
                     </td>
                     <td className="p-3 text-right font-mono text-green-500">
-                      {formatMoney(c.amount)}
+                      {formatMoney(c.transaction_amt)}
                     </td>
                     <td className="p-3 text-center text-gray-500">
-                      {formatDate(c.receipt_date)}
+                      {formatDate(c.transaction_dt)}
                     </td>
                     <td className="p-3 text-center">
                       {c.is_fraud_linked ? (
