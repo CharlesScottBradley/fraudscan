@@ -27,20 +27,6 @@ interface Person {
   photo_url: string | null;
 }
 
-interface PoliticalConnection {
-  id: string;
-  case_id: string | null;
-  total_amount: number | null;
-  connection_type: string | null;
-  cases: {
-    id: string;
-    case_name: string;
-    fraud_type: string | null;
-    total_fraud_amount: number | null;
-    status: string;
-  } | null;
-}
-
 interface Contribution {
   id: string;
   name: string | null;  // contributor name
@@ -50,7 +36,6 @@ interface Contribution {
   occupation: string | null;
   city: string | null;
   state: string | null;
-  is_fraud_linked: boolean | null;
 }
 
 interface NewsArticle {
@@ -69,14 +54,6 @@ const PARTY_COLORS: Record<string, string> = {
   Democratic: 'bg-blue-900/40 text-blue-400 border-blue-800',
   I: 'bg-purple-900/40 text-purple-400 border-purple-800',
   Independent: 'bg-purple-900/40 text-purple-400 border-purple-800',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  investigating: 'bg-gray-700 text-gray-300',
-  charged: 'bg-yellow-900/50 text-yellow-400',
-  indicted: 'bg-orange-900/50 text-orange-400',
-  convicted: 'bg-red-900/50 text-red-400',
-  sentenced: 'bg-green-900/50 text-green-400',
 };
 
 function formatMoney(amount: number | null): string {
@@ -121,36 +98,6 @@ async function getPerson(personId: string): Promise<Person | null> {
 
   if (error) return null;
   return data;
-}
-
-async function getPoliticalConnections(politicianId: string): Promise<PoliticalConnection[]> {
-  const { data, error } = await supabase
-    .from('political_connections')
-    .select(`
-      id,
-      case_id,
-      total_amount,
-      connection_type,
-      cases (
-        id,
-        case_name,
-        fraud_type,
-        total_fraud_amount,
-        status
-      )
-    `)
-    .eq('politician_id', politicianId)
-    .not('case_id', 'is', null);
-
-  if (error) return [];
-  // Supabase returns joined data that needs to be mapped
-  return (data || []).map((row: Record<string, unknown>) => ({
-    id: row.id as string,
-    case_id: row.case_id as string | null,
-    total_amount: row.total_amount as number | null,
-    connection_type: row.connection_type as string | null,
-    cases: Array.isArray(row.cases) ? row.cases[0] || null : row.cases || null,
-  })) as PoliticalConnection[];
 }
 
 async function getContributions(politicianId: string): Promise<Contribution[]> {
@@ -201,11 +148,8 @@ export default async function PoliticianDetailPage({
     notFound();
   }
 
-  // Fetch person and connections first
-  const [person, connections] = await Promise.all([
-    politician.person_id ? getPerson(politician.person_id) : null,
-    getPoliticalConnections(id),
-  ]);
+  // Fetch person info
+  const person = politician.person_id ? await getPerson(politician.person_id) : null;
 
   const name = politician.full_name || person?.full_name || 'Unknown Politician';
 
@@ -216,22 +160,20 @@ export default async function PoliticianDetailPage({
   ]);
   const photoUrl = politician.photo_url || person?.photo_url;
 
-  // Calculate fraud stats
-  const fraudLinkedContributions = contributions.filter(c => c.is_fraud_linked);
-  const totalContributions = contributions.reduce((sum, c) => sum + (c.transaction_amt || 0), 0);
-  const fraudLinkedAmount = fraudLinkedContributions.reduce((sum, c) => sum + (c.transaction_amt || 0), 0);
-  const connectedCasesAmount = connections.reduce((sum, c) => sum + (c.total_amount || 0), 0);
+  // Calculate contribution stats
+  const totalRaised = contributions.reduce((sum, c) => sum + (c.transaction_amt || 0), 0);
+  const contributionCount = contributions.length;
+  const avgContribution = contributionCount > 0 ? totalRaised / contributionCount : 0;
 
   // Group contributions by year for timeline
-  const contributionsByYear: Record<string, { count: number; amount: number; fraudLinked: number }> = {};
+  const contributionsByYear: Record<string, { count: number; amount: number }> = {};
   contributions.forEach(c => {
     const year = c.transaction_dt ? new Date(c.transaction_dt).getFullYear().toString() : 'Unknown';
     if (!contributionsByYear[year]) {
-      contributionsByYear[year] = { count: 0, amount: 0, fraudLinked: 0 };
+      contributionsByYear[year] = { count: 0, amount: 0 };
     }
     contributionsByYear[year].count++;
     contributionsByYear[year].amount += c.transaction_amt || 0;
-    if (c.is_fraud_linked) contributionsByYear[year].fraudLinked++;
   });
 
   const timelineData = Object.entries(contributionsByYear)
@@ -292,28 +234,28 @@ export default async function PoliticianDetailPage({
         </div>
       </div>
 
-      {/* 7.7: Fraud-linked contributions summary */}
+      {/* Contribution summary stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1">Total Contributions</p>
+          <p className="text-gray-500 text-sm mb-1">Total Raised</p>
           <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(totalContributions)}
+            {formatMoney(totalRaised)}
           </p>
-          <p className="text-gray-600 text-xs">{contributions.length} contributions</p>
+          <p className="text-gray-600 text-xs">from FEC filings</p>
         </div>
         <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1">Fraud-Linked</p>
-          <p className="text-red-500 font-mono text-xl font-bold">
-            {formatMoney(fraudLinkedAmount)}
-          </p>
-          <p className="text-gray-600 text-xs">{fraudLinkedContributions.length} flagged</p>
-        </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1">Connected Cases</p>
+          <p className="text-gray-500 text-sm mb-1"># Contributions</p>
           <p className="text-white font-mono text-xl font-bold">
-            {connections.length}
+            {contributionCount.toLocaleString()}
           </p>
-          <p className="text-gray-600 text-xs">{formatMoney(connectedCasesAmount)} linked</p>
+          <p className="text-gray-600 text-xs">individual donations</p>
+        </div>
+        <div className="border border-gray-800 p-4">
+          <p className="text-gray-500 text-sm mb-1">Avg Contribution</p>
+          <p className="text-white font-mono text-xl font-bold">
+            {formatMoney(avgContribution)}
+          </p>
+          <p className="text-gray-600 text-xs">per donation</p>
         </div>
         <div className="border border-gray-800 p-4">
           <p className="text-gray-500 text-sm mb-1">News Mentions</p>
@@ -324,7 +266,7 @@ export default async function PoliticianDetailPage({
         </div>
       </div>
 
-      {/* 7.8: Contribution timeline */}
+      {/* Contribution timeline */}
       {timelineData.length > 0 && (
         <div className="mb-8">
           <h2 className="text-lg font-bold mb-4">Contribution Timeline</h2>
@@ -333,22 +275,14 @@ export default async function PoliticianDetailPage({
               {timelineData.map(([year, data]) => {
                 const maxAmount = Math.max(...timelineData.map(([, d]) => d.amount));
                 const height = maxAmount > 0 ? (data.amount / maxAmount) * 100 : 0;
-                const fraudPercent = data.count > 0 ? (data.fraudLinked / data.count) * 100 : 0;
 
                 return (
                   <div key={year} className="flex-1 flex flex-col items-center">
                     <div className="w-full flex flex-col justify-end h-24">
-                      {data.fraudLinked > 0 && (
-                        <div
-                          className="w-full bg-red-600"
-                          style={{ height: `${(fraudPercent / 100) * height}%` }}
-                          title={`${data.fraudLinked} fraud-linked`}
-                        />
-                      )}
                       <div
                         className="w-full bg-green-600"
-                        style={{ height: `${((100 - fraudPercent) / 100) * height}%` }}
-                        title={`${data.count - data.fraudLinked} clean`}
+                        style={{ height: `${height}%` }}
+                        title={`${data.count} contributions - ${formatMoney(data.amount)}`}
                       />
                     </div>
                     <p className="text-xs text-gray-500 mt-2">{year}</p>
@@ -357,19 +291,11 @@ export default async function PoliticianDetailPage({
                 );
               })}
             </div>
-            <div className="flex gap-4 mt-4 text-xs">
-              <span className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-green-600" /> Clean
-              </span>
-              <span className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-red-600" /> Fraud-linked
-              </span>
-            </div>
           </div>
         </div>
       )}
 
-      {/* 7.9: Contributors table */}
+      {/* Top Contributors table */}
       {contributions.length > 0 && (
         <div className="mb-8">
           <h2 className="text-lg font-bold mb-4">Top Contributors</h2>
@@ -378,25 +304,33 @@ export default async function PoliticianDetailPage({
               <thead className="bg-gray-900">
                 <tr>
                   <th className="text-left p-3 font-medium text-gray-400">Contributor</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Employer / Occupation</th>
                   <th className="text-right p-3 font-medium text-gray-400">Amount</th>
                   <th className="text-center p-3 font-medium text-gray-400">Date</th>
-                  <th className="text-center p-3 font-medium text-gray-400">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
                 {contributions.slice(0, 20).map((c) => (
-                  <tr
-                    key={c.id}
-                    className={`hover:bg-gray-900/50 ${c.is_fraud_linked ? 'bg-red-950/20' : ''}`}
-                  >
+                  <tr key={c.id} className="hover:bg-gray-900/50">
                     <td className="p-3">
                       <span className="font-medium text-white">
                         {c.name || 'Unknown'}
                       </span>
-                      {(c.employer || c.occupation) && (
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {[c.occupation, c.employer].filter(Boolean).join(' @ ')}
+                      {c.city && c.state && (
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          {c.city}, {c.state}
                         </p>
+                      )}
+                    </td>
+                    <td className="p-3 text-gray-400">
+                      {c.occupation || c.employer ? (
+                        <>
+                          {c.occupation && <span>{c.occupation}</span>}
+                          {c.occupation && c.employer && <span className="text-gray-600"> @ </span>}
+                          {c.employer && <span>{c.employer}</span>}
+                        </>
+                      ) : (
+                        <span className="text-gray-600">-</span>
                       )}
                     </td>
                     <td className="p-3 text-right font-mono text-green-500">
@@ -404,15 +338,6 @@ export default async function PoliticianDetailPage({
                     </td>
                     <td className="p-3 text-center text-gray-500">
                       {formatDate(c.transaction_dt)}
-                    </td>
-                    <td className="p-3 text-center">
-                      {c.is_fraud_linked ? (
-                        <span className="px-2 py-0.5 rounded text-xs bg-red-900/50 text-red-400">
-                          Fraud-linked
-                        </span>
-                      ) : (
-                        <span className="text-gray-600">-</span>
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -427,63 +352,7 @@ export default async function PoliticianDetailPage({
         </div>
       )}
 
-      {/* 7.10: Connected cases section */}
-      {connections.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-bold mb-4">Connected Fraud Cases</h2>
-          <div className="border border-gray-800 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-900">
-                <tr>
-                  <th className="text-left p-3 font-medium text-gray-400">Case</th>
-                  <th className="text-left p-3 font-medium text-gray-400">Type</th>
-                  <th className="text-right p-3 font-medium text-gray-400">Fraud Amount</th>
-                  <th className="text-right p-3 font-medium text-gray-400">Connection</th>
-                  <th className="text-center p-3 font-medium text-gray-400">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {connections.map((conn) => (
-                  <tr key={conn.id} className="hover:bg-gray-900/50">
-                    <td className="p-3">
-                      {conn.cases ? (
-                        <Link
-                          href={`/case/${conn.cases.id}`}
-                          className="font-medium text-white hover:text-green-400"
-                        >
-                          {conn.cases.case_name.length > 40
-                            ? conn.cases.case_name.substring(0, 40) + '...'
-                            : conn.cases.case_name}
-                        </Link>
-                      ) : (
-                        <span className="text-gray-500">Unknown Case</span>
-                      )}
-                    </td>
-                    <td className="p-3 text-gray-400">
-                      {conn.cases?.fraud_type || '-'}
-                    </td>
-                    <td className="p-3 text-right font-mono text-red-400">
-                      {formatMoney(conn.cases?.total_fraud_amount || null)}
-                    </td>
-                    <td className="p-3 text-right font-mono text-green-500">
-                      {formatMoney(conn.total_amount)}
-                    </td>
-                    <td className="p-3 text-center">
-                      {conn.cases?.status && (
-                        <span className={`px-2 py-0.5 rounded text-xs ${STATUS_COLORS[conn.cases.status] || 'bg-gray-800 text-gray-400'}`}>
-                          {conn.cases.status}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 7.11: News coverage section */}
+      {/* News coverage section */}
       {newsArticles.length > 0 && (
         <div className="mb-8">
           <h2 className="text-lg font-bold mb-4">News Coverage</h2>
@@ -579,8 +448,7 @@ export default async function PoliticianDetailPage({
       {/* Data disclaimer */}
       <div className="text-sm text-gray-600 border-t border-gray-800 pt-8">
         <p>
-          Data sourced from FEC filings, state campaign finance boards, and public records.
-          Fraud connections are based on campaign contributions from individuals later convicted of fraud.
+          Contribution data sourced from FEC filings and public records.
         </p>
       </div>
     </div>
