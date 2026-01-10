@@ -3,6 +3,10 @@ import Link from 'next/link';
 import UnifiedStateMap from '../../components/UnifiedStateMap';
 import StateDataTable from './StateDataTable';
 import BudgetSection from './BudgetSection';
+import FederalGrantsSection from './FederalGrantsSection';
+import StateBudgetSection from './StateBudgetSection';
+import AppropriationsSection from './AppropriationsSection';
+import CheckbookSection from './CheckbookSection';
 import EmailSignup from '../../components/EmailSignup';
 import WAChildcareSection from './WAChildcareSection';
 
@@ -482,6 +486,24 @@ export default async function StatePage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* State Budget Section (Census Bureau / NASBO data) */}
+      <StateBudgetSection
+        stateCode={state.toUpperCase()}
+        stateName={stateInfo.name}
+      />
+
+      {/* Budget Appropriations - detailed line items from LBB/eBudget */}
+      <AppropriationsSection
+        stateCode={state.toUpperCase()}
+        stateName={stateInfo.name}
+      />
+
+      {/* State Checkbook / Vendor Payments Section */}
+      <CheckbookSection
+        stateCode={state.toUpperCase()}
+        stateName={stateInfo.name}
+      />
+
       {/* Unified Map - show if any geocoded data exists */}
       {((orgStats?.withCoords ?? 0) > 0 || (stats?.withCoordinates ?? 0) > 0 || (h1bStats?.withCoords ?? 0) > 0) && (
         <div className="mb-8">
@@ -580,7 +602,13 @@ export default async function StatePage({ params }: PageProps) {
       {/* WA Childcare Section - only for Washington */}
       {state.toUpperCase() === 'WA' && <WAChildcareSection />}
 
-      {/* Budget Documents Section */}
+      {/* Federal Grants Section */}
+      <FederalGrantsSection
+        stateCode={state.toUpperCase()}
+        stateName={stateInfo.name}
+      />
+
+      {/* Local Budget Documents Section */}
       <BudgetSection
         stateCode={state.toUpperCase()}
         stateName={stateInfo.name}
