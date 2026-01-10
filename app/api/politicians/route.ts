@@ -62,8 +62,8 @@ export async function GET(request: Request) {
   const office = searchParams.get('office');
   // hasFraudLinks filter removed - no longer tracking fraud connections
   const isCurrent = searchParams.get('isCurrent');
-  const sortBy = searchParams.get('sortBy') || 'state';
-  const sortDir = searchParams.get('sortDir') || 'asc';
+  const sortBy = searchParams.get('sortBy') || 'contributions';
+  const sortDir = searchParams.get('sortDir') || 'desc';
 
   try {
     // Build query with explicit columns to ensure full_name is included
@@ -222,6 +222,20 @@ export async function GET(request: Request) {
         p.office_title?.toLowerCase().includes(searchLower)
       );
     }
+
+    // Sort by contributions (default) or other fields
+    if (sortBy === 'contributions') {
+      filteredPoliticians.sort((a, b) => {
+        const diff = b.total_contributions - a.total_contributions;
+        return sortDir === 'desc' ? diff : -diff;
+      });
+    } else if (sortBy === 'name') {
+      filteredPoliticians.sort((a, b) => {
+        const cmp = (a.name || '').localeCompare(b.name || '');
+        return sortDir === 'desc' ? -cmp : cmp;
+      });
+    }
+    // For state/party/office, DB already sorted
 
     const response: PoliticiansSearchResponse = {
       data: filteredPoliticians,
