@@ -155,12 +155,16 @@ async function getPoliticalConnections(politicianId: string): Promise<PoliticalC
 
 async function getContributions(politicianId: string): Promise<Contribution[]> {
   // Get FEC contributions linked to this politician
+  console.log('[getContributions] Fetching for politicianId:', politicianId);
   const { data, error } = await supabase
     .from('fec_contributions')
     .select('id, name, transaction_amt, transaction_dt, employer, occupation, city, state, is_fraud_linked')
     .eq('linked_politician_id', politicianId)
     .order('transaction_amt', { ascending: false })
     .limit(100);
+
+  console.log('[getContributions] Error:', error);
+  console.log('[getContributions] Data count:', data?.length);
 
   if (error) return [];
   return data || [];
