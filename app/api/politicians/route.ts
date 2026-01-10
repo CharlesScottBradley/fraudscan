@@ -245,7 +245,15 @@ export async function GET(request: Request) {
       },
     };
 
-    return NextResponse.json(response);
+    // Add version marker and debug info
+    return NextResponse.json({
+      ...response,
+      _version: 'v3-fullname-fix',
+      _debug: {
+        rawSampleFullNames: (politicians || []).slice(0, 3).map(p => p.full_name),
+        hasPoliticians: (politicians || []).length > 0
+      }
+    });
 
   } catch (error) {
     console.error('Politicians API error:', error);
