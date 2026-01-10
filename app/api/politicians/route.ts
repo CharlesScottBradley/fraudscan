@@ -117,6 +117,20 @@ export async function GET(request: Request) {
       );
     }
 
+    // Debug: Check if full_name is being returned
+    if (searchParams.get('debug') === 'true') {
+      return NextResponse.json({
+        sample: (politicians || []).slice(0, 5).map(p => ({
+          id: p.id,
+          full_name: p.full_name,
+          person_id: p.person_id,
+          office_type: p.office_type
+        })),
+        hasFullName: (politicians || []).some(p => p.full_name),
+        columns: politicians?.[0] ? Object.keys(politicians[0]) : []
+      });
+    }
+
     // Get political connections (fraud links) for these politicians
     const politicianIds = (politicians || []).map(p => p.id);
     let fraudConnections: Record<string, { count: number; amount: number }> = {};
