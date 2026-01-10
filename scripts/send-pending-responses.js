@@ -11,6 +11,7 @@
  */
 
 const nodemailer = require('nodemailer');
+const Imap = require('imap');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 
@@ -34,6 +35,67 @@ function log(msg) {
   console.log(`[${new Date().toISOString()}] ${msg}`);
 }
 
+/**
+ * Save email to Sent folder via IMAP
+ */
+async function saveToSentFolder(rawEmail) {
+  return new Promise((resolve, reject) => {
+    const imap = new Imap({
+      user: process.env.EMAIL_USER,
+      password: process.env.EMAIL_PASSWORD,
+      host: 'mail.privateemail.com',
+      port: 993,
+      tls: true,
+      tlsOptions: { rejectUnauthorized: false }
+    });
+
+    imap.once('ready', () => {
+      imap.openBox('Sent', false, (err) => {
+        if (err) {
+          imap.end();
+          return reject(err);
+        }
+
+        imap.append(rawEmail, { mailbox: 'Sent', flags: ['\\Seen'] }, (appendErr) => {
+          imap.end();
+          if (appendErr) {
+            reject(appendErr);
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+
+    imap.once('error', reject);
+    imap.connect();
+  });
+}
+
+/**
+ * Build raw email string for IMAP append
+ */
+function buildRawEmail(to, subject, body, messageId, originalMessageId) {
+  const date = new Date().toUTCString();
+  const from = `"SomaliScan" <${process.env.EMAIL_USER}>`;
+  const finalSubject = subject.startsWith('Re:') ? subject : `Re: ${subject}`;
+
+  let headers = `From: ${from}\r\n`;
+  headers += `To: ${to}\r\n`;
+  headers += `Subject: ${finalSubject}\r\n`;
+  headers += `Date: ${date}\r\n`;
+  headers += `Message-ID: ${messageId}\r\n`;
+  if (originalMessageId) {
+    headers += `In-Reply-To: ${originalMessageId}\r\n`;
+    headers += `References: ${originalMessageId}\r\n`;
+  }
+  headers += `MIME-Version: 1.0\r\n`;
+  headers += `Content-Type: text/plain; charset=utf-8\r\n`;
+  headers += `\r\n`;
+
+  return headers + body;
+}
+
 async function sendEmail(to, subject, body, originalMessageId) {
   const mailOptions = {
     from: `"SomaliScan" <${process.env.EMAIL_USER}>`,
@@ -47,6 +109,16 @@ async function sendEmail(to, subject, body, originalMessageId) {
   };
 
   const info = await transporter.sendMail(mailOptions);
+
+  // Save to Sent folder
+  try {
+    const rawEmail = buildRawEmail(to, subject, body, info.messageId, originalMessageId);
+    await saveToSentFolder(rawEmail);
+  } catch (err) {
+    log(`    Warning: Failed to save to Sent folder: ${err.message}`);
+    // Don't fail the whole operation if Sent folder save fails
+  }
+
   return info;
 }
 

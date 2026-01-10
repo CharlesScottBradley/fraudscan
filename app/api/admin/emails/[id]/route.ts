@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { verifyAdminAuth, unauthorizedResponse } from '@/lib/adminAuth';
 import nodemailer from 'nodemailer';
+import Imap from 'imap';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,7 +21,70 @@ const transporter = nodemailer.createTransport({
 });
 
 /**
- * Send an email response
+ * Save email to Sent folder via IMAP
+ */
+async function saveToSentFolder(rawEmail: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const imap = new Imap({
+      user: process.env.EMAIL_USER!,
+      password: process.env.EMAIL_PASSWORD!,
+      host: 'mail.privateemail.com',
+      port: 993,
+      tls: true,
+      tlsOptions: { rejectUnauthorized: false }
+    });
+
+    imap.once('ready', () => {
+      imap.openBox('Sent', false, (err) => {
+        if (err) {
+          imap.end();
+          return reject(err);
+        }
+
+        imap.append(rawEmail, { mailbox: 'Sent', flags: ['\\Seen'] }, (appendErr) => {
+          imap.end();
+          if (appendErr) {
+            reject(appendErr);
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+
+    imap.once('error', (err: Error) => {
+      reject(err);
+    });
+
+    imap.connect();
+  });
+}
+
+/**
+ * Build raw email string for IMAP append
+ */
+function buildRawEmail(to: string, subject: string, body: string, messageId: string, originalMessageId?: string): string {
+  const date = new Date().toUTCString();
+  const from = `"SomaliScan" <${process.env.EMAIL_USER}>`;
+
+  let headers = `From: ${from}\r\n`;
+  headers += `To: ${to}\r\n`;
+  headers += `Subject: ${subject.startsWith('Re:') ? subject : `Re: ${subject}`}\r\n`;
+  headers += `Date: ${date}\r\n`;
+  headers += `Message-ID: ${messageId}\r\n`;
+  if (originalMessageId) {
+    headers += `In-Reply-To: ${originalMessageId}\r\n`;
+    headers += `References: ${originalMessageId}\r\n`;
+  }
+  headers += `MIME-Version: 1.0\r\n`;
+  headers += `Content-Type: text/plain; charset=utf-8\r\n`;
+  headers += `\r\n`;
+
+  return headers + body;
+}
+
+/**
+ * Send an email response and save to Sent folder
  */
 async function sendEmailResponse(to: string, subject: string, body: string, originalMessageId?: string) {
   const mailOptions: nodemailer.SendMailOptions = {
@@ -35,6 +99,16 @@ async function sendEmailResponse(to: string, subject: string, body: string, orig
   };
 
   const info = await transporter.sendMail(mailOptions);
+
+  // Save to Sent folder
+  try {
+    const rawEmail = buildRawEmail(to, subject, body, info.messageId, originalMessageId);
+    await saveToSentFolder(rawEmail);
+  } catch (err) {
+    console.error('Failed to save to Sent folder:', err);
+    // Don't fail the whole operation if Sent folder save fails
+  }
+
   return info;
 }
 
