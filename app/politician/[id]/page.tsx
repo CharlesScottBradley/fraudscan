@@ -100,7 +100,13 @@ async function getPerson(personId: string): Promise<Person | null> {
   return data;
 }
 
-async function getContributions(politicianId: string): Promise<Contribution[]> {
+interface ContributionsResponse {
+  contributions: Contribution[];
+  totalCount: number;
+  totalAmount: number;
+}
+
+async function getContributions(politicianId: string): Promise<ContributionsResponse> {
   // Use internal API route for reliable data fetching in server components
   const url = `https://www.somaliscan.com/api/politicians/${politicianId}/contributions`;
 
@@ -109,14 +115,18 @@ async function getContributions(politicianId: string): Promise<Contribution[]> {
 
     if (!response.ok) {
       console.error('[getContributions] API error:', response.status);
-      return [];
+      return { contributions: [], totalCount: 0, totalAmount: 0 };
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return {
+      contributions: data.contributions || [],
+      totalCount: data.totalCount || 0,
+      totalAmount: data.totalAmount || 0
+    };
   } catch (error) {
     console.error('[getContributions] Error:', error);
-    return [];
+    return { contributions: [], totalCount: 0, totalAmount: 0 };
   }
 }
 
@@ -154,15 +164,16 @@ export default async function PoliticianDetailPage({
   const name = politician.full_name || person?.full_name || 'Unknown Politician';
 
   // Fetch contributions by politician ID and news by name
-  const [contributions, newsArticles] = await Promise.all([
+  const [contributionsData, newsArticles] = await Promise.all([
     getContributions(id),
     name !== 'Unknown Politician' ? getNewsArticles(name) : Promise.resolve([]),
   ]);
+  const { contributions, totalCount, totalAmount } = contributionsData;
   const photoUrl = politician.photo_url || person?.photo_url;
 
-  // Calculate contribution stats
-  const totalRaised = contributions.reduce((sum, c) => sum + (c.transaction_amt || 0), 0);
-  const contributionCount = contributions.length;
+  // Use totals from API (accurate across all contributions, not just top 100)
+  const totalRaised = totalAmount;
+  const contributionCount = totalCount;
   const avgContribution = contributionCount > 0 ? totalRaised / contributionCount : 0;
 
   // Group contributions by year for timeline
@@ -346,7 +357,7 @@ export default async function PoliticianDetailPage({
           </div>
           {contributions.length > 20 && (
             <p className="text-gray-500 text-sm mt-2">
-              Showing top 20 of {contributions.length} contributions
+              Showing top 20 of {contributionCount.toLocaleString()} contributions
             </p>
           )}
         </div>
