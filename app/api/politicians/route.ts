@@ -70,8 +70,8 @@ export async function GET(request: Request) {
       .from('politicians')
       .select(`
         id, person_id, full_name, office_type, office_title, state, district, party,
-        current_term_start, current_term_end, is_current, fec_candidate_id,
-        bioguide_id, opensecrets_id, photo_url, website, created_at
+        current_term_start, current_term_end, is_incumbent, fec_candidate_id,
+        bioguide_id, opensecrets_id, photo_url, website
       `, { count: 'exact' });
 
     // Apply filters
@@ -201,7 +201,7 @@ export async function GET(request: Request) {
         party: p.party,
         current_term_start: p.current_term_start,
         current_term_end: p.current_term_end,
-        is_current: p.is_current,
+        is_current: p.is_incumbent,
         fec_candidate_id: p.fec_candidate_id,
         bioguide_id: p.bioguide_id,
         opensecrets_id: p.opensecrets_id,
