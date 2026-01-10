@@ -154,25 +154,19 @@ async function getPoliticalConnections(politicianId: string): Promise<PoliticalC
 }
 
 async function getContributions(politicianId: string): Promise<Contribution[]> {
-  // Use direct fetch with no-store to bypass Next.js caching
-  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/fec_contributions?linked_politician_id=eq.${politicianId}&select=id,name,transaction_amt,transaction_dt,employer,occupation,city,state,is_fraud_linked&order=transaction_amt.desc&limit=100`;
+  // Use internal API route which we know works
+  const url = `https://www.somaliscan.com/api/debug/politician-contributions?id=${politicianId}&full=true`;
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
-      },
-      cache: 'no-store',
-    });
+    const response = await fetch(url, { cache: 'no-store' });
 
     if (!response.ok) {
-      console.error('[getContributions] Fetch error:', response.status, response.statusText);
+      console.error('[getContributions] API error:', response.status);
       return [];
     }
 
     const data = await response.json();
-    return data || [];
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error('[getContributions] Error:', error);
     return [];
