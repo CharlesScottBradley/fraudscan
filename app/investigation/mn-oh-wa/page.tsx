@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 const STATE_NAMES: Record<string, string> = {
   MN: 'Minnesota',
@@ -287,6 +288,9 @@ export default async function InvestigationDashboard() {
           <p><span className="text-gray-600">└─</span> double_dippers <span className="text-white ml-4">{totals.double_dippers}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* State breakdown table */}
       <div className="mb-10">

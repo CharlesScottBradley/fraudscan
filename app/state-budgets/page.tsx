@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface StateBudget {
   id: string;
@@ -193,6 +194,9 @@ export default function StateBudgetsPage() {
           <p><span className="text-gray-600">|_</span> avg_education_spend <span className="text-white ml-4">{formatPercent(stats.avgEducationPct)}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Filters Row */}
       <div className="flex flex-wrap gap-4 mb-6 text-sm">

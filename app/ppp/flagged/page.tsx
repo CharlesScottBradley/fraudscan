@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 interface FlaggedPPPLoan {
   id: string;
@@ -194,6 +195,9 @@ export default function FlaggedPPPLoansPage() {
           <p><span className="text-gray-600">└─</span> low_severity <span className="text-white ml-4">{stats?.bySeverity?.low?.toLocaleString() || '-'}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Filters Row */}
       <div className="flex flex-wrap gap-4 mb-6 text-sm">

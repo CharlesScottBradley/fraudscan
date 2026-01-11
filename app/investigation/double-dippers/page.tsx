@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 function formatMoney(amount: number | null): string {
   if (!amount) return '-';
@@ -202,6 +203,9 @@ export default async function DoubleDippersPage() {
           <p><span className="text-gray-600">└─</span> fraud_prone_industry <span className="text-orange-400 ml-4">{fraudProneCount}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Explanation */}
       <div className="border border-gray-800 p-4 mb-8">
@@ -437,3 +441,6 @@ export default async function DoubleDippersPage() {
     </div>
   );
 }
+
+
+

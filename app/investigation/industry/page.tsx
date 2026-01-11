@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 function formatMoney(amount: number | null): string {
   if (!amount) return '-';
@@ -196,6 +197,9 @@ export default async function IndustryAnalysisPage() {
           <p><span className="text-gray-600">└─</span> flagged_value <span className="text-red-400 ml-4">{formatMoney(totalFlaggedAmount)}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Explanation */}
       <div className="border border-gray-800 p-4 mb-8">
@@ -410,3 +414,6 @@ export default async function IndustryAnalysisPage() {
     </div>
   );
 }
+
+
+

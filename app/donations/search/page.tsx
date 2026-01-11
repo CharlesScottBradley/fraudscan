@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { DonationFilters } from './DonationFilters';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 interface SearchParams {
   q?: string;
@@ -190,6 +191,9 @@ export default async function DonationsSearchPage({
           </Link>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Filters */}
       <DonationFilters

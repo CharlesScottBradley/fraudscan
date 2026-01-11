@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 function formatMoney(amount: number | null): string {
   if (!amount) return '-';
@@ -247,6 +248,9 @@ export default async function InvestigationsPage() {
         </div>
       </div>
 
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
+
       {/* Investigation Types */}
       <div className="mb-10">
         <h2 className="text-sm font-medium text-gray-400 mb-4">Investigation Types</h2>
@@ -403,6 +407,7 @@ export default async function InvestigationsPage() {
     </div>
   );
 }
+
 
 
 

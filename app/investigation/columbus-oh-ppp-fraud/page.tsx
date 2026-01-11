@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import ColumbusClient from './ColumbusClient';
 import networkData from './columbus_network_data.json';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 export const metadata: Metadata = {
   title: 'Columbus OH Fraud Network - Investigation | SomaliScan',
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function ColumbusInvestigationPage() {
-  return <ColumbusClient data={networkData} />;
+  return (
+    <div>
+      <ColumbusClient data={networkData} />
+      <ToshiAdBanner className="mt-8" />
+    </div>
+  );
 }

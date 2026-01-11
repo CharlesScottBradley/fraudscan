@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface FederalGrant {
   id: string;
@@ -19,6 +20,7 @@ interface FederalGrant {
   cfda_number: string | null;
   cfda_title: string | null;
   award_date: string | null;
+  fiscal_year: number | null;
   start_date: string | null;
   end_date: string | null;
   award_description: string | null;
@@ -85,6 +87,7 @@ export default function FederalGrantsPage() {
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
   const [agency, setAgency] = useState('');
+  const [fiscalYear, setFiscalYear] = useState('');
   const [fraudProneOnly, setFraudProneOnly] = useState(false);
   const [sortBy, setSortBy] = useState('award_amount');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -110,7 +113,7 @@ export default function FederalGrantsPage() {
   useEffect(() => {
     fetchGrants();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, selectedState, minAmount, maxAmount, agency, fraudProneOnly, page, pageSize, sortBy, sortDir]);
+  }, [debouncedSearch, selectedState, minAmount, maxAmount, agency, fiscalYear, fraudProneOnly, page, pageSize, sortBy, sortDir]);
 
   const fetchGrants = async () => {
     setLoading(true);
@@ -128,6 +131,7 @@ export default function FederalGrantsPage() {
       if (minAmount) params.set('minAmount', minAmount);
       if (maxAmount) params.set('maxAmount', maxAmount);
       if (agency) params.set('agency', agency);
+      if (fiscalYear) params.set('fiscalYear', fiscalYear);
       if (fraudProneOnly) params.set('fraudProne', 'true');
 
       const res = await fetch(`/api/grants?${params}`);
@@ -174,11 +178,12 @@ export default function FederalGrantsPage() {
     setMinAmount('');
     setMaxAmount('');
     setAgency('');
+    setFiscalYear('');
     setFraudProneOnly(false);
     setPage(1);
   };
 
-  const hasFilters = searchTerm || selectedState || minAmount || maxAmount || agency || fraudProneOnly;
+  const hasFilters = searchTerm || selectedState || minAmount || maxAmount || agency || fiscalYear || fraudProneOnly;
 
   return (
     <div>
@@ -192,6 +197,9 @@ export default function FederalGrantsPage() {
           <p><span className="text-gray-600">|_</span> fraud_prone_industries <span className="text-white ml-4">{stats.fraudProneCount.toLocaleString()}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Search Input */}
       <div className="mb-4">
@@ -229,6 +237,23 @@ export default function FederalGrantsPage() {
             onChange={(e) => { setAgency(e.target.value); setPage(1); }}
             className="w-32 px-3 py-2 bg-black border border-gray-700 rounded focus:outline-none focus:border-gray-500"
           />
+        </div>
+
+        <div>
+          <label className="block text-gray-500 text-xs mb-1">Fiscal Year</label>
+          <select
+            value={fiscalYear}
+            onChange={(e) => { setFiscalYear(e.target.value); setPage(1); }}
+            className="bg-black border border-gray-700 rounded px-3 py-2 focus:outline-none focus:border-gray-500"
+          >
+            <option value="">All Years</option>
+            <option value="2024">FY 2024</option>
+            <option value="2023">FY 2023</option>
+            <option value="2022">FY 2022</option>
+            <option value="2021">FY 2021</option>
+            <option value="2020">FY 2020</option>
+            <option value="2023,2024">FY 2023-2024</option>
+          </select>
         </div>
 
         <div>

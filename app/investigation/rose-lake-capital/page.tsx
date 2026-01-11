@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 export const metadata: Metadata = {
   title: 'Rose Lake Capital / E Street Group Investigation | SomaliScan',
@@ -197,6 +198,9 @@ export default function RoseLakeCapitalPage() {
           <p><span className="text-gray-600">└─</span> ppp_loan <span className="text-green-500 ml-4">$134,800 (forgiven)</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Investigation Type Banner */}
       <div className="bg-blue-900/20 border border-blue-800 p-4 mb-8">

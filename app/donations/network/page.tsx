@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 // Dynamically import NetworkGraph to avoid SSR issues with vis-network
 const NetworkGraph = dynamic(() => import('@/app/components/NetworkGraph'), {
@@ -167,6 +168,9 @@ export default function NetworkExplorerPage() {
           </Link>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Controls */}
       <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4">

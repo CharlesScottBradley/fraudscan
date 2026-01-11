@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import DatabaseTable from './DatabaseTable';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 async function getCounts() {
   const [providerResult, pppResult, sbaResult] = await Promise.all([
@@ -29,6 +30,9 @@ export default async function DatabasePage() {
           Search {totalCount.toLocaleString()} providers, PPP loans, and SBA loans nationwide
         </p>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       <DatabaseTable
         initialProviderCount={providerCount}

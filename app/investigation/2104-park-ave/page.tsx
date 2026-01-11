@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 function formatMoney(amount: number | null): string {
   if (!amount) return '-';
@@ -259,6 +260,9 @@ export default function ParkAveInvestigationPage() {
           <p><span className="text-gray-600">└─</span> fraud_charges <span className="text-gray-500 ml-4">0 (none filed)</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Questions About Scale */}
       <div className="bg-orange-900/20 border border-orange-600 p-4 mb-8">

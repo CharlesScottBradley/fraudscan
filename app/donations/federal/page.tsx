@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 interface FECStats {
   totalContributions: number;
@@ -174,6 +175,9 @@ export default async function FederalDonationsPage() {
         <h1 className="text-2xl font-bold mb-2">Federal Campaign Contributions</h1>
         <p className="text-gray-500">FEC data for Senate, House, and Presidential races</p>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {!hasData ? (
         <div className="border border-gray-800 p-8 text-center">

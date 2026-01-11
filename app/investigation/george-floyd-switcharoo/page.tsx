@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 function formatMoney(amount: number | null): string {
   if (!amount) return '-';
@@ -149,6 +150,9 @@ export default function GeorgeFloydSwitcharooPage() {
           <p><span className="text-gray-600">└─</span> fof_connection <span className="text-red-400 ml-4">Kadiye network ($1.16M PPP)</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Alert Banner */}
       <div className="bg-red-900/20 border border-red-800 p-4 mb-8">

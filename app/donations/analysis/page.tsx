@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../../components/ToshiAdBanner';
 
 interface ChildcareDonor {
   employer_name: string;
@@ -135,6 +136,9 @@ export default async function AnalysisPage() {
           </div>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 p-6 border border-yellow-800 bg-yellow-950/20">

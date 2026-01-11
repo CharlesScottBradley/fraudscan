@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface TopPolitician {
   politician_id: string;
@@ -91,6 +92,9 @@ export default async function LeaderboardPage() {
           {totals.count.toLocaleString()} contributions to top recipients
         </p>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       <h2 className="text-lg font-bold mb-4">Top Political Donation Recipients</h2>
       <p className="text-gray-500 text-sm mb-6">

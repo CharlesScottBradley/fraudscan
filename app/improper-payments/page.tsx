@@ -12,6 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface ImproperPayment {
   id: string;
@@ -136,6 +137,9 @@ export default function ImproperPaymentsPage() {
           <p><span className="text-gray-600">└─</span> source <span className="text-white ml-4">PaymentAccuracy.gov</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Error State */}
       {error && (
