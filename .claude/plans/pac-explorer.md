@@ -168,7 +168,151 @@ CREATE INDEX IF NOT EXISTS idx_fec_contributions_cmte_amt ON fec_contributions(c
 ---
 
 ## Status
-- [ ] Phase 1: Foundation
+- [x] Phase 1: Foundation (COMPLETE)
 - [ ] Phase 2: Detail Pages
 - [ ] Phase 3: Integration
 - [ ] Phase 4: Enhancements
+
+---
+
+## Phase 2: PAC Detail Pages
+
+### `/pac/[cmte_id]` - Committee Detail Page
+
+**Purpose**: Deep dive into a single PAC/committee
+
+#### Data Sources
+- `fec_committees` - Committee name, type, party, state
+- `pac_stats` - Aggregated stats (total received, donation count, avg)
+- `fec_contributions` - Individual donations to this committee
+- `fec_committee_candidate_links` - Politicians supported by this PAC
+
+#### Sections
+
+**1. Header**
+- Committee name, ID, type, party affiliation
+- Total raised, # donations, avg donation, donor states count
+- Link to FEC.gov page
+
+**2. Top Donors Table**
+| Donor | Employer | Occupation | Location | Amount | # Donations |
+|-------|----------|------------|----------|--------|-------------|
+Paginated, sortable by amount
+
+**3. Linked Politicians Section**
+Query `fec_committee_candidate_links` where `cmte_id` matches:
+- Show candidates this PAC supports
+- Designation type (P=Principal, A=Authorized, J=Joint)
+- Link to politician detail page if we have them
+
+**4. Donation Timeline**
+- Bar chart by month/quarter
+- Show election cycle spikes
+
+**5. Geographic Breakdown**
+- Top states by donation volume
+- Simple table, no map needed initially
+
+### API Endpoints Needed
+
+**`/api/pacs/[cmte_id]`**
+```typescript
+// Returns committee details + stats
+{
+  committee: { cmte_id, name, type, party, state, fec_url },
+  stats: { total_received, donation_count, avg_donation, donor_states_count },
+  topDonors: [...], // paginated
+  linkedCandidates: [...] // from fec_committee_candidate_links
+}
+```
+
+**`/api/pacs/[cmte_id]/donors`**
+- Paginated top donors for this committee
+- Query params: page, pageSize, sortBy
+
+---
+
+## Phase 3: Politician-PAC Integration
+
+### Goal
+Show PAC relationships on politician detail pages
+
+### Data Flow
+```
+politicians.fec_candidate_id
+  → fec_committee_candidate_links.cand_id
+  → cmte_id
+  → fec_committees (names)
+  → fec_contributions (amounts)
+```
+
+### Changes to `/politician/[id]` Page
+
+**Add new section: "Campaign Committees"**
+
+Show committees linked to this politician via `fec_committee_candidate_links`:
+
+| Committee | Type | Designation | Total Raised | Link |
+|-----------|------|-------------|--------------|------|
+| SCHIFF FOR CONGRESS | Principal Campaign | P | $26.8M | → |
+| DCCC | Party | A | - | → |
+
+**Designation codes:**
+- P = Principal Campaign Committee (their main committee)
+- A = Authorized Committee
+- J = Joint Fundraising Committee
+
+### API Changes
+
+**`/api/politicians/[id]/committees`** (new endpoint)
+```typescript
+// Returns committees linked to this politician
+{
+  committees: [
+    {
+      cmte_id: "C00401224",
+      name: "SCHIFF FOR CONGRESS",
+      committee_type: "Principal Campaign",
+      designation: "P",
+      total_raised: 26800000,
+      link_type: "principal" | "authorized" | "joint"
+    }
+  ]
+}
+```
+
+### Database Query
+```sql
+SELECT
+  ccl.cmte_id,
+  fc.name as committee_name,
+  fc.committee_type,
+  ccl.cmte_dsgn as designation,
+  COALESCE(ps.total_received, 0) as total_raised
+FROM fec_committee_candidate_links ccl
+JOIN fec_committees fc ON fc.cmte_id = ccl.cmte_id
+LEFT JOIN pac_stats ps ON ps.cmte_id = ccl.cmte_id
+WHERE ccl.cand_id = :fec_candidate_id
+ORDER BY ps.total_received DESC NULLS LAST;
+```
+
+---
+
+## Implementation Order
+
+### Phase 2 Tasks
+1. Create `/api/pacs/[cmte_id]/route.ts` - committee detail endpoint
+2. Create `/api/pacs/[cmte_id]/donors/route.ts` - paginated donors
+3. Create `/app/pac/[cmte_id]/page.tsx` - detail page UI
+4. Add linked candidates section to PAC detail page
+
+### Phase 3 Tasks
+5. Create `/api/politicians/[id]/committees/route.ts`
+6. Add "Campaign Committees" section to politician detail page
+7. Link PAC names to `/pac/[cmte_id]` pages
+
+### Phase 4 Tasks (Future)
+8. Donation timeline chart on PAC pages
+9. Geographic heatmap
+10. Compare PACs feature
+11. "Money flow" visualization (donor → PAC → politician)

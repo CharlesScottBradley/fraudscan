@@ -46,6 +46,17 @@ interface NewsArticle {
   url: string | null;
 }
 
+interface PoliticianCommittee {
+  cmte_id: string;
+  name: string | null;
+  committee_type: string | null;
+  party: string | null;
+  designation: string;
+  designation_label: string;
+  total_received: number;
+  donation_count: number;
+}
+
 const PARTY_COLORS: Record<string, string> = {
   R: 'bg-red-900/40 text-red-400 border-red-800',
   Republican: 'bg-red-900/40 text-red-400 border-red-800',
@@ -143,6 +154,20 @@ async function getNewsArticles(politicianName: string): Promise<NewsArticle[]> {
   return data || [];
 }
 
+async function getCommittees(politicianId: string): Promise<PoliticianCommittee[]> {
+  const url = `https://www.somaliscan.com/api/politicians/${politicianId}/committees`;
+
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.committees || [];
+  } catch (error) {
+    console.error('[getCommittees] Error:', error);
+    return [];
+  }
+}
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -163,9 +188,10 @@ export default async function PoliticianDetailPage({
 
   const name = politician.full_name || person?.full_name || 'Unknown Politician';
 
-  // Fetch contributions by politician ID and news by name
-  const [contributionsData, newsArticles] = await Promise.all([
+  // Fetch contributions, committees, and news
+  const [contributionsData, committees, newsArticles] = await Promise.all([
     getContributions(id),
+    getCommittees(id),
     name !== 'Unknown Politician' ? getNewsArticles(name) : Promise.resolve([]),
   ]);
   const { contributions, totalCount, totalAmount } = contributionsData;
@@ -302,6 +328,55 @@ export default async function PoliticianDetailPage({
                 );
               })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Campaign Committees */}
+      {committees.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-4">Campaign Committees</h2>
+          <div className="border border-gray-800 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-400">Committee</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Type</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Relationship</th>
+                  <th className="text-right p-3 font-medium text-gray-400">Total Raised</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {committees.map((c) => (
+                  <tr key={c.cmte_id} className="hover:bg-gray-900/50">
+                    <td className="p-3">
+                      <Link
+                        href={`/pac/${c.cmte_id}`}
+                        className="font-medium text-white hover:text-green-400"
+                      >
+                        {c.name || c.cmte_id}
+                      </Link>
+                      <span className="ml-2 text-xs text-gray-600">{c.cmte_id}</span>
+                    </td>
+                    <td className="p-3 text-gray-400 text-xs">
+                      {c.committee_type || '-'}
+                    </td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        c.designation === 'P'
+                          ? 'bg-green-900/40 text-green-400 border border-green-800'
+                          : 'bg-gray-800 text-gray-400 border border-gray-700'
+                      }`}>
+                        {c.designation_label}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right font-mono text-green-500">
+                      {formatMoney(c.total_received)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

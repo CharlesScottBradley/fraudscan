@@ -159,12 +159,10 @@ export default function PoliticiansPage() {
   const [party, setParty] = useState('');
   const [state, setState] = useState('');
   const [office, setOffice] = useState('');
-  const [search, setSearch] = useState('');
-  const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     fetchPoliticians();
-  }, [page, party, state, office, search]);
+  }, [page, party, state, office]);
 
   useEffect(() => {
     fetchContributionStats();
@@ -207,7 +205,6 @@ export default function PoliticiansPage() {
       if (party) params.set('party', party);
       if (state) params.set('state', state);
       if (office) params.set('office', office);
-      if (search) params.set('search', search);
 
       const res = await fetch(`/api/politicians?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -224,12 +221,6 @@ export default function PoliticiansPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearch(searchInput);
-    setPage(1);
   };
 
   // Calculate contribution stats for current page
@@ -259,23 +250,6 @@ export default function PoliticiansPage() {
       {/* 7.2: Filters */}
       <div className="border border-gray-800 p-4 mb-8">
         <div className="flex flex-wrap gap-4 items-end">
-          {/* Search */}
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by name..."
-              className="bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:border-green-500 focus:outline-none w-48"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm"
-            >
-              Search
-            </button>
-          </form>
-
           {/* Party filter */}
           <div>
             <label className="block text-xs text-gray-500 mb-1">Party</label>
@@ -320,14 +294,12 @@ export default function PoliticiansPage() {
           </div>
 
           {/* Clear filters */}
-          {(party || state || office || search) && (
+          {(party || state || office) && (
             <button
               onClick={() => {
                 setParty('');
                 setState('');
                 setOffice('');
-                setSearch('');
-                setSearchInput('');
                 setPage(1);
               }}
               className="text-gray-400 hover:text-white text-sm py-2"
