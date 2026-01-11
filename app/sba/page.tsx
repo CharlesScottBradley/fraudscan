@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface SBALoan {
   id: string;
@@ -186,6 +187,9 @@ export default function SBALoansPage() {
           <p><span className="text-gray-600">|_</span> fraud_prone_industries <span className="text-white ml-4">{stats.fraudProneCount.toLocaleString()}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Search Input */}
       <div className="mb-4">

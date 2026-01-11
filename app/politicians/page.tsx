@@ -2,14 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface Politician {
   id: string;
@@ -46,11 +39,6 @@ interface PoliticiansResponse {
   };
 }
 
-interface ContributionStats {
-  totalAmount: number;
-  totalCount: number;
-  topRecipients: { name: string; total: number }[];
-}
 
 const PARTY_COLORS: Record<string, string> = {
   R: '#EF4444', // red
@@ -147,7 +135,6 @@ function normalizePartyName(party: string): string {
 export default function PoliticiansPage() {
   const [politicians, setPoliticians] = useState<Politician[]>([]);
   const [stats, setStats] = useState<PoliticiansResponse['stats'] | null>(null);
-  const [contributionStats, setContributionStats] = useState<ContributionStats | null>(null);
   const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -165,7 +152,6 @@ export default function PoliticiansPage() {
   }, [page, party, state, office]);
 
   useEffect(() => {
-    fetchContributionStats();
     fetchAvailableStates();
   }, []);
 
@@ -178,19 +164,6 @@ export default function PoliticiansPage() {
       }
     } catch (err) {
       console.error('Failed to fetch states:', err);
-    }
-  };
-
-  const fetchContributionStats = async () => {
-    try {
-      // Fetch contribution totals from the donations RPC
-      const res = await fetch('/api/contributions?stats=true');
-      if (res.ok) {
-        const data = await res.json();
-        setContributionStats(data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch contribution stats:', err);
     }
   };
 
@@ -227,17 +200,11 @@ export default function PoliticiansPage() {
   const pageContributionCount = politicians.reduce((sum, p) => sum + p.contribution_count, 0);
   const pageContributionAmount = politicians.reduce((sum, p) => sum + p.total_contributions, 0);
 
-  // Top recipients chart data
-  const topRecipientsChartData = contributionStats?.topRecipients?.slice(0, 10).map(r => ({
-    name: r.name.length > 20 ? r.name.substring(0, 20) + '...' : r.name,
-    fullName: r.name,
-    amount: r.total,
-  })) || [];
 
   return (
     <div>
       {/* 7.1: Header with summary stats */}
-      <div className="font-mono text-sm mb-10">
+      <div className="font-mono text-sm mb-6">
         <p className="text-gray-500">POLITICIANS_DATABASE</p>
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">├─</span> total_tracked <span className="text-white ml-4">{total.toLocaleString()}</span></p>
@@ -246,6 +213,9 @@ export default function PoliticiansPage() {
           <p><span className="text-gray-600">└─</span> parties <span className="text-white ml-4">{Object.keys(stats?.partyBreakdown || {}).length}</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* 7.2: Filters */}
       <div className="border border-gray-800 p-4 mb-8">
@@ -308,64 +278,6 @@ export default function PoliticiansPage() {
             </button>
           )}
         </div>
-      </div>
-
-      {/* Campaign Contributions Stats + Top Recipients Chart */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        {/* Total Contributions Stat */}
-        <div className="border border-gray-800 p-6">
-          <h3 className="text-sm font-medium text-gray-400 mb-4">Campaign Contributions</h3>
-          <div className="space-y-4">
-            <div>
-              <p className="text-green-500 font-mono text-4xl font-bold">
-                {contributionStats ? formatMoney(contributionStats.totalAmount) : '-'}
-              </p>
-              <p className="text-gray-500 mt-1">Total contributions tracked</p>
-            </div>
-            <div>
-              <p className="text-white font-mono text-2xl font-bold">
-                {contributionStats?.totalCount?.toLocaleString() || '-'}
-              </p>
-              <p className="text-gray-500 mt-1">Individual donations</p>
-            </div>
-            <div className="pt-4 border-t border-gray-800">
-              <Link href="/donations" className="text-green-500 hover:text-green-400 text-sm">
-                View all donations →
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Top Recipients Bar Chart */}
-        {topRecipientsChartData.length > 0 && (
-          <div className="border border-gray-800 p-4">
-            <h3 className="text-sm font-medium text-gray-400 mb-4">Top Donation Recipients</h3>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topRecipientsChartData} layout="vertical" margin={{ left: 10, right: 30 }}>
-                  <XAxis
-                    type="number"
-                    stroke="#6B7280"
-                    tickFormatter={(v) => formatMoney(v)}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    stroke="#6B7280"
-                    width={140}
-                    tick={{ fontSize: 11 }}
-                  />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
-                    labelStyle={{ color: '#9CA3AF' }}
-                    formatter={(value) => [formatMoney(value as number), 'Total']}
-                  />
-                  <Bar dataKey="amount" fill="#22C55E" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Loading state */}

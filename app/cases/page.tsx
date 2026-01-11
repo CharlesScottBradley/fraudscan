@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface Case {
   id: string;
@@ -121,6 +122,9 @@ export default async function CasesPage() {
           <p className="text-gray-500">{stats.total} cases tracked</p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import DonationsMap from '../components/DonationsMap';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 const STATE_NAMES: Record<string, string> = {
   'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas',
@@ -76,10 +77,13 @@ export default async function DonationsPage() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">Political Donations</h1>
         <p className="text-gray-500">Campaign finance data across the United States</p>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Hero stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">

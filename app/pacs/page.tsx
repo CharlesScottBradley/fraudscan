@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface PAC {
   cmte_id: string;
@@ -117,12 +118,15 @@ export default function PACsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2">Political Action Committees</h1>
         <p className="text-gray-500">
           Browse PACs, Super PACs, and political committees by total contributions received
         </p>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Hero stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">

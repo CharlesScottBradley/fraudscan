@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface PPPLoan {
   id: string;
@@ -176,7 +177,7 @@ export default function PPPSearchPage() {
   return (
     <div>
       {/* Terminal-style stats header */}
-      <div className="font-mono text-sm mb-10">
+      <div className="font-mono text-sm mb-6">
         <p className="text-gray-500">PPP_LOANS_DATABASE</p>
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">├─</span> total_disbursed <span className="text-green-500 ml-4">$674B</span></p>
@@ -185,6 +186,9 @@ export default function PPPSearchPage() {
           <p><span className="text-gray-600">└─</span> flagged_for_review <span className="text-white ml-4">8,536</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Search Input */}
       <div className="mb-4">

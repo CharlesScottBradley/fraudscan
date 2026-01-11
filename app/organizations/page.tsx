@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface LoanStatus {
   forgiven: number;
@@ -220,7 +221,7 @@ export default function OrganizationsPage() {
   return (
     <div>
       {/* Header Stats */}
-      <div className="font-mono text-sm mb-10">
+      <div className="font-mono text-sm mb-6">
         <p className="text-gray-500">ORGANIZATIONS_MASTER_REGISTRY</p>
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">&#9500;&#9472;</span> total_organizations <span className="text-white ml-4">12.5M</span></p>
@@ -230,6 +231,9 @@ export default function OrganizationsPage() {
           <p><span className="text-gray-600">&#9492;&#9472;</span> fraud_prone_industries <span className="text-yellow-500 ml-4">5.9M</span></p>
         </div>
       </div>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Search Input */}
       <div className="mb-4">

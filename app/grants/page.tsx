@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ToshiAdBanner from '../components/ToshiAdBanner';
 
 interface Grant {
   id: string;
@@ -72,9 +73,12 @@ export default function GrantsPage() {
       </Link>
 
       <h1 className="text-2xl font-bold mb-2">Grants</h1>
-      <p className="text-gray-400 mb-8">
+      <p className="text-gray-400 mb-6">
         Financial support for accountability work — legal action, storytelling, and advocacy.
       </p>
+
+      {/* Toshi Sponsor Banner */}
+      <ToshiAdBanner className="mb-8" />
 
       {/* Total Available */}
       <div className="border-2 border-green-900/50 bg-green-950/20 rounded-lg p-6 mb-8">
