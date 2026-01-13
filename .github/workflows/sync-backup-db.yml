@@ -1,0 +1,103 @@
+name: Sync Backup Database
+
+on:
+  schedule:
+    # Run at 12:00 PM EST (5 PM UTC)
+    - cron: '0 17 * * *'
+    # Run nightly at 11 PM EST (4 AM UTC next day)
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      tables:
+        description: 'Tables to sync (comma-separated, or "all" for full sync)'
+        required: false
+        default: 'all'
+
+env:
+  # Source: Supabase
+  SOURCE_DB: postgresql://postgres:${{ secrets.SUPABASE_DB_PASSWORD }}@db.powsedjqwgniermriadb.supabase.co:5432/postgres
+  # Target: Backup DB (for agent query system)
+  TARGET_DB: postgresql://benjamin:${{ secrets.BACKUP_DB_PASSWORD }}@database.lootermap.com:5432/somaliscan
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Test connections
+        run: |
+          echo "Testing Supabase connection..."
+          PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} psql -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres -c "SELECT 1;"
+
+          echo "Testing backup DB connection..."
+          PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "SELECT 1;"
+
+      - name: Get table list
+        id: tables
+        run: |
+          if [ "${{ github.event.inputs.tables }}" = "all" ] || [ -z "${{ github.event.inputs.tables }}" ]; then
+            # Get all tables from source
+            TABLES=$(PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} psql -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres -t -c "SELECT string_agg(table_name, ',') FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
+            echo "tables=$TABLES" >> $GITHUB_OUTPUT
+            echo "Syncing all tables: $TABLES"
+          else
+            echo "tables=${{ github.event.inputs.tables }}" >> $GITHUB_OUTPUT
+            echo "Syncing specified tables: ${{ github.event.inputs.tables }}"
+          fi
+
+      - name: Sync tables
+        run: |
+          IFS=',' read -ra TABLES <<< "${{ steps.tables.outputs.tables }}"
+
+          for table in "${TABLES[@]}"; do
+            table=$(echo "$table" | xargs)  # trim whitespace
+            if [ -z "$table" ]; then continue; fi
+
+            echo "========================================"
+            echo "Syncing table: $table"
+            echo "========================================"
+
+            # Get row count before
+            BEFORE=$(PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "SELECT COUNT(*) FROM $table;" 2>/dev/null || echo "0")
+            echo "  Before: $BEFORE rows"
+
+            # Truncate target table
+            PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "TRUNCATE $table CASCADE;" 2>/dev/null || true
+
+            # Copy data from source to target
+            PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} pg_dump -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres \
+              --no-owner --no-acl -t "$table" --data-only 2>/dev/null | \
+              PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | tail -1
+
+            # Get row count after
+            AFTER=$(PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "SELECT COUNT(*) FROM $table;" 2>/dev/null || echo "0")
+            echo "  After: $AFTER rows"
+            echo ""
+          done
+
+      - name: Generate summary
+        run: |
+          echo "## Database Sync Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Source:** Supabase (powsedjqwgniermriadb)" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** database.lootermap.com" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Table Counts" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Table | Rows |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|------|" >> $GITHUB_STEP_SUMMARY
+
+          PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "
+            SELECT '| ' || relname || ' | ' || n_live_tup || ' |'
+            FROM pg_stat_user_tables
+            WHERE n_live_tup > 0
+            ORDER BY n_live_tup DESC
+            LIMIT 20;
+          " >> $GITHUB_STEP_SUMMARY
