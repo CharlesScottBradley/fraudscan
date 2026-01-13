@@ -66,7 +66,7 @@ export default function CheckbookPage() {
   const [vendorSearch, setVendorSearch] = useState('');
   const [agencySearch, setAgencySearch] = useState('');
   const [minAmount, setMinAmount] = useState('');
-  const [sortBy, setSortBy] = useState('id');
+  const [sortBy, setSortBy] = useState('amount');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   // Stats
@@ -127,7 +127,9 @@ export default function CheckbookPage() {
       const res = await fetch(`/api/state-checkbook?${params}`);
 
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
+        // Try to get error message from API response
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `HTTP ${res.status}`);
       }
 
       const data: CheckbookResponse = await res.json();
@@ -149,7 +151,8 @@ export default function CheckbookPage() {
       });
     } catch (err) {
       console.error('Failed to fetch checkbook data:', err);
-      setError('Failed to load checkbook data. Please try again.');
+      const message = err instanceof Error ? err.message : 'Failed to load checkbook data';
+      setError(message);
       setRecords([]);
       setTotalCount(0);
       setTotalPages(0);

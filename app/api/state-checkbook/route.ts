@@ -1,5 +1,21 @@
-import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
+
+// Use native fetch to PostgREST - Supabase JS client times out in Next.js
+async function queryPostgREST(table: string, query: string) {
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/${table}?${query}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`PostgREST error ${res.status}: ${err}`);
+  }
+  return res.json();
+}
 
 // Minimal columns returned to avoid timeout on 138M row table
 export interface StateCheckbookRecord {
@@ -44,71 +60,73 @@ export async function GET(request: Request) {
   const agency = searchParams.get('agency');
   const minAmount = searchParams.get('minAmount');
   const maxAmount = searchParams.get('maxAmount');
-  // Default to id desc (uses primary key index) - amount sort only fast when filtered by state
-  const sortBy = searchParams.get('sortBy') || 'id';
+  // Default to amount desc - ORDER BY id times out, but amount uses index
+  const sortBy = searchParams.get('sortBy') || 'amount';
   const sortDir = searchParams.get('sortDir') || 'desc';
 
   try {
-    // Build query - minimal columns to avoid timeout on 138M row table
-    let query = supabase
-      .from('state_checkbook')
-      .select('id, state, fiscal_year, vendor_name, amount, agency, expenditure_category, organization_id');
+    // Large states (CA=52M, TX=24M) timeout without additional filters
+    // Require fiscal_year or another filter when filtering by state alone
+    if (state && !fiscalYear && !vendor && !agency && !minAmount) {
+      return NextResponse.json({
+        error: 'Please select a fiscal year when filtering by state',
+        hint: 'Large states have millions of records that require additional filtering'
+      }, { status: 400 });
+    }
 
-    // Apply filters
+    // Build PostgREST query params
+    const params = new URLSearchParams();
+    params.set('select', 'id,state,fiscal_year,vendor_name,amount,agency,expenditure_category,organization_id');
+
+    // Apply filters using PostgREST syntax
     if (state) {
-      query = query.eq('state', state.toUpperCase());
+      params.set('state', `eq.${state.toUpperCase()}`);
     }
 
     if (fiscalYear) {
       const fyValues = fiscalYear.split(',').map(y => parseInt(y.trim())).filter(y => !isNaN(y));
       if (fyValues.length === 1) {
-        query = query.eq('fiscal_year', fyValues[0]);
+        params.set('fiscal_year', `eq.${fyValues[0]}`);
       } else if (fyValues.length > 1) {
-        query = query.in('fiscal_year', fyValues);
+        params.set('fiscal_year', `in.(${fyValues.join(',')})`);
       }
     }
 
     if (vendor) {
-      query = query.ilike('vendor_name', `%${vendor}%`);
+      params.set('vendor_name', `ilike.*${vendor}*`);
     }
 
     if (agency) {
-      query = query.ilike('agency', `%${agency}%`);
+      params.set('agency', `ilike.*${agency}*`);
     }
 
     if (minAmount) {
-      query = query.gte('amount', parseFloat(minAmount));
+      params.set('amount', `gte.${parseFloat(minAmount)}`);
     }
 
     if (maxAmount) {
-      query = query.lte('amount', parseFloat(maxAmount));
+      params.append('amount', `lte.${parseFloat(maxAmount)}`);
     }
 
     // Only apply sorting if there's a filter - unfiltered 138M row sorts timeout
     const hasFilter = state || fiscalYear || vendor || agency || minAmount || maxAmount;
     if (hasFilter) {
-      const validSortColumns = [
-        'id', 'amount', 'vendor_name', 'agency', 'fiscal_year', 'state', 'payment_date'
-      ];
+      const validSortColumns = ['amount', 'vendor_name', 'agency', 'fiscal_year', 'state'];
       const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'amount';
-      query = query.order(sortColumn, { ascending: sortDir === 'asc', nullsFirst: false });
+      params.set('order', `${sortColumn}.${sortDir}`);
     }
-    // Without filter, no ORDER BY - returns random-ish rows but avoids timeout
 
     // Pagination
-    query = query.range(offset, offset + pageSize - 1);
+    params.set('offset', offset.toString());
+    params.set('limit', pageSize.toString());
 
-    const { data: records, error } = await query;
-
-    if (error) {
-      console.error('State checkbook query error:', error);
-      throw error;
-    }
+    const records = await queryPostgREST('state_checkbook', params.toString());
 
     // Get stats from materialized view (much faster than aggregating 138M rows)
-    const { data: statsData } = await supabase
-      .from('state_checkbook_stats')
-      .select('state, fiscal_year, record_count, total_amount, unique_vendors, unique_agencies');
+    const statsData = await queryPostgREST(
+      'state_checkbook_stats',
+      'select=state,fiscal_year,record_count,total_amount,unique_vendors,unique_agencies'
+    );
 
     let totalAmount = 0;
     let recordCount = 0;
