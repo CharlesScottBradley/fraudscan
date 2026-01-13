@@ -9,6 +9,7 @@ import AppropriationsSection from './AppropriationsSection';
 import CheckbookSection from './CheckbookSection';
 import EmailSignup from '../../components/EmailSignup';
 import WAChildcareSection from './WAChildcareSection';
+import StateSpendingWrapper from './StateSpendingWrapper';
 
 // All US states with map centers
 const STATE_INFO: Record<string, { name: string; center: [number, number]; zoom: number }> = {
@@ -486,6 +487,12 @@ export default async function StatePage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Government Spending Overview + Top Recipients - single fetch */}
+      <StateSpendingWrapper
+        stateCode={state.toUpperCase()}
+        stateName={stateInfo.name}
+      />
+
       {/* State Budget Section (Census Bureau / NASBO data) */}
       <StateBudgetSection
         stateCode={state.toUpperCase()}
@@ -622,7 +629,7 @@ export default async function StatePage({ params }: PageProps) {
           label={`${stateInfo.name} Alerts`}
         />
         <p className="text-gray-600 text-sm mt-2">
-          Get notified of new fraud investigations in {stateInfo.name}.
+          Get notified when new spending data is added for {stateInfo.name}.
         </p>
       </div>
     </div>

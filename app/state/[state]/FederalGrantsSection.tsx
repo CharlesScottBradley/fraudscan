@@ -102,7 +102,7 @@ export default function FederalGrantsSection({ stateCode, stateName }: Props) {
         <div className="mt-2 text-gray-400">
           <p><span className="text-gray-600">|-</span> grants_awarded <span className="text-white ml-4">{formatNumber(totalStats.total)}</span></p>
           <p><span className="text-gray-600">|-</span> total_amount <span className="text-green-500 ml-4">{formatMoney(totalStats.totalAmount)}</span></p>
-          <p><span className="text-gray-600">|_</span> fraud_prone_industries <span className="text-white ml-4">{formatNumber(totalStats.fraudProneCount)}</span></p>
+          <p><span className="text-gray-600">|_</span> high_risk_industries <span className="text-white ml-4">{formatNumber(totalStats.fraudProneCount)}</span></p>
         </div>
       </div>
 

@@ -19,12 +19,12 @@ interface HomePageClientProps {
 }
 
 const FILTERS: { id: EntityType; label: string }[] = [
-  { id: 'all', label: 'All' },
+  { id: 'all', label: 'All Entities' },
   { id: 'childcare', label: 'Childcare' },
   { id: 'nursing_home', label: 'Nursing Homes' },
-  { id: 'ppp', label: 'PPP Loans' },
-  { id: 'sba', label: 'SBA Loans' },
-  { id: 'h1b', label: 'H-1B Visas' },
+  { id: 'h1b', label: 'H-1B Employers' },
+  { id: 'ppp', label: 'PPP (Historical)' },
+  { id: 'sba', label: 'SBA' },
 ];
 
 function formatMoney(amount: number): string {
@@ -53,22 +53,22 @@ export default function HomePageClient({
       {/* Stats row */}
       <div className="flex flex-wrap gap-x-16 gap-y-6 mb-8">
         <div>
-          <p className="text-green-500 font-mono text-4xl font-bold">
-            {formatMoney(totalFraud)}
-          </p>
-          <p className="text-gray-500 mt-1 text-sm">Total fraud tracked</p>
-        </div>
-        <div>
           <p className="text-white font-mono text-4xl font-bold">
             {totalOrganizations.toLocaleString()}
           </p>
-          <p className="text-gray-500 mt-1 text-sm">Organizations tracked</p>
+          <p className="text-gray-500 mt-1 text-sm">Entities tracked</p>
+        </div>
+        <div>
+          <p className="text-green-500 font-mono text-4xl font-bold">
+            {formatMoney(totalFraud)}
+          </p>
+          <p className="text-gray-500 mt-1 text-sm">Prosecutions documented</p>
         </div>
         <div className="ml-auto">
-          <EmailSignup 
-            source="homepage" 
-            variant="terminal" 
-            label="Get notified when new fraud cases are published"
+          <EmailSignup
+            source="homepage"
+            variant="terminal"
+            label="Get updates on government spending data"
           />
         </div>
       </div>

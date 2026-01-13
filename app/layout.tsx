@@ -27,7 +27,7 @@ const cinzel = Cinzel({
 
 export const metadata: Metadata = {
   title: "SomaliScan",
-  description: "Child Care Subsidy Fraud Tracker",
+  description: "Government spending transparency platform - track where taxpayer money goes",
 };
 
 export default function RootLayout({

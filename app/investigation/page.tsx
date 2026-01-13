@@ -238,13 +238,12 @@ export default async function InvestigationsPage() {
     <div>
       {/* Terminal-style stats */}
       <div className="font-mono text-sm mb-10">
-        <p className="text-gray-500">FRAUD_DETECTION_SYSTEM</p>
+        <p className="text-gray-500">ANALYSIS_DASHBOARD</p>
         <div className="mt-2 text-gray-400">
-          <p><span className="text-gray-600">├─</span> flagged_loan_value <span className="text-green-500 ml-4">{formatMoney(totalFlaggedAmount)}</span></p>
-          <p><span className="text-gray-600">├─</span> flagged_loans <span className="text-white ml-4">{formatNumber(totalFlagged)}</span></p>
+          <p><span className="text-gray-600">├─</span> documented_fraud <span className="text-green-500 ml-4">{formatMoney(stats.total_fraud_amount)}</span></p>
           <p><span className="text-gray-600">├─</span> prosecuted_cases <span className="text-white ml-4">{stats.fraud_cases}</span></p>
-          <p><span className="text-gray-600">├─</span> confirmed_fraud <span className="text-green-500 ml-4">{formatMoney(stats.total_fraud_amount)}</span></p>
-          <p><span className="text-gray-600">└─</span> investigations <span className="text-white ml-4">{stats.total_investigations}</span></p>
+          <p><span className="text-gray-600">├─</span> active_analyses <span className="text-white ml-4">{stats.total_investigations}</span></p>
+          <p><span className="text-gray-600">└─</span> loan_flags <span className="text-gray-500 ml-4">{formatNumber(totalFlagged)} ({formatMoney(totalFlaggedAmount)})</span></p>
         </div>
       </div>
 
@@ -336,9 +335,9 @@ export default async function InvestigationsPage() {
         )}
       </div>
 
-      {/* Flagged Loans Breakdown */}
+      {/* Loan Program Flags - historical COVID programs */}
       <div className="mb-10">
-        <h2 className="text-sm font-medium text-gray-400 mb-4">Flagged for Review</h2>
+        <h2 className="text-sm font-medium text-gray-400 mb-4">COVID Loan Program Flags <span className="text-gray-600">(PPP/EIDL - historical)</span></h2>
         <div className="border border-gray-800 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-900">
@@ -387,12 +386,12 @@ export default async function InvestigationsPage() {
             Fraud Cases
           </Link>
           <span className="text-gray-700">|</span>
-          <Link href="/ppp" className="text-gray-400 hover:text-green-400">
-            PPP Database
+          <Link href="/checkbook" className="text-gray-400 hover:text-green-400">
+            State Checkbook
           </Link>
           <span className="text-gray-700">|</span>
-          <Link href="/nursing-homes" className="text-gray-400 hover:text-green-400">
-            Nursing Homes
+          <Link href="/donations" className="text-gray-400 hover:text-green-400">
+            Political Donations
           </Link>
           <span className="text-gray-700">|</span>
           <Link href="/improper-payments" className="text-gray-400 hover:text-green-400">

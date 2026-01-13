@@ -2,7 +2,7 @@ import EmailSignup from '../components/EmailSignup';
 
 export const metadata = {
   title: 'About | SomaliScan',
-  description: 'Why I built this government spending tracker',
+  description: 'Government spending transparency - one place to see where taxpayer money goes',
 };
 
 export default function AboutPage() {
@@ -12,57 +12,79 @@ export default function AboutPage() {
 
       <div className="prose prose-invert prose-gray">
         <div className="text-gray-300 leading-relaxed space-y-4 mb-10">
-          <p>I am anon</p>
-          <p>
-            My ancestors faught in every major American war from 1776 until 1945
+          <p className="text-xl text-white">
+            One place to see where taxpayer money goes.
           </p>
           <p>
-            When I was younger I loved America and everything it stood for but over the years I have grown apathetic
+            Government spending data is public but scattered across hundreds of websites,
+            PDFs, and FOIA responses. We aggregate it into one searchable database so
+            anyone can follow the money.
           </p>
           <p>
-            The America my ancestors built and died for is now plagued with a parasitic infection of looters that build nothing
+            We link entities across datasets - the same organization receiving state contracts,
+            federal grants, and PPP loans appears as one profile, not three separate records.
           </p>
-          <p>
-            I am exhasted of playing partisain game and every other retarded game we play
-          </p>
-          <p>
-            I am exhausted of losing 50% of my income to taxes that enrich parasites
-          </p>
-          <p>
-            I am exhausted of the trash in every city, the DEF tank on my truck, the freakazoid eunichs castrating children, the fat people everywhere, the senile old retards in charge of everything, the cheap shit everything is made of, the poison in my food, etc etc etc etc
-          </p>
-          <p>
-            Mainly i'm tired of my money being stolen from me by a fradulent government
-          </p>
-          <p className="mt-6 text-gray-400">
-            This site will be transparent, bipartisain, focused on fraud committed by immigrants who dont speak my language
-          </p>
-          <p className="text-4xl font-black text-white mt-8 tracking-wide" style={{ fontFamily: 'var(--font-cinzel)' }}>
-            I care about one thing: Who stole all of our money
+          <p className="text-gray-400">
+            Fraud detection is one tool we provide, not the mission. Transparency is the foundation.
           </p>
         </div>
 
-        <h2 className="text-xl font-semibold mt-10 mb-4 text-white">Current Data Sources</h2>
-        <ul className="text-gray-400 space-y-2">
-          <li>State childcare licensing databases</li>
-          <li>PPP loan data (SBA)</li>
-          <li>Federal campaign contribution records (FEC)</li>
-          <li>State campaign finance databases</li>
-          <li>Court records and DOJ press releases</li>
-        </ul>
+        <h2 className="text-xl font-semibold mt-10 mb-4 text-white">Data Coverage</h2>
+        <div className="space-y-4 text-gray-400">
+          <div>
+            <h3 className="text-white text-sm font-medium mb-1">State Spending</h3>
+            <ul className="space-y-1 text-sm">
+              <li>138M+ state checkbook transactions</li>
+              <li>5.7M state employee salary records</li>
+              <li>State budget and grant data</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-white text-sm font-medium mb-1">Political Money</h3>
+            <ul className="space-y-1 text-sm">
+              <li>58M federal campaign contributions (FEC)</li>
+              <li>96M state campaign contributions</li>
+              <li>PAC, politician, and donor profiles</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-white text-sm font-medium mb-1">Healthcare</h3>
+            <ul className="space-y-1 text-sm">
+              <li>28M Open Payments (pharma to physicians)</li>
+              <li>Medicaid provider data</li>
+              <li>Nursing home ownership records</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-white text-sm font-medium mb-1">Federal Programs</h3>
+            <ul className="space-y-1 text-sm">
+              <li>5.2M federal grant records</li>
+              <li>7.5M PPP loans (historical COVID program)</li>
+              <li>1.8M SBA loans</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-white text-sm font-medium mb-1">Entities</h3>
+            <ul className="space-y-1 text-sm">
+              <li>8M+ organizations in unified registry</li>
+              <li>660K SNAP retailers</li>
+              <li>161K childcare providers</li>
+            </ul>
+          </div>
+        </div>
 
         <h2 className="text-xl font-semibold mt-10 mb-4 text-white">Roadmap</h2>
         <ul className="text-gray-400 space-y-2">
-          <li>Add more state subsidy programs (SNAP, housing, etc.)</li>
-          <li>Cross-reference business owners with political donations</li>
-          <li>Integrate federal contract data (USAspending.gov)</li>
-          <li>Build anomaly detection for suspicious patterns</li>
-          <li>Expand to all 50 states</li>
+          <li>USASpending.gov federal contracts integration</li>
+          <li>More state checkbook coverage (targeting all 50)</li>
+          <li>Local government spending (cities, counties)</li>
+          <li>Medicare/Medicaid claims data</li>
+          <li>Childcare subsidy payment data</li>
         </ul>
 
         <h2 className="text-xl font-semibold mt-10 mb-4 text-white">Contact</h2>
         <p className="text-gray-400">
-          Questions, tips, or want to help?{' '}
+          Questions, tips, data corrections, or want to contribute?{' '}
           <a href="mailto:admin@somaliscan.com" className="text-green-500 hover:underline">
             admin@somaliscan.com
           </a>
@@ -74,13 +96,13 @@ export default function AboutPage() {
           </a>
         </p>
 
-        <EmailSignup 
-          source="about" 
-          variant="block" 
+        <EmailSignup
+          source="about"
+          variant="block"
           label="Stay Informed"
         />
         <p className="text-gray-600 text-sm mt-2">
-          Get notified when new data is added or major fraud cases are published.
+          Get notified when new spending data is added.
         </p>
       </div>
     </div>

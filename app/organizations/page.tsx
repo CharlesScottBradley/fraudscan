@@ -117,7 +117,7 @@ export default function OrganizationsPage() {
   const [minFunding, setMinFunding] = useState('');
   const [maxFunding, setMaxFunding] = useState('');
   const [industrySector, setIndustrySector] = useState('');
-  const [fraudProneOnly, setFraudProneOnly] = useState(false);
+  const [highRiskOnly, setFraudProneOnly] = useState(false);
   const [orgType, setOrgType] = useState('');
   const [minClusterSize, setMinClusterSize] = useState('');
   const [sortBy, setSortBy] = useState('total_all_funding');
@@ -144,7 +144,7 @@ export default function OrganizationsPage() {
   useEffect(() => {
     fetchOrgs();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, selectedState, minFunding, maxFunding, industrySector, fraudProneOnly, orgType, minClusterSize, page, pageSize, sortBy, sortDir]);
+  }, [debouncedSearch, selectedState, minFunding, maxFunding, industrySector, highRiskOnly, orgType, minClusterSize, page, pageSize, sortBy, sortDir]);
 
   const fetchOrgs = async () => {
     setLoading(true);
@@ -162,7 +162,7 @@ export default function OrganizationsPage() {
       if (minFunding) params.set('minFunding', minFunding);
       if (maxFunding) params.set('maxFunding', maxFunding);
       if (industrySector) params.set('sector', industrySector);
-      if (fraudProneOnly) params.set('fraudProne', 'true');
+      if (highRiskOnly) params.set('fraudProne', 'true');
       if (orgType) params.set('type', orgType);
       if (minClusterSize) params.set('minClusterSize', minClusterSize);
 
@@ -216,7 +216,7 @@ export default function OrganizationsPage() {
     setPage(1);
   };
 
-  const hasFilters = searchTerm || selectedState || minFunding || maxFunding || industrySector || fraudProneOnly || orgType || minClusterSize;
+  const hasFilters = searchTerm || selectedState || minFunding || maxFunding || industrySector || highRiskOnly || orgType || minClusterSize;
 
   return (
     <div>
@@ -228,7 +228,7 @@ export default function OrganizationsPage() {
           <p><span className="text-gray-600">&#9500;&#9472;</span> total_funding_tracked <span className="text-green-500 ml-4">$800B+</span></p>
           <p><span className="text-gray-600">&#9500;&#9472;</span> ppp_recipients <span className="text-white ml-4">10.1M</span></p>
           <p><span className="text-gray-600">&#9500;&#9472;</span> eidl_recipients <span className="text-white ml-4">3.7M</span></p>
-          <p><span className="text-gray-600">&#9492;&#9472;</span> fraud_prone_industries <span className="text-yellow-500 ml-4">5.9M</span></p>
+          <p><span className="text-gray-600">&#9492;&#9472;</span> high_risk_industries <span className="text-yellow-500 ml-4">5.9M</span></p>
         </div>
       </div>
 
@@ -327,11 +327,11 @@ export default function OrganizationsPage() {
           <label className="flex items-center gap-2 px-3 py-2 border border-gray-700 rounded cursor-pointer hover:border-gray-600">
             <input
               type="checkbox"
-              checked={fraudProneOnly}
+              checked={highRiskOnly}
               onChange={(e) => { setFraudProneOnly(e.target.checked); setPage(1); }}
               className="form-checkbox h-4 w-4 text-gray-500 bg-black border-gray-700 rounded"
             />
-            <span className="text-gray-400">Fraud-Prone</span>
+            <span className="text-gray-400">High-Risk Industry</span>
           </label>
         </div>
 
@@ -367,7 +367,7 @@ export default function OrganizationsPage() {
         </p>
         {stats.fraudProneCount > 0 && !loading && !error && (
           <p className="text-gray-500">
-            {stats.fraudProneCount.toLocaleString()} fraud-prone in results
+            {stats.fraudProneCount.toLocaleString()} high-risk in results
           </p>
         )}
       </div>
@@ -430,7 +430,7 @@ export default function OrganizationsPage() {
                     <tr key={org.id} className="hover:bg-gray-900/50">
                       <td className="p-3">
                         {org.is_fraud_prone_industry && (
-                          <span className="text-yellow-500 text-xs">FP</span>
+                          <span className="text-yellow-500 text-xs">HR</span>
                         )}
                         {org.address_cluster_size && org.address_cluster_size >= 3 && (
                           <span className="text-red-500 text-xs ml-1">CL</span>
@@ -528,7 +528,7 @@ export default function OrganizationsPage() {
       <div className="mt-8 pt-6 border-t border-gray-800">
         <p className="text-sm text-gray-500 mb-3">Legend</p>
         <div className="flex flex-wrap gap-6 text-xs text-gray-500">
-          <span><span className="text-yellow-500">FP</span> = Fraud-Prone Industry</span>
+          <span><span className="text-yellow-500">HR</span> = High-Risk Industry</span>
           <span><span className="text-blue-400">Forgiven</span> = PPP loan forgiven by govt</span>
           <span><span className="text-green-400">Paid</span> = PPP paid in full by borrower</span>
           <span><span className="text-red-400">Charged Off</span> = PPP default/write-off</span>

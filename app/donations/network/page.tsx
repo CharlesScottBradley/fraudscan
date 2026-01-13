@@ -41,7 +41,7 @@ interface SearchResult {
 // Preset examples to explore
 const PRESETS = [
   { label: 'Feeding Our Future', query: 'Feeding Our Future', type: 'case' },
-  { label: 'PPP Fraud Cases', query: 'PPP', type: 'case' },
+  { label: 'PPP Cases', query: 'PPP', type: 'case' },
   { label: 'State of Minnesota', query: 'Minnesota State', type: 'vendor' },
   { label: 'Healthcare Orgs', query: 'health', type: 'org' },
   { label: 'Tim Walz', query: 'Walz', type: 'recipient' },

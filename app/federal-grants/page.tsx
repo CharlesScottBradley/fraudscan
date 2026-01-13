@@ -88,7 +88,7 @@ export default function FederalGrantsPage() {
   const [maxAmount, setMaxAmount] = useState('');
   const [agency, setAgency] = useState('');
   const [fiscalYear, setFiscalYear] = useState('');
-  const [fraudProneOnly, setFraudProneOnly] = useState(false);
+  const [highRiskOnly, setFraudProneOnly] = useState(false);
   const [sortBy, setSortBy] = useState('award_amount');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
@@ -113,7 +113,7 @@ export default function FederalGrantsPage() {
   useEffect(() => {
     fetchGrants();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, selectedState, minAmount, maxAmount, agency, fiscalYear, fraudProneOnly, page, pageSize, sortBy, sortDir]);
+  }, [debouncedSearch, selectedState, minAmount, maxAmount, agency, fiscalYear, highRiskOnly, page, pageSize, sortBy, sortDir]);
 
   const fetchGrants = async () => {
     setLoading(true);
@@ -132,7 +132,7 @@ export default function FederalGrantsPage() {
       if (maxAmount) params.set('maxAmount', maxAmount);
       if (agency) params.set('agency', agency);
       if (fiscalYear) params.set('fiscalYear', fiscalYear);
-      if (fraudProneOnly) params.set('fraudProne', 'true');
+      if (highRiskOnly) params.set('fraudProne', 'true');
 
       const res = await fetch(`/api/grants?${params}`);
 
@@ -183,7 +183,7 @@ export default function FederalGrantsPage() {
     setPage(1);
   };
 
-  const hasFilters = searchTerm || selectedState || minAmount || maxAmount || agency || fiscalYear || fraudProneOnly;
+  const hasFilters = searchTerm || selectedState || minAmount || maxAmount || agency || fiscalYear || highRiskOnly;
 
   return (
     <div>
@@ -194,7 +194,7 @@ export default function FederalGrantsPage() {
           <p><span className="text-gray-600">|-</span> grants_tracked <span className="text-white ml-4">3.68M</span></p>
           <p><span className="text-gray-600">|-</span> total_disbursed <span className="text-green-500 ml-4">$1.2T</span></p>
           <p><span className="text-gray-600">|-</span> awarding_agencies <span className="text-white ml-4">2,847</span></p>
-          <p><span className="text-gray-600">|_</span> fraud_prone_industries <span className="text-white ml-4">{stats.fraudProneCount.toLocaleString()}</span></p>
+          <p><span className="text-gray-600">|_</span> high_risk_industries <span className="text-white ml-4">{stats.fraudProneCount.toLocaleString()}</span></p>
         </div>
       </div>
 
@@ -282,11 +282,11 @@ export default function FederalGrantsPage() {
           <label className="flex items-center gap-2 px-3 py-2 border border-gray-700 rounded cursor-pointer hover:border-gray-600">
             <input
               type="checkbox"
-              checked={fraudProneOnly}
+              checked={highRiskOnly}
               onChange={(e) => { setFraudProneOnly(e.target.checked); setPage(1); }}
               className="form-checkbox h-4 w-4 text-gray-500 bg-black border-gray-700 rounded"
             />
-            <span className="text-gray-400">Fraud-Prone Industries</span>
+            <span className="text-gray-400">High-Risk Industries</span>
           </label>
         </div>
 
@@ -322,7 +322,7 @@ export default function FederalGrantsPage() {
         </p>
         {stats.fraudProneCount > 0 && !loading && !error && (
           <p className="text-gray-500">
-            {stats.fraudProneCount.toLocaleString()} in fraud-prone industries
+            {stats.fraudProneCount.toLocaleString()} in high-risk industries
           </p>
         )}
       </div>

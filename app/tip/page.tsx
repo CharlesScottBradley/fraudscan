@@ -109,8 +109,8 @@ export default function TipPage() {
 
       <h1 className="text-2xl font-bold mb-2">Submit a Tip</h1>
       <p className="text-gray-400 mb-8">
-        Have information about fraud? Submit it below. All tips are reviewed and investigated.
-        Your information helps us track and expose fraud.
+        Have information about government spending anomalies, waste, or fraud? Submit it below.
+        All tips are reviewed. Your information helps improve spending transparency.
       </p>
 
       {submitStatus === 'success' && (

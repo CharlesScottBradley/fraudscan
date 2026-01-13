@@ -20,43 +20,58 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Map', href: '/' },
   {
-    label: 'Investigations',
-    children: [
-      { label: 'Overview', href: '/investigation' },
-      { label: 'Cases', href: '/cases' },
-      { label: 'MN/OH/WA Analysis', href: '/investigation/mn-oh-wa' },
-      { label: 'Address Clusters', href: '/investigation/address-clusters' },
-      { label: 'Double Dippers', href: '/investigation/double-dippers' },
-    ],
-  },
-  {
     label: 'Database',
     children: [
+      { label: 'Spending Explorer', href: '/spending' },
       {
-        label: 'Organizations',
-        href: '/organizations',
+        label: 'Spending',
         children: [
-          { label: 'Childcare Providers', href: '/database' },
-          { label: 'HCBS Providers', href: '/hcbs' },
-          { label: 'Nursing Homes', href: '/nursing-homes' },
+          { label: 'State Checkbook', href: '/checkbook' },
+          { label: 'Federal Grants', href: '/federal-grants' },
+          { label: 'State Budgets', href: '/state-budgets' },
+          { label: 'Local Budgets', href: '/budgets' },
+          { label: 'Open Payments', href: '/open-payments' },
+          { label: 'Improper Payments', href: '/improper-payments' },
         ],
       },
-      { label: 'PPP Loans', href: '/ppp' },
-      { label: 'SBA Loans', href: '/sba' },
-      { label: 'State Budgets', href: '/state-budgets' },
-      { label: 'State Checkbook', href: '/checkbook' },
-      { label: 'Local Budgets', href: '/budgets' },
-      { label: 'Improper Payments', href: '/improper-payments' },
+      {
+        label: 'Entities',
+        children: [
+          { label: 'Organizations', href: '/organizations' },
+          { label: 'Nonprofits', href: '/nonprofits' },
+          { label: 'Childcare Providers', href: '/database' },
+          { label: 'Nursing Homes', href: '/nursing-homes' },
+          { label: 'SNAP Retailers', href: '/snap-retailers' },
+          { label: 'H-1B Employers', href: '/h1b' },
+        ],
+      },
+      {
+        label: 'Loans',
+        children: [
+          { label: 'PPP (Historical)', href: '/ppp' },
+          { label: 'SBA', href: '/sba' },
+        ],
+      },
     ],
   },
   {
     label: 'Political',
     children: [
+      { label: 'Donations', href: '/donations' },
       { label: 'Politicians', href: '/politicians' },
       { label: 'PACs', href: '/pacs' },
-      { label: 'Donations', href: '/donations' },
+      { label: 'Donor Network', href: '/donations/network' },
       { label: 'Leaderboard', href: '/leaderboard' },
-      { label: 'Network', href: '/donations/network' },
+    ],
+  },
+  {
+    label: 'Analysis',
+    children: [
+      { label: 'Overview', href: '/investigation' },
+      { label: 'Cases', href: '/cases' },
+      { label: 'Address Clusters', href: '/investigation/address-clusters' },
+      { label: 'Double Dippers', href: '/investigation/double-dippers' },
+      { label: 'State Comparison', href: '/investigation/mn-oh-wa' },
     ],
   },
   {
@@ -64,21 +79,20 @@ const navItems: NavItem[] = [
     children: [
       { label: 'Data Requests', href: '/crowdsource' },
       { label: 'Bounty Board', href: '/crowdsource/bounties' },
-      { label: 'Contributor Leaderboard', href: '/crowdsource/leaderboard' },
+      { label: 'Leaderboard', href: '/crowdsource/leaderboard' },
       { label: 'Submit Data', href: '/crowdsource/submit' },
     ],
   },
-  { label: 'News', href: '/news' },
   {
-    label: 'Resources',
+    label: 'More',
     children: [
-      { label: 'Data Source Links', href: '/resources/links' },
-      { label: 'FOIA Request Generator', href: '/foia' },
-      { label: 'District Court Complaint', href: '/lawsuit' },
-      { label: 'SomaliScan Grants', href: '/grants' },
-      { label: 'Submit a Tip', href: '/tip' },
-      { label: 'About', href: '/about' },
+      { label: 'Data Coverage', href: '/coverage' },
+      { label: 'News', href: '/news' },
+      { label: 'Data Sources', href: '/resources/links' },
+      { label: 'FOIA Generator', href: '/foia' },
       { label: 'API Docs', href: '/api/docs' },
+      { label: 'About', href: '/about' },
+      { label: 'Submit a Tip', href: '/tip' },
     ],
   },
 ];

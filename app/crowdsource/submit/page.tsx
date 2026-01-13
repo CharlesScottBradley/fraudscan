@@ -17,8 +17,11 @@ const supabaseClient = supabaseUrl && supabaseAnonKey
 declare global {
   interface Window {
     turnstile?: {
+      render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
       reset: (widgetId?: string) => void;
+      remove: (widgetId?: string) => void;
     };
+    onTurnstileLoad?: () => void;
   }
 }
 
@@ -102,28 +105,104 @@ function SubmitFormContent() {
   
   // Turnstile CAPTCHA
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  const [turnstileLoaded, setTurnstileLoaded] = useState(false);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
 
-  // Expose callback for Turnstile implicit rendering
+  // Initialize Turnstile with explicit rendering
   useEffect(() => {
-    // Define global callback for Turnstile
-    (window as Window & { onTurnstileCallback?: (token: string) => void }).onTurnstileCallback = (token: string) => {
-      setTurnstileToken(token);
+    if (!TURNSTILE_SITE_KEY) {
+      setTurnstileLoaded(true); // No captcha needed
+      return;
+    }
+
+    let mounted = true;
+    let timeoutId: NodeJS.Timeout;
+
+    const initTurnstile = () => {
+      if (!mounted || !turnstileRef.current || !window.turnstile) return;
+
+      try {
+        // Remove existing widget if any
+        if (turnstileWidgetId.current) {
+          try {
+            window.turnstile.remove(turnstileWidgetId.current);
+          } catch (e) {
+            // Ignore removal errors
+          }
+        }
+
+        turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: 'dark',
+          callback: (token: string) => {
+            if (mounted) {
+              setTurnstileToken(token);
+              setTurnstileError(null);
+            }
+          },
+          'expired-callback': () => {
+            if (mounted) {
+              setTurnstileToken(null);
+            }
+          },
+          'error-callback': () => {
+            if (mounted) {
+              setTurnstileError('CAPTCHA failed to load. You can still submit.');
+              setTurnstileToken('bypass'); // Allow submission on error
+            }
+          },
+        });
+
+        if (mounted) {
+          setTurnstileLoaded(true);
+          setTurnstileError(null);
+        }
+      } catch (err) {
+        console.error('Turnstile init error:', err);
+        if (mounted) {
+          setTurnstileError('CAPTCHA failed to initialize. You can still submit.');
+          setTurnstileToken('bypass');
+          setTurnstileLoaded(true);
+        }
+      }
     };
-    (window as Window & { onTurnstileExpired?: () => void }).onTurnstileExpired = () => {
-      setTurnstileToken(null);
-    };
-    
+
+    // Set up callback for when Turnstile script loads
+    window.onTurnstileLoad = initTurnstile;
+
+    // Check if already loaded
+    if (window.turnstile) {
+      initTurnstile();
+    } else {
+      // Timeout - if Turnstile doesn't load in 10s, allow bypass
+      timeoutId = setTimeout(() => {
+        if (mounted && !turnstileLoaded) {
+          setTurnstileError('CAPTCHA took too long to load. You can still submit.');
+          setTurnstileToken('bypass');
+          setTurnstileLoaded(true);
+        }
+      }, 10000);
+    }
+
     return () => {
-      delete (window as Window & { onTurnstileCallback?: (token: string) => void }).onTurnstileCallback;
-      delete (window as Window & { onTurnstileExpired?: () => void }).onTurnstileExpired;
+      mounted = false;
+      clearTimeout(timeoutId);
+      delete window.onTurnstileLoad;
     };
-  }, []);
+  }, [turnstileLoaded]);
 
   // Reset Turnstile after successful submission
   const resetTurnstile = useCallback(() => {
-    if (window.turnstile) {
-      window.turnstile.reset();
-      setTurnstileToken(null);
+    setTurnstileToken(null);
+    setTurnstileError(null);
+    if (window.turnstile && turnstileWidgetId.current) {
+      try {
+        window.turnstile.reset(turnstileWidgetId.current);
+      } catch (e) {
+        // Ignore reset errors
+      }
     }
   }, []);
 
@@ -818,14 +897,14 @@ function SubmitFormContent() {
 
         {/* Turnstile CAPTCHA */}
         {TURNSTILE_SITE_KEY && (
-          <div className="flex justify-center">
-            <div
-              className="cf-turnstile"
-              data-sitekey={TURNSTILE_SITE_KEY}
-              data-callback="onTurnstileCallback"
-              data-expired-callback="onTurnstileExpired"
-              data-theme="dark"
-            />
+          <div className="flex flex-col items-center gap-2">
+            <div ref={turnstileRef} />
+            {turnstileError && (
+              <p className="text-yellow-500 text-xs">{turnstileError}</p>
+            )}
+            {!turnstileLoaded && !turnstileError && (
+              <p className="text-gray-500 text-xs">Loading verification...</p>
+            )}
           </div>
         )}
 
@@ -849,9 +928,9 @@ function SubmitFormContent() {
 export default function SubmitPage() {
   return (
     <>
-      {/* Cloudflare Turnstile Script */}
+      {/* Cloudflare Turnstile Script - explicit render mode */}
       <Script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
         async
         defer
       />
