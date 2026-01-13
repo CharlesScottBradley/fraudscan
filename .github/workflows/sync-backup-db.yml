@@ -71,9 +71,11 @@ jobs:
             PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "TRUNCATE $table CASCADE;" 2>/dev/null || true
 
             # Copy data from source to target
+            # Filter out Supabase-specific \restrict/\unrestrict commands that break standard PostgreSQL
             PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} pg_dump -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres \
               --no-owner --no-acl -t "$table" --data-only 2>/dev/null | \
-              PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | tail -1
+              grep -v '^\\restrict\|^\\unrestrict' | \
+              PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | grep -v "transaction_timeout" | tail -5
 
             # Get row count after
             AFTER=$(PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "SELECT COUNT(*) FROM $table;" 2>/dev/null || echo "0")
