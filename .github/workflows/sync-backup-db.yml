@@ -22,7 +22,7 @@ env:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 360  # 6 hours for full sync with 72M+ rows
 
     steps:
       - name: Install PostgreSQL 17 client
@@ -56,6 +56,22 @@ jobs:
             echo "Syncing specified tables: ${{ github.event.inputs.tables }}"
           fi
 
+      - name: Disable foreign key checks
+        run: |
+          echo "Disabling foreign key checks on backup DB..."
+          PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "SET session_replication_role = 'replica';" 2>&1 || true
+
+      - name: Truncate all tables first
+        run: |
+          echo "Truncating all tables to avoid FK cascade issues..."
+          IFS=',' read -ra TABLES <<< "${{ steps.tables.outputs.tables }}"
+          for table in "${TABLES[@]}"; do
+            table=$(echo "$table" | xargs)
+            if [ -z "$table" ]; then continue; fi
+            PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "TRUNCATE $table CASCADE;" 2>/dev/null || true
+          done
+          echo "All tables truncated"
+
       - name: Sync tables
         run: |
           IFS=',' read -ra TABLES <<< "${{ steps.tables.outputs.tables }}"
@@ -67,13 +83,6 @@ jobs:
             echo "========================================"
             echo "Syncing table: $table"
             echo "========================================"
-
-            # Get row count before
-            BEFORE=$(PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "SELECT COUNT(*) FROM $table;" 2>/dev/null || echo "0")
-            echo "  Before: $BEFORE rows"
-
-            # Truncate target table
-            PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "TRUNCATE $table CASCADE;" 2>/dev/null || true
 
             # Copy data from source to target
             # Filter out Supabase-specific \restrict/\unrestrict commands that break standard PostgreSQL
