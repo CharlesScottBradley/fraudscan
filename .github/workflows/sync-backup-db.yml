@@ -89,7 +89,7 @@ jobs:
             # Stream directly to avoid disk space issues with large tables
             PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} pg_dump -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres \
               --no-owner --no-acl -t "$table" --data-only 2>&1 | \
-              sed '/^\\restrict/d; /^\\unrestrict/d' | \
+              grep -v '\\restrict\|\\unrestrict' | \
               PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | \
               grep -E "COPY|ERROR" | tail -3
 
