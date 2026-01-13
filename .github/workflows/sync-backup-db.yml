@@ -84,14 +84,12 @@ jobs:
             echo "Syncing table: $table"
             echo "========================================"
 
-            # Copy data from source to target
-            # Filter out Supabase-specific \restrict/\unrestrict commands that break standard PostgreSQL
-            # Stream directly to avoid disk space issues with large tables
+            # Copy data - filter out Supabase's \restrict/\unrestrict commands using printf for proper escaping
             PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} pg_dump -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres \
-              --no-owner --no-acl -t "$table" --data-only 2>&1 | \
-              grep -v '\\restrict\|\\unrestrict' | \
+              --no-owner --no-acl -t "$table" --data-only 2>/dev/null | \
+              grep -v "$(printf '\\\\restrict')" | grep -v "$(printf '\\\\unrestrict')" | \
               PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | \
-              grep -E "COPY|ERROR" | tail -3
+              tail -3
 
             # Get row count after
             AFTER=$(PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "SELECT COUNT(*) FROM $table;" 2>/dev/null || echo "0")
