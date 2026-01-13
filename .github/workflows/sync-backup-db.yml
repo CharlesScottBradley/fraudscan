@@ -72,10 +72,20 @@ jobs:
 
             # Copy data from source to target
             # Filter out Supabase-specific \restrict/\unrestrict commands that break standard PostgreSQL
+            # Use temp file to capture row count from COPY output
             PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} pg_dump -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres \
-              --no-owner --no-acl -t "$table" --data-only 2>/dev/null | \
-              grep -v '^\\restrict\|^\\unrestrict' | \
-              PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | grep -v "transaction_timeout" | tail -5
+              --no-owner --no-acl -t "$table" --data-only 2>&1 | \
+              sed '/^\\restrict/d; /^\\unrestrict/d' > /tmp/dump.sql
+
+            DUMP_LINES=$(wc -l < /tmp/dump.sql)
+            echo "  Dump lines: $DUMP_LINES"
+
+            if [ "$DUMP_LINES" -gt 10 ]; then
+              PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -f /tmp/dump.sql 2>&1 | grep -E "COPY|ERROR" | tail -5
+            else
+              echo "  WARNING: Dump too small, showing contents:"
+              cat /tmp/dump.sql
+            fi
 
             # Get row count after
             AFTER=$(PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -t -c "SELECT COUNT(*) FROM $table;" 2>/dev/null || echo "0")
