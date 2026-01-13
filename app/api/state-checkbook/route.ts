@@ -1,17 +1,5 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
-
-// Lazy init to avoid build-time errors when env vars aren't available
-let _supabaseAdmin: SupabaseClient | null = null;
-function getSupabaseAdmin() {
-  if (!_supabaseAdmin) {
-    _supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-  }
-  return _supabaseAdmin;
-}
 
 // Minimal columns returned to avoid timeout on 138M row table
 export interface StateCheckbookRecord {
@@ -62,7 +50,7 @@ export async function GET(request: Request) {
 
   try {
     // Build query - minimal columns to avoid timeout on 138M row table
-    let query = getSupabaseAdmin()
+    let query = supabase
       .from('state_checkbook')
       .select('id, state, fiscal_year, vendor_name, amount, agency, expenditure_category, organization_id');
 
@@ -118,7 +106,7 @@ export async function GET(request: Request) {
     }
 
     // Get stats from materialized view (much faster than aggregating 138M rows)
-    const { data: statsData } = await getSupabaseAdmin()
+    const { data: statsData } = await supabase
       .from('state_checkbook_stats')
       .select('state, fiscal_year, record_count, total_amount, unique_vendors, unique_agencies');
 
