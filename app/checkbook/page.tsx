@@ -6,16 +6,11 @@ import Link from 'next/link';
 interface CheckbookRecord {
   id: number;
   state: string;
-  county: string | null;
   fiscal_year: number | null;
   vendor_name: string;
-  vendor_name_normalized: string | null;
   amount: number;
   agency: string | null;
-  division: string | null;
   expenditure_category: string | null;
-  payment_date: string | null;
-  fund_name: string | null;
   organization_id: string | null;
 }
 
@@ -71,7 +66,7 @@ export default function CheckbookPage() {
   const [vendorSearch, setVendorSearch] = useState('');
   const [agencySearch, setAgencySearch] = useState('');
   const [minAmount, setMinAmount] = useState('');
-  const [sortBy, setSortBy] = useState('amount');
+  const [sortBy, setSortBy] = useState('id');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   // Stats

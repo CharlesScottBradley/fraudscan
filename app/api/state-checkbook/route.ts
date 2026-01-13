@@ -1,25 +1,21 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
+// Use service role for this 138M row table - anon key has RLS overhead
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+// Minimal columns returned to avoid timeout on 138M row table
 export interface StateCheckbookRecord {
   id: number;
   state: string;
-  county: string | null;
   fiscal_year: number | null;
-  fiscal_quarter: number | null;
-  payment_date: string | null;
   vendor_name: string;
-  vendor_name_normalized: string | null;
-  contract_number: string | null;
   amount: number;
   agency: string | null;
-  division: string | null;
   expenditure_category: string | null;
-  account_description: string | null;
-  budget_code: string | null;
-  fund_name: string | null;
-  service_type: string | null;
-  source_file: string | null;
   organization_id: string | null;
 }
 
@@ -54,34 +50,15 @@ export async function GET(request: Request) {
   const agency = searchParams.get('agency');
   const minAmount = searchParams.get('minAmount');
   const maxAmount = searchParams.get('maxAmount');
-  const sortBy = searchParams.get('sortBy') || 'amount';
+  // Default to id desc (uses primary key index) - amount sort only fast when filtered by state
+  const sortBy = searchParams.get('sortBy') || 'id';
   const sortDir = searchParams.get('sortDir') || 'desc';
 
   try {
-    // Build query
-    let query = supabase
+    // Build query - minimal columns to avoid timeout on 138M row table
+    let query = supabaseAdmin
       .from('state_checkbook')
-      .select(`
-        id,
-        state,
-        county,
-        fiscal_year,
-        fiscal_quarter,
-        payment_date,
-        vendor_name,
-        vendor_name_normalized,
-        contract_number,
-        amount,
-        agency,
-        division,
-        expenditure_category,
-        account_description,
-        budget_code,
-        fund_name,
-        service_type,
-        source_file,
-        organization_id
-      `, { count: 'exact' });
+      .select('id, state, fiscal_year, vendor_name, amount, agency, expenditure_category, organization_id');
 
     // Apply filters
     if (state) {
@@ -113,25 +90,29 @@ export async function GET(request: Request) {
       query = query.lte('amount', parseFloat(maxAmount));
     }
 
-    // Sorting
-    const validSortColumns = [
-      'amount', 'vendor_name', 'agency', 'fiscal_year', 'state', 'payment_date'
-    ];
-    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'amount';
-    query = query.order(sortColumn, { ascending: sortDir === 'asc', nullsFirst: false });
+    // Only apply sorting if there's a filter - unfiltered 138M row sorts timeout
+    const hasFilter = state || fiscalYear || vendor || agency || minAmount || maxAmount;
+    if (hasFilter) {
+      const validSortColumns = [
+        'id', 'amount', 'vendor_name', 'agency', 'fiscal_year', 'state', 'payment_date'
+      ];
+      const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'amount';
+      query = query.order(sortColumn, { ascending: sortDir === 'asc', nullsFirst: false });
+    }
+    // Without filter, no ORDER BY - returns random-ish rows but avoids timeout
 
     // Pagination
     query = query.range(offset, offset + pageSize - 1);
 
-    const { data: records, error, count } = await query;
+    const { data: records, error } = await query;
 
     if (error) {
       console.error('State checkbook query error:', error);
       throw error;
     }
 
-    // Get stats from materialized view (much faster than aggregating 54M rows)
-    const { data: statsData } = await supabase
+    // Get stats from materialized view (much faster than aggregating 138M rows)
+    const { data: statsData } = await supabaseAdmin
       .from('state_checkbook_stats')
       .select('state, fiscal_year, record_count, total_amount, unique_vendors, unique_agencies');
 
@@ -146,6 +127,8 @@ export async function GET(request: Request) {
       for (const stat of statsData) {
         // If filtering by state, only count that state's stats
         if (state && stat.state !== state.toUpperCase()) continue;
+        // If filtering by fiscal year, only count that year's stats
+        if (fiscalYear && stat.fiscal_year !== parseInt(fiscalYear)) continue;
 
         totalAmount += parseFloat(stat.total_amount) || 0;
         recordCount += stat.record_count || 0;
@@ -156,12 +139,15 @@ export async function GET(request: Request) {
       }
     }
 
+    // Use stats-based count for total (much faster than exact count on 138M rows)
+    const estimatedTotal = recordCount;
+
     const response: StateCheckbookResponse = {
       records: records || [],
-      total: count || 0,
+      total: estimatedTotal,
       page,
       pageSize,
-      totalPages: Math.ceil((count || 0) / pageSize),
+      totalPages: Math.ceil(estimatedTotal / pageSize),
       stats: {
         totalAmount,
         recordCount,
