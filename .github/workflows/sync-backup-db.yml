@@ -84,10 +84,10 @@ jobs:
             echo "Syncing table: $table"
             echo "========================================"
 
-            # Copy data - filter out Supabase's \restrict/\unrestrict commands using printf for proper escaping
+            # Copy data - filter out Supabase's \restrict/\unrestrict commands
             PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} pg_dump -h db.powsedjqwgniermriadb.supabase.co -U postgres -d postgres \
               --no-owner --no-acl -t "$table" --data-only 2>/dev/null | \
-              grep -v "$(printf '\\\\restrict')" | grep -v "$(printf '\\\\unrestrict')" | \
+              grep -v '\\restrict' | grep -v '\\unrestrict' | \
               PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan 2>&1 | \
               tail -3
 
