@@ -82,6 +82,23 @@ export default function AboutPage() {
           <li>Childcare subsidy payment data</li>
         </ul>
 
+        <h2 className="text-xl font-semibold mt-10 mb-4 text-white">Who Made This</h2>
+        <div className="text-gray-400 space-y-3">
+          <p>I am anon.</p>
+          <p>
+            My ancestors fought in every major American war from 1776 until 1945.
+          </p>
+          <p>I am Christian.</p>
+          <p>
+            I have expertise in data pipelines, blockchain analytics, AI systems, fintech,
+            biomedical commercialization, cybersecurity, and rocket science if you count
+            the pepsi/mentos rockets from grade school.
+          </p>
+          <p>I accidentally made somaliscan.com.</p>
+          <p>I am a zoomer.</p>
+          <p>I am God's most retarded soldier.</p>
+        </div>
+
         <h2 className="text-xl font-semibold mt-10 mb-4 text-white">Contact</h2>
         <p className="text-gray-400">
           Questions, tips, data corrections, or want to contribute?{' '}
