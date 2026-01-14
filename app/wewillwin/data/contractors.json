@@ -1,0 +1,219 @@
+{
+  "contractors": [
+    {
+      "id": "cdr-maguire",
+      "name": "CDR Maguire / CDR Health",
+      "headquarters": "Miami, FL",
+      "executives": [
+        {"name": "Carlos Duart", "title": "CEO, CDR Maguire", "note": "FIU Board Chair (DeSantis appointee)"},
+        {"name": "Tina Vidal-Duart", "title": "CEO, CDR Health", "note": "FAU Trustee, Hope Florida Board Member"}
+      ],
+      "donations": {
+        "total": "$2.7 million+",
+        "breakdown": [
+          {"recipient": "Friends of Ron DeSantis", "amount": "$1.9M"},
+          {"recipient": "Trump Inaugural Committee", "amount": "$500K"},
+          {"recipient": "Friends of James Uthmeier", "amount": "$275K"},
+          {"recipient": "Republican Party of Florida", "amount": "Included above"}
+        ]
+      },
+      "contracts": {
+        "total": "$537 million+",
+        "estimated": "Up to $1 billion",
+        "breakdown": [
+          {"description": "COVID testing sites (statewide)", "amount": "$100M+"},
+          {"description": "COVID test kits & supplies", "amount": "$9.8M"},
+          {"description": "Medical supplies procurement", "amount": "$34M"},
+          {"description": "Vaccination sites", "amount": "$20-24M"},
+          {"description": "Alligator Alcatraz medical facilities", "amount": "$17.5M"},
+          {"description": "Field hospital construction", "amount": "Unknown", "note": "Never used"}
+        ]
+      },
+      "documentation": "MISSING - Contracts removed from FACTS database",
+      "roi": "199x return on political investment",
+      "redFlags": [
+        "No prior public health experience before COVID contracts",
+        "Both executives appointed to university boards after contracts awarded",
+        "Tina sits on Hope Florida board (under investigation)",
+        "Contracts literally removed from public database during reporting",
+        "Using NDAs to prevent disclosure of services"
+      ],
+      "lobbyists": ["Nick Iarossi", "Jonathon Kilman"],
+      "sources": [
+        {"name": "Florida Bulldog", "url": "https://www.floridabulldog.org/2025/10/more-than-6-billion-in-desantis-emergency-contracts-missing-required-public-documentation/"},
+        {"name": "Tampa Bay Times", "url": "https://www.tampabay.com/news/florida-politics/2025/07/03/alligator-alcatraz-desantis-cdr-maguire-gardaworld-contractors/"}
+      ]
+    },
+    {
+      "id": "geo-group",
+      "name": "GEO Group Inc.",
+      "headquarters": "Boca Raton, FL",
+      "executives": [
+        {"name": "George Zoley", "title": "Chairman & CEO", "note": "FAU alumni, withdrew $6M gift after protests"}
+      ],
+      "donations": {
+        "total": "$8.8 million+ to Republicans",
+        "breakdown": [
+          {"recipient": "Republican Governors Association", "amount": "$740K+ (2022)"},
+          {"recipient": "Friends of Ron DeSantis", "amount": "$150K+"},
+          {"recipient": "George Zoley personal to DeSantis", "amount": "$103K+"},
+          {"recipient": "GEO management team", "amount": "Multiple $3K donations"}
+        ]
+      },
+      "contracts": {
+        "total": "$320 million+",
+        "annualRevenue": "$110 million/year from Florida",
+        "breakdown": [
+          {"description": "South Bay Correctional Facility", "amount": "$320M+ since 2009", "beds": 1948},
+          {"description": "Graceville Correctional Facility", "amount": "Part of state contracts"},
+          {"description": "Moore Haven Correctional Facility", "amount": "Part of state contracts"}
+        ]
+      },
+      "documentation": "Available (not emergency)",
+      "roi": "36x return on political investment",
+      "redFlags": [
+        "$150K donation in mid-August 2022 → contract renewal 2 weeks later",
+        "Florida is 66% of their lobbying expenditure",
+        "FEC complaint for $100K contribution day after Obama ended federal private prisons"
+      ],
+      "sources": [
+        {"name": "Jason Garcia Substack", "url": "https://jasongarcia.substack.com/p/how-private-prisons-backdoor-big"},
+        {"name": "Orlando Weekly", "url": "https://www.orlandoweekly.com/news/ron-desantis-just-accepted-100k-from-the-geo-group-a-controversial-florida-based-private-prison-giant-17272961/"}
+      ]
+    },
+    {
+      "id": "ashbritt",
+      "name": "AshBritt Inc.",
+      "headquarters": "Deerfield Beach, FL",
+      "executives": [
+        {"name": "Randal Perkins", "title": "Founder/Chairman", "note": "Died January 2, 2025"},
+        {"name": "Brittany Perkins Castillo", "title": "CEO", "note": "Daughter"},
+        {"name": "Sara Perkins", "title": "Executive", "note": "Daughter"}
+      ],
+      "donations": {
+        "total": "$336K+ to GOP",
+        "breakdown": [
+          {"recipient": "DeSantis presidential campaign", "amount": "$13.2K (Perkins family)"},
+          {"recipient": "DeSantis 2018 gubernatorial", "amount": "$3K"},
+          {"recipient": "Republican Party of Florida", "amount": "$50K"},
+          {"recipient": "Republican Governors Association", "amount": "$270K+"},
+          {"recipient": "Pro-Trump Super PAC", "amount": "$500K", "note": "Led to FEC penalty"}
+        ]
+      },
+      "contracts": {
+        "total": "$286 million+",
+        "breakdown": [
+          {"description": "Emergency disaster recovery", "amount": "$286M+"},
+          {"description": "Hurricane Katrina cleanup", "amount": "$900M", "note": "Historical - raised questions about pay-to-play"}
+        ]
+      },
+      "documentation": "MISSING - Part of 719 emergency contracts",
+      "roi": "851x return on political investment",
+      "redFlags": [
+        "$125K FEC penalty for illegal $500K pay-to-play contribution",
+        "2006 congressional report cited 'waste and abuse' on Katrina contracts",
+        "Multiple layers of subcontractors passing work down"
+      ],
+      "sources": [
+        {"name": "Florida Bulldog", "url": "https://www.floridabulldog.org/2021/08/ashbritts-perkins-pays-fec-125k-penalty-fec-dismissal-of-rick-scott-case-challenged/"},
+        {"name": "Sun-Sentinel", "url": "https://www.sun-sentinel.com/2025/01/02/randy-perkins-ashbritt-disaster-relief-founder-dies-at-60/"}
+      ]
+    },
+    {
+      "id": "strategic-digital",
+      "name": "Strategic Digital Services LLC",
+      "headquarters": "Tallahassee, FL",
+      "executives": [],
+      "donations": {
+        "total": "Unknown",
+        "breakdown": []
+      },
+      "contracts": {
+        "total": "$16.4 million",
+        "timeframe": "3 days",
+        "breakdown": [
+          {"description": "AHCA", "amount": "$275K+"},
+          {"description": "DOH (Health)", "amount": "$6M"},
+          {"description": "FDOT (Transportation)", "amount": "$4.4M"},
+          {"description": "Other agencies", "amount": "~$5.8M"}
+        ]
+      },
+      "documentation": "Minimal - vague details in FACTS",
+      "redFlags": [
+        "$16.4M from 5 agencies in 3 days - no bidding",
+        "Used 'medical services' exemption - misapplied",
+        "DeSantis claims 'PSAs' but PSAs are free - these were paid political ads",
+        "Funds diverted from children's services, opioid treatment"
+      ],
+      "sources": [
+        {"name": "Jason Garcia Substack", "url": "https://jasongarcia.substack.com/p/hidden-consultants-and-hurried-payments"}
+      ]
+    },
+    {
+      "id": "vertol",
+      "name": "Vertol Systems Company Inc.",
+      "headquarters": "Destin, FL",
+      "executives": [
+        {"name": "James Montgomerie", "title": "CEO"}
+      ],
+      "donations": {
+        "total": "GOP donations (amount unknown)",
+        "breakdown": []
+      },
+      "contracts": {
+        "total": "$1.6 million",
+        "breakdown": [
+          {"description": "Martha's Vineyard flights (advance)", "amount": "$615K"},
+          {"description": "Future flights (Delaware, Illinois)", "amount": "$950K"}
+        ],
+        "costPerMigrant": "$45,000+"
+      },
+      "documentation": "Under litigation",
+      "redFlags": [
+        "Larry Keefe (DeSantis appointee) represented Vertol in 12 lawsuits before joining government",
+        "Keefe used private email and alias while negotiating contract",
+        "Keefe appears to have written Vertol's bid proposal language",
+        "Federal lawsuit alleges 'premeditated, fraudulent, and illegal scheme'",
+        "Migrants allegedly lured under false pretenses"
+      ],
+      "sources": [
+        {"name": "NBC Miami", "url": "https://www.nbcmiami.com/news/local/desantis-czar-used-alias-private-email-as-contractor-sought-migrant-flights-deal/2937675/"},
+        {"name": "Tampa Bay Times", "url": "https://www.tampabay.com/news/florida-politics/2022/12/27/keefe-migrant-flights-desantis-private-email-clarice-lawsuit/"}
+      ]
+    },
+    {
+      "id": "step-up",
+      "name": "Step Up For Students",
+      "headquarters": "Florida",
+      "type": "501(c)(3) Nonprofit",
+      "executives": [
+        {"name": "Doug Tuthill", "title": "President", "salary": "$286,847"}
+      ],
+      "donations": {
+        "total": "N/A - nonprofit voucher administrator",
+        "breakdown": []
+      },
+      "contracts": {
+        "total": "$4-5 billion/year",
+        "adminFee": "3% (~$120-150M/year)",
+        "breakdown": [
+          {"description": "2022-23 vouchers", "amount": "$1.4B", "students": 258000},
+          {"description": "2023-24 vouchers", "amount": "$3.8B", "students": 420000},
+          {"description": "2024-25 vouchers", "amount": "$4B", "students": "500,000+"}
+        ]
+      },
+      "documentation": "State audit conducted November 2025",
+      "redFlags": [
+        "70% of new voucher recipients were already in private school",
+        "82% attend religious schools",
+        "30,000 students 'lost' - $270M unaccounted",
+        "$2.3M in accounts exceeded legal limits",
+        "Disney tickets, PS5s, TVs purchased with voucher funds",
+        "School claimed 80 students 130 miles away they never taught"
+      ],
+      "sources": [
+        {"name": "Washington Post", "url": "https://www.washingtonpost.com/education/2025/12/08/florida-school-vouchers-audit/"}
+      ]
+    }
+  ]
+}

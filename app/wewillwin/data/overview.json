@@ -1,0 +1,105 @@
+{
+  "title": "Florida: The DeSantis Investigation",
+  "subtitle": "Following the Money from Donors to Contracts",
+  "lastUpdated": "2025-01-14",
+  "stats": {
+    "missingContracts": {
+      "label": "Missing Contract Documentation",
+      "value": "$6+ billion",
+      "count": 719,
+      "description": "Emergency contracts with no public documentation as required by law"
+    },
+    "politicalAds": {
+      "label": "State Funds → Political Ads",
+      "value": "$36.2 million",
+      "description": "Diverted from healthcare, children's services, opioid treatment"
+    },
+    "voucherUnaccounted": {
+      "label": "Voucher Funds Unaccounted",
+      "value": "$270 million",
+      "students": 30000,
+      "description": "30,000 students 'lost' in the system"
+    },
+    "auditsRequired": {
+      "label": "Required Audits",
+      "required": 2,
+      "conducted": 0,
+      "description": "DeSantis signed the audit law in 2021, then ignored it"
+    }
+  },
+  "investigations": [
+    {
+      "name": "Hope Florida / Centene",
+      "status": "Grand jury active",
+      "startDate": "October 2025",
+      "allegations": ["Money laundering", "Wire fraud", "Conspiracy"],
+      "amount": "$10 million"
+    },
+    {
+      "name": "Strategic Digital Services",
+      "status": "House investigation",
+      "allegations": ["No-bid contract violations", "Misuse of state funds"],
+      "amount": "$16.4 million"
+    },
+    {
+      "name": "Emergency Contracts",
+      "status": "Exposed, no action",
+      "allegations": ["Missing documentation", "Transparency law violations"],
+      "amount": "$6+ billion"
+    }
+  ],
+  "thePattern": {
+    "title": "The Pay-to-Play Pattern",
+    "steps": [
+      "Donate to DeSantis PAC or Republican Party of Florida",
+      "Emergency declared (COVID, border, hurricane)",
+      "No-bid contract awarded under emergency powers",
+      "Contract documents not posted to FACTS database",
+      "No audit conducted (despite law requiring it)",
+      "Donate more, get appointed to boards",
+      "Repeat"
+    ]
+  },
+  "keyQuote": {
+    "text": "The state government in Tallahassee got drunk on emergency powers in the pandemic and they just haven't stopped. It's a feast for politically connected donors that want to get their hands on no-bid contracts.",
+    "attribution": "Jose Javier Rodriguez, Democratic candidate for Florida Attorney General"
+  },
+  "sources": [
+    {
+      "name": "Florida Bulldog",
+      "title": "More than $6 billion in DeSantis emergency contracts missing required public documentation",
+      "url": "https://www.floridabulldog.org/2025/10/more-than-6-billion-in-desantis-emergency-contracts-missing-required-public-documentation/",
+      "date": "October 2025"
+    },
+    {
+      "name": "Tampa Bay Times",
+      "title": "DeSantis used $36.2M in state money for political ads. Records show how.",
+      "url": "https://www.tampabay.com/news/florida-politics/2024/12/13/desantis-political-ads-amendment-4-amendment-3-florida/",
+      "date": "December 2024"
+    },
+    {
+      "name": "NPR",
+      "title": "Did Florida illegally use taxpayer money for political ads?",
+      "url": "https://www.npr.org/2025/04/24/nx-s1-5374767/florida-casey-desantis-hope-florida-taxpayer-money-political-ads",
+      "date": "April 2025"
+    },
+    {
+      "name": "Florida Politics",
+      "title": "State prosecutors question officials over Hope Florida, Centene scandal",
+      "url": "https://floridapolitics.com/archives/hope-florida-centene-grand-jury/",
+      "date": "October 2025"
+    },
+    {
+      "name": "Orlando Sentinel",
+      "title": "State auditor finds $270M voucher funds unaccounted for",
+      "url": "https://www.orlandosentinel.com/2025/11/01/florida-school-voucher-audit-findings/",
+      "date": "November 2025"
+    },
+    {
+      "name": "Florida FACTS Database",
+      "title": "Florida Accountability Contract Tracking System",
+      "url": "https://facts.fldfs.com/",
+      "date": null
+    }
+  ]
+}

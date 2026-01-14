@@ -1,0 +1,199 @@
+{
+  "categories": [
+    {
+      "id": "covid",
+      "name": "COVID-19 Contracts (2020-2022)",
+      "total": "$600M+ attempted",
+      "contracts": [
+        {
+          "contractor": "Various PPE vendors",
+          "amount": "$600M attempted",
+          "actual": "$305M signed",
+          "cancelled": "$180M (59%)",
+          "description": "N95 masks - empty warehouses, fake cargo planes",
+          "outcome": "Most vendors not authorized by 3M"
+        },
+        {
+          "contractor": "CDR Maguire",
+          "amount": "$100M+",
+          "description": "Testing sites, vaccination sites, medical supplies",
+          "outcome": "1M+ tests, 1M vaccines - but no prior health experience"
+        },
+        {
+          "contractor": "BioReference Labs (Frost)",
+          "amount": "$2.7M",
+          "description": "COVID testing",
+          "donations": "$77.7K to DeSantis",
+          "outcome": "Operated"
+        },
+        {
+          "contractor": "Physicians Group (Kompothecras)",
+          "amount": "$2M+",
+          "description": "Hand sanitizer at $7.80/8oz bottle",
+          "donations": "$50K+ to DeSantis",
+          "outcome": "Delivered"
+        },
+        {
+          "contractor": "Ring Power Corp",
+          "amount": "$6.6M",
+          "description": "Mobile generators",
+          "donations": "$35K to DeSantis",
+          "outcome": "Delivered"
+        },
+        {
+          "contractor": "MedPro/Management Health",
+          "amount": "$100M+",
+          "description": "Healthcare staffing",
+          "outcome": "Accused of 'forced labor' of foreign workers"
+        },
+        {
+          "contractor": "Twenty Labs",
+          "amount": "$6.7M",
+          "description": "Contact tracing app",
+          "outcome": "Paid AFTER DeSantis said 'contact tracing doesn't work'"
+        },
+        {
+          "contractor": "Field hospitals",
+          "amount": "Unknown",
+          "description": "Built but never used",
+          "outcome": "DeSantis: 'All those field hospitals sit empty today'"
+        }
+      ]
+    },
+    {
+      "id": "alcatraz",
+      "name": "Alligator Alcatraz (2023-2025)",
+      "total": "$250-450 million",
+      "contracts": [
+        {
+          "contractor": "Gothams LLC",
+          "amount": "$310.5M",
+          "description": "Unknown (NDA)",
+          "documentation": "MISSING"
+        },
+        {
+          "contractor": "Critical Response Strategies",
+          "amount": "$78M",
+          "description": "Operations",
+          "documentation": "MISSING"
+        },
+        {
+          "contractor": "GardaWorld Federal Services",
+          "amount": "$37M",
+          "description": "Security staffing",
+          "documentation": "MISSING"
+        },
+        {
+          "contractor": "LTS Inc",
+          "amount": "$37M",
+          "description": "Roadway, fencing (28,000 ft barbed wire)",
+          "documentation": "MISSING"
+        },
+        {
+          "contractor": "CDR Health Care",
+          "amount": "$17.5M",
+          "description": "Medical facilities",
+          "documentation": "REMOVED from database"
+        },
+        {
+          "contractor": "GardaWorld (additional)",
+          "amount": "$2M",
+          "description": "Barbers, translators, overtime",
+          "documentation": "MISSING"
+        }
+      ],
+      "notes": [
+        "Total documented: $517M+",
+        "DHS estimate (1 year): $450M",
+        "FEMA reimbursement: $608M",
+        "11 contracts removed from FACTS during reporting"
+      ]
+    },
+    {
+      "id": "vouchers",
+      "name": "School Vouchers (2023-2025)",
+      "total": "$4-5 billion/year",
+      "spending": [
+        {"year": "2022-23", "amount": "$1.4B", "students": 258000, "note": "Pre-expansion"},
+        {"year": "2023-24", "amount": "$3.8B", "students": 420000, "note": "Post-HB1 (58% growth)"},
+        {"year": "2024-25", "amount": "$4B", "students": "500,000+", "note": "Funding crisis"},
+        {"year": "2025-26", "amount": "$5B projected", "students": "Growing", "note": "Reforms underway"}
+      ],
+      "auditFindings": [
+        {"finding": "Funding shortfall", "amount": "$398M more allocated than budgeted"},
+        {"finding": "Missing students", "amount": "$270M for 30,000 students unaccounted"},
+        {"finding": "Over-funded accounts", "amount": "$2.3M+ exceeding $50K/student limit"}
+      ],
+      "fraudExamples": [
+        "Little Wings school: Claimed 80 students 130 miles away they never taught",
+        "Touched by an Angel: Invoiced for students they didn't educate",
+        "Non-educational purchases: Disney tickets, PS5, 55\" TVs"
+      ]
+    },
+    {
+      "id": "political-ads",
+      "name": "Political Advertising (2024)",
+      "total": "$36.2 million",
+      "sources": [
+        {"agency": "DCF (Children & Families)", "amount": "$1.1M", "intended": "Keep children with families"},
+        {"agency": "Community Health Fund", "amount": "~$1M", "intended": "Public health"},
+        {"agency": "Opioid Settlement Trust", "amount": "$4M", "intended": "Drug addiction treatment"},
+        {"agency": "DOH (Health)", "amount": "$6M", "intended": "Health programs"},
+        {"agency": "FDOT (Transportation)", "amount": "$4.4M", "intended": "Roads/infrastructure"},
+        {"agency": "Other agencies", "amount": "~$20M", "intended": "Various"}
+      ],
+      "recipients": [
+        {"contractor": "Strategic Digital Services", "amount": "$16.4M", "timeframe": "3 days", "method": "No-bid"}
+      ],
+      "purpose": "Ads opposing Amendment 3 (marijuana) and Amendment 4 (abortion)",
+      "claim": "DeSantis: 'Public service announcements'",
+      "reality": "PSAs are free - these were paid political ads"
+    },
+    {
+      "id": "prisons",
+      "name": "Private Prisons",
+      "total": "$320 million+",
+      "contracts": [
+        {
+          "contractor": "GEO Group",
+          "amount": "$320M+ since 2009",
+          "facility": "South Bay Correctional Facility",
+          "beds": 1948,
+          "annualRevenue": "$110M/year from Florida"
+        },
+        {
+          "contractor": "CoreCivic",
+          "amount": "Unknown",
+          "facility": "Lake City Correctional Facility",
+          "beds": 893
+        }
+      ],
+      "donations": "$8.8M to Republicans over 18 years"
+    },
+    {
+      "id": "hope-florida",
+      "name": "Hope Florida Scandal",
+      "total": "$10 million",
+      "flow": [
+        {"step": 1, "entity": "Centene", "action": "Overbilled Medicaid", "amount": "$67M settlement"},
+        {"step": 2, "entity": "Florida State", "action": "Received settlement"},
+        {"step": 3, "entity": "Hope Florida Foundation", "action": "Received $10M", "note": "Casey DeSantis charity"},
+        {"step": 4, "entity": "Two dark money nonprofits", "action": "Received $10M transfer"},
+        {"step": 5, "entity": "Keep Florida Clean PAC", "action": "Received $8.5M", "note": "Controlled by James Uthmeier"},
+        {"step": 6, "entity": "Anti-marijuana ads", "action": "Final destination"}
+      ],
+      "legalStatus": [
+        {"action": "House investigation", "date": "2025", "status": "Halted after cooperation refused"},
+        {"action": "State prosecutors subpoenas", "date": "October 2025", "status": "Issued"},
+        {"action": "Grand jury convened", "date": "October 2025", "status": "Active"},
+        {"action": "Officials questioned", "date": "October 14, 2025", "status": "Conspiracy, money laundering, wire fraud"}
+      ]
+    }
+  ],
+  "totals": {
+    "missingDocumentation": "$6+ billion",
+    "contractCount": 719,
+    "auditsRequired": 2,
+    "auditsConducted": 0
+  }
+}

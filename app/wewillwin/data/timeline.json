@@ -1,0 +1,247 @@
+{
+  "events": [
+    {
+      "date": "2019-01-08",
+      "year": 2019,
+      "title": "DeSantis Inaugurated",
+      "description": "Ron DeSantis becomes Governor of Florida. First budget: $91 billion.",
+      "category": "administration",
+      "amount": null
+    },
+    {
+      "date": "2019-01-04",
+      "year": 2019,
+      "title": "Mary Mayhew Appointed",
+      "description": "DeSantis taps Mary Mayhew as AHCA Secretary (Chief Medicaid Officer).",
+      "category": "appointment",
+      "amount": null
+    },
+    {
+      "date": "2020-01-15",
+      "year": 2020,
+      "title": "Deloitte Donates to DeSantis",
+      "description": "Deloitte makes $3,000 contribution to Friends of Ron DeSantis.",
+      "category": "donation",
+      "amount": "$3,000"
+    },
+    {
+      "date": "2020-03-09",
+      "year": 2020,
+      "title": "COVID Emergency Declared",
+      "description": "DeSantis declares COVID emergency, suspends competitive bidding requirements.",
+      "category": "emergency",
+      "amount": null
+    },
+    {
+      "date": "2020-03-19",
+      "year": 2020,
+      "title": "Tom McCullion 'Let Go'",
+      "description": "Tom McCullion (CONNECT project manager, advising on Deloitte contract) let go from AHCA.",
+      "category": "personnel",
+      "amount": null
+    },
+    {
+      "date": "2020-03-01",
+      "year": 2020,
+      "title": "$600M PPE Scramble Begins",
+      "description": "State attempts $600M in no-bid PPE contracts. Empty warehouses, fake cargo planes.",
+      "category": "contract",
+      "amount": "$600M attempted"
+    },
+    {
+      "date": "2020-04-15",
+      "year": 2020,
+      "title": "DeSantis Calls CONNECT 'Clunker'",
+      "description": "Governor calls Deloitte's CONNECT system 'a clunker,' 'a jalopy,' 'in tatters.'",
+      "category": "statement",
+      "amount": null
+    },
+    {
+      "date": "2020-05-04",
+      "year": 2020,
+      "title": "Investigation Ordered",
+      "description": "DeSantis orders Inspector General investigation into Deloitte's CONNECT system.",
+      "category": "investigation",
+      "amount": null
+    },
+    {
+      "date": "2020-05-15",
+      "year": 2020,
+      "title": "State Fines Deloitte",
+      "description": "Florida fines Deloitte $8 million for CONNECT failures.",
+      "category": "legal",
+      "amount": "$8M fine"
+    },
+    {
+      "date": "2020-08-05",
+      "year": 2020,
+      "title": "AHCA Awards Deloitte $135M",
+      "description": "Despite investigation and fine, AHCA awards Deloitte $135M Medicaid data warehouse contract.",
+      "category": "contract",
+      "amount": "$135M",
+      "highlight": true
+    },
+    {
+      "date": "2020-08-07",
+      "year": 2020,
+      "title": "DeSantis: 'I Don't Like It'",
+      "description": "Governor says he would void contract if he could, claims procurement rules tied his hands.",
+      "category": "statement",
+      "amount": null
+    },
+    {
+      "date": "2020-10-02",
+      "year": 2020,
+      "title": "Mary Mayhew Leaves for Hospital Association",
+      "description": "AHCA Secretary departs to become CEO of Florida Hospital Association.",
+      "category": "revolving-door",
+      "amount": null
+    },
+    {
+      "date": "2021-01-01",
+      "year": 2021,
+      "title": "DeSantis Signs Audit Law",
+      "description": "Governor signs law requiring audits of emergency spending after 1 year.",
+      "category": "legislation",
+      "amount": null
+    },
+    {
+      "date": "2022-08-15",
+      "year": 2022,
+      "title": "GEO Group Donates $150K",
+      "description": "Private prison company donates $150K to RGA.",
+      "category": "donation",
+      "amount": "$150K"
+    },
+    {
+      "date": "2022-08-29",
+      "year": 2022,
+      "title": "GEO Contract Renewed",
+      "description": "South Bay Correctional contract renewed less than 2 weeks after donation.",
+      "category": "contract",
+      "amount": "$320M+",
+      "highlight": true
+    },
+    {
+      "date": "2022-09-14",
+      "year": 2022,
+      "title": "Martha's Vineyard Flights",
+      "description": "Vertol Systems flies ~50 migrants from Texas to Martha's Vineyard.",
+      "category": "contract",
+      "amount": "$1.6M"
+    },
+    {
+      "date": "2022-11-09",
+      "year": 2022,
+      "title": "Marstiller Resigns",
+      "description": "AHCA Secretary Simone Marstiller resigns day after DeSantis re-election.",
+      "category": "personnel",
+      "amount": null
+    },
+    {
+      "date": "2023-01-01",
+      "year": 2023,
+      "title": "Border 'Emergency' Declared",
+      "description": "DeSantis declares border 'emergency,' suspends competitive bidding. Extended 15 times.",
+      "category": "emergency",
+      "amount": null
+    },
+    {
+      "date": "2023-05-01",
+      "year": 2023,
+      "title": "HB1 Expands Vouchers",
+      "description": "Universal school vouchers signed into law. No income limits.",
+      "category": "legislation",
+      "amount": "$3.8B"
+    },
+    {
+      "date": "2024-09-12",
+      "year": 2024,
+      "title": "$16.4M in 3 Days",
+      "description": "Strategic Digital Services receives $16.4M from 5 agencies in 3 days. No bidding.",
+      "category": "contract",
+      "amount": "$16.4M",
+      "highlight": true
+    },
+    {
+      "date": "2024-10-01",
+      "year": 2024,
+      "title": "Centene Settlement",
+      "description": "$67M settlement for overbilling. $10M diverted to Hope Florida.",
+      "category": "legal",
+      "amount": "$67M"
+    },
+    {
+      "date": "2025-04-24",
+      "year": 2025,
+      "title": "Hope Florida Scandal Breaks",
+      "description": "NPR reports on developing scandal. House opens investigation.",
+      "category": "investigation",
+      "amount": "$10M"
+    },
+    {
+      "date": "2025-07-01",
+      "year": 2025,
+      "title": "Alligator Alcatraz Opens",
+      "description": "$250M+ detention facility in Everglades. Contracts removed from database.",
+      "category": "contract",
+      "amount": "$250M+",
+      "highlight": true
+    },
+    {
+      "date": "2025-10-01",
+      "year": 2025,
+      "title": "$6B Missing Contracts Exposed",
+      "description": "Florida Bulldog reveals 719 contracts worth $6B+ missing documentation.",
+      "category": "investigation",
+      "amount": "$6B+",
+      "highlight": true
+    },
+    {
+      "date": "2025-10-14",
+      "year": 2025,
+      "title": "Grand Jury Convened",
+      "description": "State prosecutors issue subpoenas. Officials questioned on conspiracy, money laundering.",
+      "category": "legal",
+      "amount": null
+    },
+    {
+      "date": "2025-11-01",
+      "year": 2025,
+      "title": "Voucher Audit Released",
+      "description": "State auditor finds $270M missing for 30,000 students.",
+      "category": "investigation",
+      "amount": "$270M"
+    },
+    {
+      "date": "2025-12-01",
+      "year": 2025,
+      "title": "Political Ads Scandal",
+      "description": "Tampa Bay Times reveals $36.2M diverted from healthcare/children to political ads.",
+      "category": "investigation",
+      "amount": "$36.2M"
+    },
+    {
+      "date": "2025-02-06",
+      "year": 2025,
+      "title": "Uthmeier Becomes AG",
+      "description": "James Uthmeier appointed Attorney General while under investigation.",
+      "category": "appointment",
+      "amount": null,
+      "highlight": true
+    }
+  ],
+  "categoryColors": {
+    "administration": "#6366f1",
+    "appointment": "#8b5cf6",
+    "donation": "#10b981",
+    "emergency": "#ef4444",
+    "contract": "#f59e0b",
+    "statement": "#6b7280",
+    "legal": "#ec4899",
+    "investigation": "#f97316",
+    "revolving-door": "#14b8a6",
+    "legislation": "#3b82f6",
+    "personnel": "#a855f7"
+  }
+}

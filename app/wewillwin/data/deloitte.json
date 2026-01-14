@@ -1,0 +1,118 @@
+{
+  "title": "The Deloitte Connection",
+  "subtitle": "How Florida Awarded $135M to a Contractor It Was Suing",
+  "theContradiction": {
+    "publicStatements": [
+      {
+        "quote": "There's going to be a whole investigation that's going to need to be done about how the state of Florida could have paid $77 million for this thing.",
+        "speaker": "Ron DeSantis",
+        "date": "May 2020"
+      },
+      {
+        "quote": "The system is a clunker... designed to create pointless roadblocks so people would say 'the hell with it.'",
+        "speaker": "Ron DeSantis",
+        "date": "April 2020"
+      },
+      {
+        "quote": "It'd be my preference that [Deloitte] not get anything.",
+        "speaker": "Ron DeSantis",
+        "date": "August 2020"
+      }
+    ],
+    "whatActuallyHappened": [
+      {"date": "May 2020", "action": "DeSantis orders investigation into CONNECT"},
+      {"date": "May 2020", "action": "State sues Deloitte, fines them $8M"},
+      {"date": "August 2020", "action": "AHCA awards Deloitte $135M contract"},
+      {"date": "October 2020", "action": "Mary Mayhew leaves for Hospital Association"}
+    ],
+    "summary": "Deloitte got fined $8M and rewarded with $135M simultaneously."
+  },
+  "connectSystem": {
+    "originalContract": "$40 million (2011)",
+    "finalCost": "$77 million",
+    "purpose": "Unemployment system",
+    "launchDate": "2013",
+    "problems": [
+      "Stress tested for 4,200 users (requirement was 200,000)",
+      "177 defects identified, 32 'critical'",
+      "Staff 'delayed and overextended'",
+      "System 'crashed constantly'",
+      "Job seekers waited 'weeks and months' for benefits"
+    ],
+    "covidImpact": "March 2020 - system crashed when unemployment tripled to 12.9%"
+  },
+  "newContract": {
+    "amount": "$135 million",
+    "awardDate": "August 5, 2020",
+    "purpose": "Medicaid data warehouse",
+    "duration": "7 years",
+    "competingBidders": ["IBM", "Accenture"],
+    "protests": "Both competitors protested, later dropped",
+    "pastPerformanceScore": "10/10",
+    "note": "Perfect score while being actively sued"
+  },
+  "keyPlayers": [
+    {
+      "name": "Mary Mayhew",
+      "role": "AHCA Secretary",
+      "dates": "January 2019 - October 2020",
+      "appointedBy": "Ron DeSantis",
+      "keyActions": ["Oversaw $135M Deloitte contract award"],
+      "whereAfter": "Florida Hospital Association CEO",
+      "gapDays": "Immediate",
+      "pattern": "Hospital Association CEO Pattern"
+    },
+    {
+      "name": "Jennifer Ungru",
+      "role": "AHCA Chief of Staff / Deloitte Lobbyist",
+      "background": [
+        "AHCA Chief of Staff (Scott/DeSantis era)",
+        "Deputy Chief of Staff to Governor Rick Scott",
+        "Lead recount manager for DeSantis 2018 victory"
+      ],
+      "current": "Deloitte registered lobbyist",
+      "concern": "Lobbied for Deloitte contract she knew intimately from AHCA"
+    },
+    {
+      "name": "Christopher Moya",
+      "role": "DeSantis Inaugural Committee / Deloitte Lobbyist",
+      "background": ["DeSantis Inaugural Committee member (2018-2019)"],
+      "current": "Deloitte registered lobbyist",
+      "gapDays": 121
+    },
+    {
+      "name": "Tom McCullion",
+      "role": "The Smoking Gun",
+      "timeline": [
+        {"period": "2011-2013", "role": "DEO Project Manager", "action": "Selected Deloitte for CONNECT ($40M→$77M)"},
+        {"period": "2013", "role": "Same", "action": "Wrote 'system is unstable' after Deloitte delivered"},
+        {"period": "2013", "role": "Same", "action": "Received list of 177 defects, 32 'critical'"},
+        {"period": "Fall 2019", "role": "AHCA Consultant ($155/hr)", "action": "Advised on new Deloitte Medicaid contract"},
+        {"period": "March 2020", "role": "Same", "action": "'Let go' 5 months before Deloitte won $135M"}
+      ],
+      "pattern": "Official who oversaw first failure advised on second contract"
+    }
+  ],
+  "desantisExcuse": {
+    "quote": "They dropped their price so dramatically, that it's not clear to me that at that point they could have been denied it on neutral grounds.",
+    "problems": [
+      "AHCA gave Deloitte 10/10 on past performance while being sued",
+      "His inaugural committee member and recount manager lobby for Deloitte",
+      "He uses emergency powers for $6B+ in other no-bid contracts",
+      "Mary Mayhew left for industry she regulated immediately after"
+    ]
+  },
+  "unansweredQuestions": [
+    "Why was Tom McCullion hired at AHCA to advise on Deloitte contract after overseeing their failed CONNECT project?",
+    "Who made the decision to give Deloitte a '10' on past performance when they were actively being sued?",
+    "What role did Deloitte's lobbyists (Ungru, Moya) play in winning the $135M contract?",
+    "Why didn't DeSantis use emergency powers to stop the Deloitte contract when he uses them for billions in other contracts?",
+    "Are there more Deloitte contracts hidden in the $6B of emergency contracts with missing documentation?"
+  ],
+  "sources": [
+    {"name": "Washington Examiner", "title": "DeSantis would void Deloitte contract", "url": "https://www.washingtonexaminer.com/news/98394/florida-governor-says-he-would-void-135m-contract-with-deloitte-if-he-could/"},
+    {"name": "Tampa Bay Times", "title": "Tom McCullion connections", "url": "https://www.tampabay.com/florida-politics/buzz/2020/08/22/florida-official-at-center-of-unemployment-fiasco-advised-state-on-disputed-135-million-contract/"},
+    {"name": "Orlando Sentinel", "title": "Deloitte wins after botching CONNECT", "url": "https://www.orlandosentinel.com/2020/08/05/after-botching-floridas-unemployment-system-consultant-just-won-a-110-million-state-contract/"},
+    {"name": "Florida Politics", "title": "Mary Mayhew departs AHCA", "url": "https://floridapolitics.com/archives/364860-mary-mayhew-departs-ahca-as-agency-falls-under-fire/"}
+  ]
+}

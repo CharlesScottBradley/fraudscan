@@ -93,3 +93,57 @@ select:focus {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Print styles for PDF reports */
+@media print {
+  /* Hide non-printable elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset to printable colors */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  /* Page break utilities */
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .print-page {
+    page-break-inside: avoid;
+  }
+
+  /* Prevent tables from being split */
+  table {
+    page-break-inside: avoid;
+  }
+
+  /* Typography adjustments for print */
+  h1 {
+    font-size: 18pt;
+  }
+
+  h2 {
+    font-size: 14pt;
+  }
+
+  h3 {
+    font-size: 12pt;
+  }
+
+  /* Ensure links are visible but not styled as links */
+  a {
+    color: black !important;
+    text-decoration: none !important;
+  }
+
+  /* Print margins */
+  @page {
+    margin: 0.75in;
+  }
+}
