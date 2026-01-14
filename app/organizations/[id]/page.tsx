@@ -29,6 +29,18 @@ interface RelatedOrg {
   relationship: string;
 }
 
+interface EarmarkReceived {
+  id: string;
+  fiscal_year: number;
+  amount_requested: number | null;
+  industry: string | null;
+  subcommittee: string | null;
+  project_description: string | null;
+  politician_name: string | null;
+  politician_id: string | null;
+  bioguide_id: string | null;
+}
+
 interface StatePayment {
   id: number;
   vendor_name: string;
@@ -110,6 +122,7 @@ export default function OrganizationDetailPage() {
   const id = params.id as string;
 
   const [org, setOrg] = useState<OrganizationDetail | null>(null);
+  const [earmarksReceived, setEarmarksReceived] = useState<EarmarkReceived[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -124,19 +137,28 @@ export default function OrganizationDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/organizations/${id}`);
+      const [orgRes, earmarksRes] = await Promise.all([
+        fetch(`/api/organizations/${id}`),
+        fetch(`/api/organizations/${id}/earmarks`)
+      ]);
 
-      if (res.status === 404) {
+      if (orgRes.status === 404) {
         setError('Organization not found');
         return;
       }
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
+      if (!orgRes.ok) {
+        throw new Error(`HTTP ${orgRes.status}`);
       }
 
-      const data = await res.json();
+      const data = await orgRes.json();
       setOrg(data);
+
+      // Earmarks are optional - don't fail if endpoint doesn't exist
+      if (earmarksRes.ok) {
+        const earmarksData = await earmarksRes.json();
+        setEarmarksReceived(earmarksData.earmarks || []);
+      }
     } catch (err) {
       console.error('Failed to fetch organization:', err);
       setError('Failed to load organization details.');
@@ -214,7 +236,7 @@ export default function OrganizationDetailPage() {
             This entity appears in {
               [(org.state_payments || []).length > 0, org.ppp_loans.length > 0,
                (org.federal_grants || []).length > 0, (org.sba_loans || []).length > 0,
-               org.eidl_loans.length > 0].filter(Boolean).length
+               org.eidl_loans.length > 0, earmarksReceived.length > 0].filter(Boolean).length
             } data sources
           </span>
         </div>
@@ -244,9 +266,14 @@ export default function OrganizationDetailPage() {
               EIDL Loans <span className="text-cyan-400 font-mono ml-1">{formatMoney(totalEIDL)}</span>
             </span>
           )}
+          {earmarksReceived.length > 0 && (
+            <span className="px-3 py-1.5 text-sm bg-green-900/50 text-green-300 border border-green-800 rounded">
+              Earmarks <span className="text-green-400 font-mono ml-1">{formatMoney(earmarksReceived.reduce((sum, e) => sum + (e.amount_requested || 0), 0))}</span>
+            </span>
+          )}
           {(org.state_payments || []).length === 0 && org.ppp_loans.length === 0 &&
            (org.federal_grants || []).length === 0 && (org.sba_loans || []).length === 0 &&
-           org.eidl_loans.length === 0 && (
+           org.eidl_loans.length === 0 && earmarksReceived.length === 0 && (
             <span className="text-gray-500 text-sm">No linked funding records</span>
           )}
         </div>
@@ -551,6 +578,68 @@ export default function OrganizationDetailPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Earmarks Received */}
+      {earmarksReceived.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-medium text-white mb-2">Earmarks Received ({earmarksReceived.length})</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Congressional earmarks directed to this organization
+          </p>
+          <div className="border border-gray-800 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-400">Member of Congress</th>
+                  <th className="text-right p-3 font-medium text-gray-400">Amount</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Industry</th>
+                  <th className="text-center p-3 font-medium text-gray-400">FY</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {earmarksReceived.map((earmark) => (
+                  <tr key={earmark.id} className="hover:bg-gray-900/50">
+                    <td className="p-3">
+                      {earmark.politician_id ? (
+                        <Link
+                          href={`/politician/${earmark.politician_id}`}
+                          className="text-white hover:text-green-400"
+                        >
+                          {earmark.politician_name}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-300">
+                          {earmark.politician_name || 'Unknown'}
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 text-right font-mono text-green-500">
+                      {formatMoney(earmark.amount_requested)}
+                    </td>
+                    <td className="p-3 text-gray-400 text-xs">
+                      {earmark.industry || '-'}
+                    </td>
+                    <td className="p-3 text-center text-gray-500">
+                      {earmark.fiscal_year}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {earmarksReceived.length > 0 && (
+            <div className="mt-3 p-3 bg-gray-900/30 border border-gray-800 text-sm">
+              <span className="text-gray-500">Total Earmarked: </span>
+              <span className="font-mono text-green-500">
+                {formatMoney(earmarksReceived.reduce((sum, e) => sum + (e.amount_requested || 0), 0))}
+              </span>
+              <span className="text-gray-600 ml-4">
+                from {new Set(earmarksReceived.map(e => e.bioguide_id).filter(Boolean)).size} member(s) of Congress
+              </span>
+            </div>
+          )}
         </div>
       )}
 

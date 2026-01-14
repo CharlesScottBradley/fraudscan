@@ -23,6 +23,8 @@ interface Politician {
   website: string | null;
   contribution_count: number;
   total_contributions: number;
+  earmark_count: number;
+  earmark_total: number;
 }
 
 interface PoliticiansResponse {
@@ -146,10 +148,11 @@ export default function PoliticiansPage() {
   const [party, setParty] = useState('');
   const [state, setState] = useState('');
   const [office, setOffice] = useState('');
+  const [hasEarmarks, setHasEarmarks] = useState(false);
 
   useEffect(() => {
     fetchPoliticians();
-  }, [page, party, state, office]);
+  }, [page, party, state, office, hasEarmarks]);
 
   useEffect(() => {
     fetchAvailableStates();
@@ -178,6 +181,7 @@ export default function PoliticiansPage() {
       if (party) params.set('party', party);
       if (state) params.set('state', state);
       if (office) params.set('office', office);
+      if (hasEarmarks) params.set('hasEarmarks', 'true');
 
       const res = await fetch(`/api/politicians?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -234,15 +238,15 @@ export default function PoliticiansPage() {
             </select>
           </div>
 
-          {/* State filter */}
+          {/* Jurisdiction filter */}
           <div>
-            <label className="block text-xs text-gray-500 mb-1">State</label>
+            <label className="block text-xs text-gray-500 mb-1">Jurisdiction</label>
             <select
               value={state}
               onChange={(e) => { setState(e.target.value); setPage(1); }}
               className="bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
             >
-              <option value="">All States</option>
+              <option value="">All Jurisdictions</option>
               {availableStates.map(s => (
                 <option key={s} value={s}>{STATE_NAMES[s] || s}</option>
               ))}
@@ -263,13 +267,28 @@ export default function PoliticiansPage() {
             </select>
           </div>
 
+          {/* Has Earmarks filter */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="hasEarmarks"
+              checked={hasEarmarks}
+              onChange={(e) => { setHasEarmarks(e.target.checked); setPage(1); }}
+              className="w-4 h-4 rounded border-gray-700 bg-gray-900 text-green-500 focus:ring-green-500"
+            />
+            <label htmlFor="hasEarmarks" className="text-sm text-gray-400 cursor-pointer">
+              Has Earmarks
+            </label>
+          </div>
+
           {/* Clear filters */}
-          {(party || state || office) && (
+          {(party || state || office || hasEarmarks) && (
             <button
               onClick={() => {
                 setParty('');
                 setState('');
                 setOffice('');
+                setHasEarmarks(false);
                 setPage(1);
               }}
               className="text-gray-400 hover:text-white text-sm py-2"
@@ -310,9 +329,10 @@ export default function PoliticiansPage() {
                   <th className="text-left p-3 font-medium text-gray-400">Name</th>
                   <th className="text-left p-3 font-medium text-gray-400">Party</th>
                   <th className="text-left p-3 font-medium text-gray-400">Office</th>
-                  <th className="text-center p-3 font-medium text-gray-400">State</th>
+                  <th className="text-center p-3 font-medium text-gray-400">Jurisdiction</th>
                   <th className="text-right p-3 font-medium text-gray-400">Contributions</th>
                   <th className="text-right p-3 font-medium text-gray-400">Total Raised</th>
+                  <th className="text-right p-3 font-medium text-gray-400">Earmarks</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
@@ -353,6 +373,13 @@ export default function PoliticiansPage() {
                     <td className="p-3 text-right font-mono">
                       {p.total_contributions > 0 ? (
                         <span className="text-green-400">{formatMoney(p.total_contributions)}</span>
+                      ) : (
+                        <span className="text-gray-600">-</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-right font-mono">
+                      {p.earmark_total > 0 ? (
+                        <span className="text-amber-400">{formatMoney(p.earmark_total)}</span>
                       ) : (
                         <span className="text-gray-600">-</span>
                       )}

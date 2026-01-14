@@ -57,6 +57,56 @@ interface PoliticianCommittee {
   donation_count: number;
 }
 
+interface Earmark {
+  id: string;
+  fiscal_year: number;
+  recipient_name: string;
+  amount_requested: number | null;
+  industry: string | null;
+  recipient_type: string | null;
+  subcommittee: string | null;
+  project_description: string | null;
+  recipient_city: string | null;
+  recipient_state: string | null;
+  organization_id: string | null;
+  organization: {
+    legal_name: string;
+    ein: string | null;
+  } | null;
+}
+
+interface EarmarkStats {
+  totalEarmarks: number;
+  totalAmount: number;
+  uniqueRecipients: number;
+  topIndustry: string | null;
+  byIndustry: { industry: string; count: number; amount: number }[];
+  fiscalYears: number[];
+}
+
+interface Vote {
+  id: number;
+  vote: string;
+  voteDate: string | null;
+  voteQuestion: string | null;
+  voteDescription: string | null;
+  voteResult: string | null;
+  billId: string | null;
+  billType: string | null;
+  billNumber: number | null;
+  billTitle: string | null;
+  chamber: string | null;
+}
+
+interface VoteStats {
+  totalVotes: number;
+  yeaCount: number;
+  nayCount: number;
+  presentCount: number;
+  notVotingCount: number;
+  yeaPercent: number;
+}
+
 const PARTY_COLORS: Record<string, string> = {
   R: 'bg-red-900/40 text-red-400 border-red-800',
   Republican: 'bg-red-900/40 text-red-400 border-red-800',
@@ -168,6 +218,54 @@ async function getCommittees(politicianId: string): Promise<PoliticianCommittee[
   }
 }
 
+interface EarmarksResponse {
+  earmarks: Earmark[];
+  stats: EarmarkStats;
+}
+
+async function getEarmarks(politicianId: string): Promise<EarmarksResponse> {
+  const url = `https://www.somaliscan.com/api/politicians/${politicianId}/earmarks`;
+
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      return { earmarks: [], stats: { totalEarmarks: 0, totalAmount: 0, uniqueRecipients: 0, topIndustry: null, byIndustry: [], fiscalYears: [] } };
+    }
+    const data = await response.json();
+    return {
+      earmarks: data.earmarks || [],
+      stats: data.stats || { totalEarmarks: 0, totalAmount: 0, uniqueRecipients: 0, topIndustry: null, byIndustry: [], fiscalYears: [] }
+    };
+  } catch (error) {
+    console.error('[getEarmarks] Error:', error);
+    return { earmarks: [], stats: { totalEarmarks: 0, totalAmount: 0, uniqueRecipients: 0, topIndustry: null, byIndustry: [], fiscalYears: [] } };
+  }
+}
+
+interface VotesResponse {
+  votes: Vote[];
+  stats: VoteStats;
+}
+
+async function getVotes(politicianId: string): Promise<VotesResponse> {
+  const url = `https://www.somaliscan.com/api/politicians/${politicianId}/votes`;
+
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      return { votes: [], stats: { totalVotes: 0, yeaCount: 0, nayCount: 0, presentCount: 0, notVotingCount: 0, yeaPercent: 0 } };
+    }
+    const data = await response.json();
+    return {
+      votes: data.votes || [],
+      stats: data.stats || { totalVotes: 0, yeaCount: 0, nayCount: 0, presentCount: 0, notVotingCount: 0, yeaPercent: 0 }
+    };
+  } catch (error) {
+    console.error('[getVotes] Error:', error);
+    return { votes: [], stats: { totalVotes: 0, yeaCount: 0, nayCount: 0, presentCount: 0, notVotingCount: 0, yeaPercent: 0 } };
+  }
+}
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -188,13 +286,17 @@ export default async function PoliticianDetailPage({
 
   const name = politician.full_name || person?.full_name || 'Unknown Politician';
 
-  // Fetch contributions, committees, and news
-  const [contributionsData, committees, newsArticles] = await Promise.all([
+  // Fetch contributions, committees, news, earmarks, and votes
+  const [contributionsData, committees, newsArticles, earmarksData, votesData] = await Promise.all([
     getContributions(id),
     getCommittees(id),
     name !== 'Unknown Politician' ? getNewsArticles(name) : Promise.resolve([]),
+    getEarmarks(id),
+    getVotes(id),
   ]);
   const { contributions, totalCount, totalAmount } = contributionsData;
+  const { earmarks, stats: earmarkStats } = earmarksData;
+  const { votes, stats: voteStats } = votesData;
   const photoUrl = politician.photo_url || person?.photo_url;
 
   // Use totals from API (accurate across all contributions, not just top 100)
@@ -378,6 +480,209 @@ export default async function PoliticianDetailPage({
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Earmarks Section */}
+      {earmarkStats.totalEarmarks > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-4">
+            Earmarks {earmarkStats.fiscalYears.length > 0 && (
+              <span className="text-gray-500 font-normal text-sm ml-2">
+                FY{earmarkStats.fiscalYears[0]}{earmarkStats.fiscalYears.length > 1 ? `-${earmarkStats.fiscalYears[earmarkStats.fiscalYears.length - 1]}` : ''}
+              </span>
+            )}
+          </h2>
+
+          {/* Earmark Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Total Earmarked</p>
+              <p className="text-green-500 font-mono text-xl font-bold">
+                {formatMoney(earmarkStats.totalAmount)}
+              </p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1"># Earmarks</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {earmarkStats.totalEarmarks}
+              </p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Recipients</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {earmarkStats.uniqueRecipients}
+              </p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Top Industry</p>
+              <p className="text-white font-mono text-lg font-bold truncate">
+                {earmarkStats.topIndustry || '-'}
+              </p>
+            </div>
+          </div>
+
+          {/* Industry Breakdown */}
+          {earmarkStats.byIndustry.length > 0 && (
+            <div className="mb-6">
+              <p className="text-gray-500 text-sm mb-2">By Industry</p>
+              <div className="flex flex-wrap gap-2">
+                {earmarkStats.byIndustry.slice(0, 8).map((ind) => (
+                  <span
+                    key={ind.industry}
+                    className="px-3 py-1 rounded text-sm bg-gray-800 text-gray-300 border border-gray-700"
+                  >
+                    {ind.industry} <span className="text-green-500">{formatMoney(ind.amount)}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Earmark Recipients Table */}
+          <div className="border border-gray-800 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-400">Recipient</th>
+                  <th className="text-right p-3 font-medium text-gray-400">Amount</th>
+                  <th className="text-left p-3 font-medium text-gray-400">Industry</th>
+                  <th className="text-center p-3 font-medium text-gray-400">FY</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {earmarks.slice(0, 15).map((e) => (
+                  <tr key={e.id} className="hover:bg-gray-900/50">
+                    <td className="p-3">
+                      {e.organization_id ? (
+                        <Link
+                          href={`/organizations/${e.organization_id}`}
+                          className="font-medium text-white hover:text-green-400"
+                        >
+                          {e.recipient_name}
+                        </Link>
+                      ) : (
+                        <span className="font-medium text-white">{e.recipient_name}</span>
+                      )}
+                      {e.recipient_city && e.recipient_state && (
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          {e.recipient_city}, {e.recipient_state}
+                        </p>
+                      )}
+                    </td>
+                    <td className="p-3 text-right font-mono text-green-500">
+                      {formatMoney(e.amount_requested)}
+                    </td>
+                    <td className="p-3 text-gray-400 text-xs">
+                      {e.industry || '-'}
+                    </td>
+                    <td className="p-3 text-center text-gray-500">
+                      {e.fiscal_year}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {earmarks.length > 15 && (
+            <p className="text-gray-500 text-sm mt-2">
+              Showing top 15 of {earmarkStats.totalEarmarks} earmarks
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Voting Record Section */}
+      {voteStats.totalVotes > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-4">Voting Record</h2>
+
+          {/* Vote Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Total Votes</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {voteStats.totalVotes.toLocaleString()}
+              </p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Yea Rate</p>
+              <p className="text-green-500 font-mono text-xl font-bold">
+                {voteStats.yeaPercent}%
+              </p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Yea / Nay</p>
+              <p className="font-mono text-lg">
+                <span className="text-green-500">{voteStats.yeaCount.toLocaleString()}</span>
+                <span className="text-gray-600"> / </span>
+                <span className="text-red-500">{voteStats.nayCount.toLocaleString()}</span>
+              </p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Present / Not Voting</p>
+              <p className="text-gray-400 font-mono text-lg">
+                {voteStats.presentCount} / {voteStats.notVotingCount}
+              </p>
+            </div>
+          </div>
+
+          {/* Recent Votes Table */}
+          <div className="border border-gray-800 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-400">Bill / Vote Question</th>
+                  <th className="text-center p-3 font-medium text-gray-400">Vote</th>
+                  <th className="text-center p-3 font-medium text-gray-400">Result</th>
+                  <th className="text-center p-3 font-medium text-gray-400">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {votes.slice(0, 20).map((v) => (
+                  <tr key={v.id} className="hover:bg-gray-900/50">
+                    <td className="p-3">
+                      <span className="font-medium text-white">
+                        {v.billTitle || v.voteQuestion || v.voteDescription || 'Vote'}
+                      </span>
+                      {v.billType && v.billNumber && (
+                        <span className="ml-2 text-xs text-gray-500">
+                          {v.billType.toUpperCase()} {v.billNumber}
+                        </span>
+                      )}
+                      {v.chamber && (
+                        <span className="ml-2 text-xs text-gray-600">
+                          ({v.chamber})
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                        v.vote === 'Yea' || v.vote === 'Yes' || v.vote === 'Aye'
+                          ? 'bg-green-900/40 text-green-400 border border-green-800'
+                          : v.vote === 'Nay' || v.vote === 'No'
+                          ? 'bg-red-900/40 text-red-400 border border-red-800'
+                          : 'bg-gray-800 text-gray-400 border border-gray-700'
+                      }`}>
+                        {v.vote}
+                      </span>
+                    </td>
+                    <td className="p-3 text-center text-xs text-gray-500">
+                      {v.voteResult || '-'}
+                    </td>
+                    <td className="p-3 text-center text-gray-500 text-xs">
+                      {formatDate(v.voteDate)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {votes.length > 20 && (
+            <p className="text-gray-500 text-sm mt-2">
+              Showing 20 most recent of {voteStats.totalVotes.toLocaleString()} votes
+            </p>
+          )}
         </div>
       )}
 

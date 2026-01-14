@@ -20,6 +20,8 @@ export interface Politician {
   website: string | null;
   contribution_count: number;
   total_contributions: number;
+  earmark_count: number;
+  earmark_total: number;
 }
 
 export interface PoliticiansSearchResponse {
@@ -41,13 +43,27 @@ export async function GET(request: Request) {
 
   // Check if only requesting available states
   if (searchParams.get('statesOnly') === 'true') {
-    const { data } = await supabase
-      .from('politicians')
-      .select('state')
-      .not('state', 'is', null);
+    // Fetch all states with pagination to avoid Supabase 1000 row limit
+    const allStates = new Set<string>();
+    let page = 0;
+    const pageSize = 1000;
 
-    const uniqueStates = [...new Set(data?.map(p => p.state) || [])].sort();
-    return NextResponse.json({ states: uniqueStates });
+    while (page < 10) { // Safety limit
+      const { data } = await supabase
+        .from('politicians')
+        .select('state')
+        .not('state', 'is', null)
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (!data || data.length === 0) break;
+
+      data.forEach(p => {
+        if (p.state) allStates.add(p.state);
+      });
+      page++;
+    }
+
+    return NextResponse.json({ states: [...allStates].sort() });
   }
 
   // Pagination
@@ -62,8 +78,9 @@ export async function GET(request: Request) {
   const office = searchParams.get('office');
   // hasFraudLinks filter removed - no longer tracking fraud connections
   const isCurrent = searchParams.get('isCurrent');
-  const sortBy = searchParams.get('sortBy') || 'contributions';
-  const sortDir = searchParams.get('sortDir') || 'desc';
+  const sortBy = searchParams.get('sortBy') || 'name'; // Changed from 'contributions' to show all politicians
+  const sortDir = searchParams.get('sortDir') || 'asc';
+  const hasEarmarks = searchParams.get('hasEarmarks') === 'true';
 
   try {
     // When sorting by contributions, use the materialized view (already sorted correctly)
@@ -109,6 +126,32 @@ export async function GET(request: Request) {
         );
       }
 
+      // Get bioguide_ids to fetch earmark data
+      const bioguideIds = (topPoliticians || [])
+        .map(p => p.bioguide_id)
+        .filter((id): id is string => Boolean(id));
+
+      // Fetch earmark totals by bioguide_id
+      let earmarkStats: Record<string, { count: number; total: number }> = {};
+      if (bioguideIds.length > 0) {
+        const { data: earmarkData } = await supabase
+          .from('earmarks')
+          .select('bioguide_id, amount_requested')
+          .in('bioguide_id', bioguideIds);
+
+        if (earmarkData) {
+          earmarkData.forEach(e => {
+            if (e.bioguide_id) {
+              if (!earmarkStats[e.bioguide_id]) {
+                earmarkStats[e.bioguide_id] = { count: 0, total: 0 };
+              }
+              earmarkStats[e.bioguide_id].count++;
+              earmarkStats[e.bioguide_id].total += e.amount_requested || 0;
+            }
+          });
+        }
+      }
+
       // Transform materialized view data to Politician format
       const partyBreakdown: Record<string, number> = {};
       const officeBreakdown: Record<string, number> = {};
@@ -120,6 +163,8 @@ export async function GET(request: Request) {
         if (p.office_type) officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
         totalContributions += Number(p.contribution_count) || 0;
         totalContributionAmount += Number(p.total_amount) || 0;
+
+        const earmarkData = p.bioguide_id ? earmarkStats[p.bioguide_id] : null;
 
         return {
           id: p.politician_id,
@@ -134,12 +179,14 @@ export async function GET(request: Request) {
           current_term_end: null,
           is_current: null,
           fec_candidate_id: null,
-          bioguide_id: null,
+          bioguide_id: p.bioguide_id || null,
           opensecrets_id: null,
           photo_url: null,
           website: null,
           contribution_count: Number(p.contribution_count) || 0,
           total_contributions: Number(p.total_amount) || 0,
+          earmark_count: earmarkData?.count || 0,
+          earmark_total: earmarkData?.total || 0,
         };
       });
 
@@ -191,9 +238,34 @@ export async function GET(request: Request) {
       query = query.eq('office_type', office.toLowerCase());
     }
 
+    // Filter by has earmarks if requested
+    if (hasEarmarks) {
+      // Get bioguide_ids of politicians who have earmarks
+      const { data: earmarkBioguides } = await supabase
+        .from('earmarks')
+        .select('bioguide_id')
+        .not('bioguide_id', 'is', null);
+
+      const uniqueBioguides = [...new Set(earmarkBioguides?.map(e => e.bioguide_id) || [])];
+      if (uniqueBioguides.length > 0) {
+        query = query.in('bioguide_id', uniqueBioguides);
+      } else {
+        // No politicians have earmarks, return empty
+        return NextResponse.json({
+          data: [],
+          total: 0,
+          page,
+          pageSize,
+          totalPages: 0,
+          stats: { partyBreakdown: {}, officeBreakdown: {}, totalContributions: 0, totalContributionAmount: 0 },
+        });
+      }
+    }
+
     // Sorting for non-contribution sorts
-    const validSortColumns = ['state', 'party', 'office_type', 'full_name'];
-    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'state';
+    const validSortColumns = ['state', 'party', 'office_type', 'full_name', 'name'];
+    let sortColumn = sortBy === 'name' ? 'full_name' : sortBy;
+    sortColumn = validSortColumns.includes(sortColumn) ? sortColumn : 'full_name';
     query = query.order(sortColumn, { ascending: sortDir === 'asc', nullsFirst: false });
 
     // Pagination
@@ -241,6 +313,31 @@ export async function GET(request: Request) {
       });
     }
 
+    // Get earmark data for politicians with bioguide_id
+    const bioguideIdsForEarmarks = (politicians || [])
+      .map(p => p.bioguide_id)
+      .filter((id): id is string => Boolean(id));
+
+    let earmarkStatsTable: Record<string, { count: number; total: number }> = {};
+    if (bioguideIdsForEarmarks.length > 0) {
+      const { data: earmarkData } = await supabase
+        .from('earmarks')
+        .select('bioguide_id, amount_requested')
+        .in('bioguide_id', bioguideIdsForEarmarks);
+
+      if (earmarkData) {
+        earmarkData.forEach(e => {
+          if (e.bioguide_id) {
+            if (!earmarkStatsTable[e.bioguide_id]) {
+              earmarkStatsTable[e.bioguide_id] = { count: 0, total: 0 };
+            }
+            earmarkStatsTable[e.bioguide_id].count++;
+            earmarkStatsTable[e.bioguide_id].total += e.amount_requested || 0;
+          }
+        });
+      }
+    }
+
     // Process results
     const partyBreakdown: Record<string, number> = {};
     const officeBreakdown: Record<string, number> = {};
@@ -250,6 +347,7 @@ export async function GET(request: Request) {
     const enrichedPoliticians: Politician[] = (politicians || []).map((p) => {
       const peopleName = p.person_id ? personNames[p.person_id] || null : null;
       const contribData = contributionStats[p.id] || { count: 0, amount: 0 };
+      const earmarkData = p.bioguide_id ? earmarkStatsTable[p.bioguide_id] : null;
 
       if (p.party) partyBreakdown[p.party] = (partyBreakdown[p.party] || 0) + 1;
       if (p.office_type) officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
@@ -277,6 +375,8 @@ export async function GET(request: Request) {
         website: p.website,
         contribution_count: contribData.count,
         total_contributions: contribData.amount,
+        earmark_count: earmarkData?.count || 0,
+        earmark_total: earmarkData?.total || 0,
       };
     });
 
