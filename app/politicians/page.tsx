@@ -87,6 +87,12 @@ const PARTIES = [
   { value: 'I', label: 'Independent' },
 ];
 
+const SORT_OPTIONS = [
+  { value: 'name', label: 'Name (A-Z)' },
+  { value: 'earmarks', label: 'Earmarks (Highest)' },
+  { value: 'state', label: 'Jurisdiction' },
+];
+
 // State codes to names mapping
 const STATE_NAMES: Record<string, string> = {
   'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas',
@@ -149,10 +155,11 @@ export default function PoliticiansPage() {
   const [state, setState] = useState('');
   const [office, setOffice] = useState('');
   const [hasEarmarks, setHasEarmarks] = useState(false);
+  const [sortBy, setSortBy] = useState('name');
 
   useEffect(() => {
     fetchPoliticians();
-  }, [page, party, state, office, hasEarmarks]);
+  }, [page, party, state, office, hasEarmarks, sortBy]);
 
   useEffect(() => {
     fetchAvailableStates();
@@ -182,6 +189,7 @@ export default function PoliticiansPage() {
       if (state) params.set('state', state);
       if (office) params.set('office', office);
       if (hasEarmarks) params.set('hasEarmarks', 'true');
+      if (sortBy) params.set('sortBy', sortBy);
 
       const res = await fetch(`/api/politicians?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -281,14 +289,29 @@ export default function PoliticiansPage() {
             </label>
           </div>
 
+          {/* Sort by */}
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Sort By</label>
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+              className="bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+            >
+              {SORT_OPTIONS.map(s => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Clear filters */}
-          {(party || state || office || hasEarmarks) && (
+          {(party || state || office || hasEarmarks || sortBy !== 'name') && (
             <button
               onClick={() => {
                 setParty('');
                 setState('');
                 setOffice('');
                 setHasEarmarks(false);
+                setSortBy('name');
                 setPage(1);
               }}
               className="text-gray-400 hover:text-white text-sm py-2"

@@ -207,6 +207,99 @@ export async function GET(request: Request) {
       });
     }
 
+    // When sorting by earmarks, use the politician_earmark_stats materialized view
+    if (sortBy === 'earmarks') {
+      let mvQuery = supabase
+        .from('politician_earmark_stats')
+        .select('*', { count: 'exact' });
+
+      // Apply filters
+      if (state) {
+        mvQuery = mvQuery.eq('state', state.toUpperCase());
+      }
+      if (party) {
+        const partyUpper = party.toUpperCase();
+        if (partyUpper === 'D' || partyUpper === 'DEMOCRAT' || partyUpper === 'DEMOCRATIC') {
+          mvQuery = mvQuery.or('party.ilike.%democrat%,party.eq.D');
+        } else if (partyUpper === 'R' || partyUpper === 'REPUBLICAN') {
+          mvQuery = mvQuery.or('party.ilike.%republican%,party.eq.R');
+        } else if (partyUpper === 'I' || partyUpper === 'INDEPENDENT') {
+          mvQuery = mvQuery.or('party.ilike.%independent%,party.eq.I');
+        } else {
+          mvQuery = mvQuery.ilike('party', `%${party}%`);
+        }
+      }
+      if (office) {
+        mvQuery = mvQuery.eq('office_type', office.toLowerCase());
+      }
+      if (search) {
+        mvQuery = mvQuery.or(`full_name.ilike.%${search}%,state.ilike.%${search}%`);
+      }
+
+      // Sort by earmark_total (descending by default for earmarks)
+      const earmarkSortDir = sortDir || 'desc';
+      mvQuery = mvQuery.order('earmark_total', { ascending: earmarkSortDir === 'asc' });
+      mvQuery = mvQuery.range(offset, offset + pageSize - 1);
+
+      const { data: earmarkPoliticians, error: mvError, count } = await mvQuery;
+
+      if (mvError) {
+        console.error('Earmark stats view query error:', mvError);
+        return NextResponse.json(
+          { error: 'Database query failed', details: mvError.message },
+          { status: 500 }
+        );
+      }
+
+      // Transform materialized view data to Politician format
+      const partyBreakdown: Record<string, number> = {};
+      const officeBreakdown: Record<string, number> = {};
+
+      const politicians: Politician[] = (earmarkPoliticians || []).map((p) => {
+        if (p.party) partyBreakdown[p.party] = (partyBreakdown[p.party] || 0) + 1;
+        if (p.office_type) officeBreakdown[p.office_type] = (officeBreakdown[p.office_type] || 0) + 1;
+
+        return {
+          id: p.politician_id,
+          person_id: null,
+          name: p.full_name,
+          office_type: p.office_type,
+          office_title: p.office_title,
+          state: p.state,
+          district: null,
+          party: p.party,
+          current_term_start: null,
+          current_term_end: null,
+          is_current: null,
+          fec_candidate_id: null,
+          bioguide_id: p.bioguide_id || null,
+          opensecrets_id: null,
+          photo_url: null,
+          website: null,
+          contribution_count: 0,
+          total_contributions: 0,
+          earmark_count: Number(p.earmark_count) || 0,
+          earmark_total: Number(p.earmark_total) || 0,
+        };
+      });
+
+      return NextResponse.json({
+        data: politicians,
+        total: count || 0,
+        page,
+        pageSize,
+        totalPages: Math.ceil((count || 0) / pageSize),
+        stats: {
+          partyBreakdown,
+          officeBreakdown,
+          totalContributions: 0,
+          totalContributionAmount: 0,
+        },
+        _version: 'v4-earmarks-sort',
+        _source: 'politician_earmark_stats'
+      });
+    }
+
     // For other sort options, use the regular politicians table
     let query = supabase
       .from('politicians')
