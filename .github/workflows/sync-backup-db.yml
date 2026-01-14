@@ -68,7 +68,7 @@ jobs:
           for table in "${TABLES[@]}"; do
             table=$(echo "$table" | xargs)
             if [ -z "$table" ]; then continue; fi
-            PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "TRUNCATE $table CASCADE;" 2>/dev/null || true
+            PGPASSWORD=${{ secrets.BACKUP_DB_PASSWORD }} psql -h database.lootermap.com -U benjamin -d somaliscan -c "TRUNCATE $table;" 2>/dev/null || true
           done
           echo "All tables truncated"
 
