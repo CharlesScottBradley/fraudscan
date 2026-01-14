@@ -156,10 +156,11 @@ export default function PoliticiansPage() {
   const [office, setOffice] = useState('');
   const [hasEarmarks, setHasEarmarks] = useState(false);
   const [sortBy, setSortBy] = useState('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     fetchPoliticians();
-  }, [page, party, state, office, hasEarmarks, sortBy]);
+  }, [page, party, state, office, hasEarmarks, sortBy, sortDir]);
 
   useEffect(() => {
     fetchAvailableStates();
@@ -190,6 +191,7 @@ export default function PoliticiansPage() {
       if (office) params.set('office', office);
       if (hasEarmarks) params.set('hasEarmarks', 'true');
       if (sortBy) params.set('sortBy', sortBy);
+      if (sortDir) params.set('sortDir', sortDir);
 
       const res = await fetch(`/api/politicians?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -292,19 +294,34 @@ export default function PoliticiansPage() {
           {/* Sort by */}
           <div>
             <label className="block text-xs text-gray-500 mb-1">Sort By</label>
-            <select
-              value={sortBy}
-              onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-              className="bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
-            >
-              {SORT_OPTIONS.map(s => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
+            <div className="flex">
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  const newSort = e.target.value;
+                  setSortBy(newSort);
+                  // Default direction based on sort type
+                  setSortDir(newSort === 'earmarks' ? 'desc' : 'asc');
+                  setPage(1);
+                }}
+                className="bg-gray-900 border border-gray-700 px-3 py-2 text-sm focus:border-green-500 focus:outline-none"
+              >
+                {SORT_OPTIONS.map(s => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+              <button
+                onClick={() => { setSortDir(sortDir === 'asc' ? 'desc' : 'asc'); setPage(1); }}
+                className="bg-gray-900 border border-gray-700 border-l-0 px-2 py-2 text-sm text-gray-400 hover:text-white focus:outline-none"
+                title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
+              >
+                {sortDir === 'asc' ? '↑' : '↓'}
+              </button>
+            </div>
           </div>
 
           {/* Clear filters */}
-          {(party || state || office || hasEarmarks || sortBy !== 'name') && (
+          {(party || state || office || hasEarmarks || sortBy !== 'name' || sortDir !== 'asc') && (
             <button
               onClick={() => {
                 setParty('');
@@ -312,6 +329,7 @@ export default function PoliticiansPage() {
                 setOffice('');
                 setHasEarmarks(false);
                 setSortBy('name');
+                setSortDir('asc');
                 setPage(1);
               }}
               className="text-gray-400 hover:text-white text-sm py-2"

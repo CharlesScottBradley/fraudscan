@@ -237,7 +237,7 @@ export async function GET(request: Request) {
       }
 
       // Sort by earmark_total (descending by default for earmarks)
-      const earmarkSortDir = sortDir || 'desc';
+      const earmarkSortDir = searchParams.get('sortDir') || 'desc';
       mvQuery = mvQuery.order('earmark_total', { ascending: earmarkSortDir === 'asc' });
       mvQuery = mvQuery.range(offset, offset + pageSize - 1);
 
