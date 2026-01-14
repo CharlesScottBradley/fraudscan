@@ -12,6 +12,7 @@ const WALLET_ADDRESSES = {
   btc: 'bc1q0m8mcmdn4wqm95sh2uur35z86wmyxf4m3pze6y',
   eth: '0x972FD29E7cE2b163a2efbA35D62D8d5D7216d644',
   sol: 'DK9mWzDBcHf6VKVuVP12LUowerBfxfsNvQAcLyUG7WZQ',
+  xmr: '44QGBoKDqboDXdGmPAnwGbWgTVzHNynopjbhpbwaKaqUYUzDPYeA9y42jCHvfGwx8YBC3QsHiW43ZQabux8f983x2P1yopj',
 };
 
 export default function SupportPage() {
@@ -93,9 +94,26 @@ export default function SupportPage() {
             <div className="font-mono text-sm text-gray-400 break-all bg-black p-3 border border-gray-800">
               {WALLET_ADDRESSES.sol}
             </div>
-            <button 
+            <button
               className="mt-2 text-xs text-gray-500 hover:text-white"
               onClick={() => navigator.clipboard.writeText(WALLET_ADDRESSES.sol)}
+            >
+              Copy address
+            </button>
+          </div>
+
+          {/* Monero */}
+          <div className="border border-gray-800 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-white font-medium">Monero</span>
+              <span className="text-gray-600 text-sm">XMR</span>
+            </div>
+            <div className="font-mono text-sm text-gray-400 break-all bg-black p-3 border border-gray-800">
+              {WALLET_ADDRESSES.xmr}
+            </div>
+            <button
+              className="mt-2 text-xs text-gray-500 hover:text-white"
+              onClick={() => navigator.clipboard.writeText(WALLET_ADDRESSES.xmr)}
             >
               Copy address
             </button>
