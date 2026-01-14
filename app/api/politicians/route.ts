@@ -331,15 +331,14 @@ export async function GET(request: Request) {
       query = query.eq('office_type', office.toLowerCase());
     }
 
-    // Filter by has earmarks if requested
+    // Filter by has earmarks if requested - use materialized view for complete list
     if (hasEarmarks) {
-      // Get bioguide_ids of politicians who have earmarks
-      const { data: earmarkBioguides } = await supabase
-        .from('earmarks')
-        .select('bioguide_id')
-        .not('bioguide_id', 'is', null);
+      // Get bioguide_ids from politician_earmark_stats (already aggregated, no row limit issue)
+      const { data: earmarkPoliticians } = await supabase
+        .from('politician_earmark_stats')
+        .select('bioguide_id');
 
-      const uniqueBioguides = [...new Set(earmarkBioguides?.map(e => e.bioguide_id) || [])];
+      const uniqueBioguides = earmarkPoliticians?.map(e => e.bioguide_id).filter(Boolean) || [];
       if (uniqueBioguides.length > 0) {
         query = query.in('bioguide_id', uniqueBioguides);
       } else {
