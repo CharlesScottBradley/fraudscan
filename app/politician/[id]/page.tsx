@@ -304,20 +304,20 @@ export default async function PoliticianDetailPage({
   const contributionCount = totalCount;
   const avgContribution = contributionCount > 0 ? totalRaised / contributionCount : 0;
 
-  // Group contributions by year for timeline
-  const contributionsByYear: Record<string, { count: number; amount: number }> = {};
-  contributions.forEach(c => {
-    const year = c.transaction_dt ? new Date(c.transaction_dt).getFullYear().toString() : 'Unknown';
-    if (!contributionsByYear[year]) {
-      contributionsByYear[year] = { count: 0, amount: 0 };
+  // Group earmarks by fiscal year for timeline
+  const earmarksByYear: Record<number, { count: number; amount: number }> = {};
+  earmarks.forEach(e => {
+    const fy = e.fiscal_year;
+    if (!earmarksByYear[fy]) {
+      earmarksByYear[fy] = { count: 0, amount: 0 };
     }
-    contributionsByYear[year].count++;
-    contributionsByYear[year].amount += c.transaction_amt || 0;
+    earmarksByYear[fy].count++;
+    earmarksByYear[fy].amount += e.amount_requested || 0;
   });
 
-  const timelineData = Object.entries(contributionsByYear)
-    .filter(([year]) => year !== 'Unknown')
-    .sort(([a], [b]) => parseInt(a) - parseInt(b));
+  const earmarkTimelineData = Object.entries(earmarksByYear)
+    .map(([year, data]) => ({ year: parseInt(year), ...data }))
+    .sort((a, b) => a.year - b.year);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -373,59 +373,94 @@ export default async function PoliticianDetailPage({
         </div>
       </div>
 
-      {/* Contribution summary stats */}
+      {/* Summary stats - show earmark stats if available, otherwise contributions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1">Total Raised</p>
-          <p className="text-green-500 font-mono text-xl font-bold">
-            {formatMoney(totalRaised)}
-          </p>
-          <p className="text-gray-600 text-xs">from FEC filings</p>
-        </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1"># Contributions</p>
-          <p className="text-white font-mono text-xl font-bold">
-            {contributionCount.toLocaleString()}
-          </p>
-          <p className="text-gray-600 text-xs">individual donations</p>
-        </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1">Avg Contribution</p>
-          <p className="text-white font-mono text-xl font-bold">
-            {formatMoney(avgContribution)}
-          </p>
-          <p className="text-gray-600 text-xs">per donation</p>
-        </div>
-        <div className="border border-gray-800 p-4">
-          <p className="text-gray-500 text-sm mb-1">News Mentions</p>
-          <p className="text-white font-mono text-xl font-bold">
-            {newsArticles.length}
-          </p>
-          <p className="text-gray-600 text-xs">articles found</p>
-        </div>
+        {earmarkStats.totalEarmarks > 0 ? (
+          <>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Total Earmarked</p>
+              <p className="text-amber-500 font-mono text-xl font-bold">
+                {formatMoney(earmarkStats.totalAmount)}
+              </p>
+              <p className="text-gray-600 text-xs">requested spending</p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1"># Earmarks</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {earmarkStats.totalEarmarks}
+              </p>
+              <p className="text-gray-600 text-xs">spending requests</p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Recipients</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {earmarkStats.uniqueRecipients}
+              </p>
+              <p className="text-gray-600 text-xs">unique organizations</p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">News Mentions</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {newsArticles.length}
+              </p>
+              <p className="text-gray-600 text-xs">articles found</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Total Raised</p>
+              <p className="text-green-500 font-mono text-xl font-bold">
+                {formatMoney(totalRaised)}
+              </p>
+              <p className="text-gray-600 text-xs">from FEC filings</p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1"># Contributions</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {contributionCount.toLocaleString()}
+              </p>
+              <p className="text-gray-600 text-xs">individual donations</p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">Avg Contribution</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {formatMoney(avgContribution)}
+              </p>
+              <p className="text-gray-600 text-xs">per donation</p>
+            </div>
+            <div className="border border-gray-800 p-4">
+              <p className="text-gray-500 text-sm mb-1">News Mentions</p>
+              <p className="text-white font-mono text-xl font-bold">
+                {newsArticles.length}
+              </p>
+              <p className="text-gray-600 text-xs">articles found</p>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Contribution timeline */}
-      {timelineData.length > 0 && (
+      {/* Earmark Timeline */}
+      {earmarkTimelineData.length > 1 && (
         <div className="mb-8">
-          <h2 className="text-lg font-bold mb-4">Contribution Timeline</h2>
+          <h2 className="text-lg font-bold mb-4">Earmark Timeline</h2>
           <div className="border border-gray-800 p-4">
             <div className="flex items-end gap-2 h-32">
-              {timelineData.map(([year, data]) => {
-                const maxAmount = Math.max(...timelineData.map(([, d]) => d.amount));
-                const height = maxAmount > 0 ? (data.amount / maxAmount) * 100 : 0;
+              {earmarkTimelineData.map(({ year, count, amount }) => {
+                const maxAmount = Math.max(...earmarkTimelineData.map(d => d.amount));
+                const height = maxAmount > 0 ? (amount / maxAmount) * 100 : 0;
 
                 return (
                   <div key={year} className="flex-1 flex flex-col items-center">
                     <div className="w-full flex flex-col justify-end h-24">
                       <div
-                        className="w-full bg-green-600"
+                        className="w-full bg-amber-600"
                         style={{ height: `${height}%` }}
-                        title={`${data.count} contributions - ${formatMoney(data.amount)}`}
+                        title={`FY${year}: ${count} earmarks - ${formatMoney(amount)}`}
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">{year}</p>
-                    <p className="text-xs text-gray-600">{formatMoney(data.amount)}</p>
+                    <p className="text-xs text-gray-500 mt-2">FY{year}</p>
+                    <p className="text-xs text-gray-600">{formatMoney(amount)}</p>
                   </div>
                 );
               })}
