@@ -122,6 +122,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'indiana-child-welfare',
+    title: 'Indiana Child Welfare Machine',
+    description: '$4.29B in spending, $250M to consultants, 12,000 children in foster care - how consulting firms captured the system',
+    href: '/investigations/indiana',
+    stats: '$4.29B tracked',
+    isNew: true
+  },
+  {
     id: 'nursing-home-donors',
     title: 'Nursing Home Owner Donors',
     description: '86 nursing home owners making suspicious donations - $5.3M from operators of 244 facilities',
