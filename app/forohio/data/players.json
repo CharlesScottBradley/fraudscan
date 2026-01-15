@@ -1,0 +1,118 @@
+{
+  "players": [
+    {
+      "name": "Matt Huffman",
+      "role": "Senate President (2021-2024), House Speaker (2025-)",
+      "party": "Republican",
+      "location": "Lima, OH",
+      "pacMoney": 5869843,
+      "pacCount": 1868,
+      "keyActions": [
+        "Led dissolution of JMOC at 2 AM",
+        "Received 3.5x more PAC money than any other statewide official",
+        "Top recipient of OHCA PAC ($45K) and Vorys PAC ($56K)"
+      ],
+      "significance": "Central figure in removing Medicaid oversight"
+    },
+    {
+      "name": "Mike DeWine",
+      "role": "Governor (2019-)",
+      "party": "Republican",
+      "keyActions": [
+        "Appointed Corcoran as Medicaid Director",
+        "Signed bills removing oversight",
+        "Received Deloitte PAC donations"
+      ],
+      "significance": "Appointed conflicted officials, signed away oversight"
+    },
+    {
+      "name": "Dave Yost",
+      "role": "Attorney General (2019-)",
+      "party": "Republican",
+      "pacMoney": 1680000,
+      "keyActions": [
+        "Declared 'no evidence of wrongdoing' by Deloitte",
+        "Did not prosecute after $3.8B unemployment fraud",
+        "Received Deloitte PAC donations"
+      ],
+      "significance": "Failed to prosecute contractor that enabled fraud"
+    },
+    {
+      "name": "Maureen Corcoran",
+      "role": "Ohio Medicaid Director (2019-2025)",
+      "beforeGov": "Vorys Health Care Advisors (founder/president)",
+      "afterGov": "Vorys Health Care Advisors (returned Oct 2025)",
+      "conflicts": [
+        "Owned stock in UnitedHealth",
+        "Owned stock in CVS Health",
+        "Directed $54B to MCOs while holding financial interest"
+      ],
+      "significance": "Classic revolving door - directed billions to companies she had stake in"
+    },
+    {
+      "name": "Rob McColley",
+      "role": "Senate President Pro Tempore",
+      "party": "Republican",
+      "pacMoney": 390000,
+      "keyActions": [
+        "Co-led JMOC dissolution at 2 AM",
+        "Second-highest recipient of OHCA PAC ($24K)",
+        "Running for Lt. Governor with Ramaswamy"
+      ],
+      "significance": "Partner with Huffman in removing oversight"
+    },
+    {
+      "name": "Gary Mohr",
+      "role": "DRC Director under Kasich",
+      "beforeGov": "CCA (CoreCivic) executive",
+      "keyActions": [
+        "Appointed to regulate industry he came from",
+        "Oversaw prison privatization deal with former employer"
+      ],
+      "significance": "Revolving door - regulated former employer"
+    },
+    {
+      "name": "John Kasich",
+      "role": "Governor (2011-2019)",
+      "party": "Republican",
+      "keyActions": [
+        "Privatized state prisons to CoreCivic",
+        "Created JobsOhio (exempt from audits)",
+        "Appointed industry insiders to regulatory roles"
+      ],
+      "significance": "Set up many of the patterns DeWine continued"
+    }
+  ],
+  "pacSummary": {
+    "topRecipient": "Matt Huffman",
+    "topAmount": 5869843,
+    "keyPACs": [
+      {
+        "name": "Ohio Health Care Association PAC",
+        "type": "Medicaid industry lobby",
+        "topRecipients": [
+          {"name": "Matt Huffman", "amount": 44724},
+          {"name": "Rob McColley", "amount": 23500}
+        ],
+        "significance": "Top 2 recipients dissolved JMOC"
+      },
+      {
+        "name": "Vorys PAC",
+        "type": "Law firm (Corcoran's employer)",
+        "totalGiven": 211000,
+        "topRecipients": [
+          {"name": "Matt Huffman", "amount": 56067}
+        ]
+      },
+      {
+        "name": "Deloitte PAC",
+        "type": "IT contractor",
+        "totalGiven": 48000,
+        "topRecipients": [
+          {"name": "Mike DeWine", "amount": 15000},
+          {"name": "Dave Yost", "amount": 15000}
+        ]
+      }
+    ]
+  }
+}

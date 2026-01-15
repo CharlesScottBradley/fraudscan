@@ -1,0 +1,224 @@
+{
+  "contractors": [
+    {
+      "name": "CareSource",
+      "category": "Medicaid MCO",
+      "total": 26105436783,
+      "byYear": {
+        "2017": 6950534487,
+        "2018": 1874276749,
+        "2019": 7811384478,
+        "2020": 9469241069
+      },
+      "agencies": ["Department of Medicaid", "Medicaid MMIS"],
+      "growth": {
+        "preDewine": 8824811236,
+        "postDewine": 17280625547,
+        "percentChange": 96
+      },
+      "issues": [
+        "Part of $54B Medicaid MCO system",
+        "Oversight committee (JMOC) dissolved while investigating"
+      ],
+      "pacConnection": "Ohio Health Care Association PAC",
+      "outcome": "JMOC dissolved at 2 AM by Huffman/McColley"
+    },
+    {
+      "name": "UnitedHealthcare",
+      "category": "Medicaid MCO",
+      "total": 7736901127,
+      "byYear": {
+        "2017": 1871314667,
+        "2018": 518808169,
+        "2019": 2304632291,
+        "2020": 3042145999
+      },
+      "agencies": ["Department of Medicaid", "Medicaid MMIS"],
+      "issues": [
+        "Corcoran owned stock in UnitedHealth",
+        "Directed billions to company she had financial interest in"
+      ],
+      "pacConnection": "Corcoran stock ownership",
+      "outcome": "Corcoran returned to Vorys after directing billions"
+    },
+    {
+      "name": "Molina",
+      "category": "Medicaid MCO",
+      "total": 7645965715,
+      "byYear": {
+        "2017": 2023514954,
+        "2018": 523067425,
+        "2019": 2284752764,
+        "2020": 2814630571
+      },
+      "agencies": ["Department of Medicaid", "Medicaid MMIS"],
+      "issues": ["Part of $54B Medicaid MCO system"],
+      "pacConnection": "Ohio Health Care Association PAC",
+      "outcome": "JMOC dissolved"
+    },
+    {
+      "name": "Buckeye Health",
+      "category": "Medicaid MCO",
+      "total": 7801000517,
+      "byYear": {
+        "2017": 2001304349,
+        "2018": 569969035,
+        "2019": 2317267181,
+        "2020": 2912459952
+      },
+      "agencies": ["Department of Medicaid", "Medicaid MMIS", "Department of Education"],
+      "issues": ["Part of $54B Medicaid MCO system"],
+      "pacConnection": "Ohio Health Care Association PAC",
+      "outcome": "JMOC dissolved"
+    },
+    {
+      "name": "Paramount",
+      "category": "Medicaid MCO",
+      "total": 4453330341,
+      "byYear": {
+        "2017": 1076764532,
+        "2018": 315056905,
+        "2019": 1450020968,
+        "2020": 1611487937
+      },
+      "agencies": ["Department of Medicaid", "Medicaid MMIS"],
+      "issues": ["Part of $54B Medicaid MCO system"],
+      "pacConnection": "Ohio Health Care Association PAC",
+      "outcome": "JMOC dissolved"
+    },
+    {
+      "name": "Deloitte",
+      "category": "IT Consulting",
+      "total": 165851966,
+      "byYear": {
+        "2017": 29399581,
+        "2018": 18066305,
+        "2019": 56372308,
+        "2020": 62013773
+      },
+      "agencies": ["Department of Administrative Services", "Department of Medicaid", "Department of Job and Family Services"],
+      "growth": {
+        "preDewine": 47465886,
+        "postDewine": 118386081,
+        "percentChange": 149
+      },
+      "issues": [
+        "Built unemployment system that enabled $3.8 BILLION fraud",
+        "Payments DOUBLED after the fraud occurred",
+        "AG Yost declared 'no evidence of wrongdoing'"
+      ],
+      "pacDonations": 48000,
+      "pacRecipients": "DeWine, Yost, Sprague",
+      "outcome": "No prosecution, more contracts"
+    },
+    {
+      "name": "CoreCivic",
+      "category": "Private Prisons",
+      "total": 174509120,
+      "byYear": {
+        "2017": 33519207,
+        "2018": 26397109,
+        "2019": 55112137,
+        "2020": 59480667
+      },
+      "agencies": ["Department of Rehabilitation & Correction"],
+      "growth": {
+        "preDewine": 59916316,
+        "postDewine": 114592804,
+        "percentChange": 91
+      },
+      "issues": [
+        "Violence up 180-300% at private prisons",
+        "Gary Mohr (CCA executive) appointed DRC Director",
+        "Payments nearly DOUBLED despite violence crisis"
+      ],
+      "pacConnection": "Prison privatization under Kasich",
+      "outcome": "Contract continues despite documented failures"
+    },
+    {
+      "name": "Aramark",
+      "category": "Prison Food Service",
+      "total": 241885631,
+      "byYear": {
+        "2017": 65690624,
+        "2018": 40610351,
+        "2019": 65253606,
+        "2020": 70331050
+      },
+      "agencies": ["Department of Rehabilitation & Correction"],
+      "growth": {
+        "preDewine": 106300975,
+        "postDewine": 135584656,
+        "percentChange": 28
+      },
+      "issues": [
+        "Maggots found in prison food",
+        "$235K fine for food safety violations",
+        "Contract renewed for $130M despite failures"
+      ],
+      "outcome": "Contract renewed despite documented failures"
+    },
+    {
+      "name": "Accenture",
+      "category": "IT Consulting",
+      "total": 306254766,
+      "byYear": {
+        "2017": 76621279,
+        "2018": 55664911,
+        "2019": 105781422,
+        "2020": 68187154
+      },
+      "agencies": ["Department of Administrative Services", "Department of Health"],
+      "growth": {
+        "preDewine": 132286190,
+        "postDewine": 173968576,
+        "percentChange": 32
+      },
+      "issues": [
+        "1,100 defects in state systems",
+        "Proprietary lock-in continues",
+        "No consequences for failures"
+      ],
+      "outcome": "Contracts continue"
+    },
+    {
+      "name": "Kokosing",
+      "category": "Construction",
+      "total": 900234537,
+      "byYear": {
+        "2017": 244769690,
+        "2018": 169660452,
+        "2019": 216201827,
+        "2020": 269602568
+      },
+      "agencies": ["Department of Transportation", "Public Works Commission"],
+      "issues": [
+        "Burgett family major PAC donors",
+        "Top ODOT contractor"
+      ],
+      "pacDonations": 13000,
+      "pacRecipients": "Ohio Contractors PAC, various",
+      "outcome": "Continues as top state contractor"
+    },
+    {
+      "name": "Conduent",
+      "category": "IT Services",
+      "total": 89681032,
+      "byYear": {
+        "2017": 31939596,
+        "2018": 20085814,
+        "2019": 27800127,
+        "2020": 9855495
+      },
+      "agencies": ["Department of Job & Family Services", "Department of Public Safety"],
+      "issues": ["State IT vendor"],
+      "outcome": "Contracts continue"
+    }
+  ],
+  "totals": {
+    "medicaidMCOs": 53742634483,
+    "itConsulting": 561787764,
+    "corrections": 416394751,
+    "construction": 900234537
+  }
+}

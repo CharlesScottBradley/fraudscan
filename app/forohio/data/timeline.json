@@ -1,0 +1,152 @@
+{
+  "events": [
+    {
+      "year": "2011",
+      "events": [
+        {
+          "date": "2011",
+          "title": "Kasich Privatizes Prisons",
+          "description": "Governor Kasich sells state prisons to CoreCivic (then CCA). Gary Mohr, former CCA executive, appointed DRC Director.",
+          "impact": "Sets up revolving door pattern",
+          "category": "prisons"
+        }
+      ]
+    },
+    {
+      "year": "2017",
+      "events": [
+        {
+          "date": "2017",
+          "title": "Private Prison Violence Crisis",
+          "description": "Violence at private prisons up 180-300% compared to state-run facilities.",
+          "impact": "CoreCivic still receives $33.5M",
+          "category": "prisons"
+        },
+        {
+          "date": "2017",
+          "title": "Deloitte Builds Unemployment System",
+          "description": "Deloitte contracted to build Ohio's unemployment claims system.",
+          "amount": 29399581,
+          "category": "it"
+        }
+      ]
+    },
+    {
+      "year": "2018",
+      "events": [
+        {
+          "date": "2018",
+          "title": "Unemployment System Vulnerabilities Known",
+          "description": "Security vulnerabilities in Deloitte's unemployment system identified but not fixed.",
+          "amount": 18066305,
+          "category": "it"
+        }
+      ]
+    },
+    {
+      "year": "2019",
+      "events": [
+        {
+          "date": "2019-01-14",
+          "title": "DeWine Takes Office",
+          "description": "Mike DeWine inaugurated as Governor of Ohio.",
+          "impact": "Beginning of major contract increases",
+          "category": "political"
+        },
+        {
+          "date": "2019-01",
+          "title": "Corcoran Appointed Medicaid Director",
+          "description": "Maureen Corcoran appointed Director of Ohio Department of Medicaid. She owned stock in UnitedHealth and other MCOs.",
+          "impact": "Will direct $54B to companies she has financial interest in",
+          "category": "appointments"
+        },
+        {
+          "date": "2019",
+          "title": "Deloitte Payments Jump 212%",
+          "description": "Deloitte payments increase from $18M to $56M under new administration.",
+          "amount": 56372308,
+          "percentChange": 212,
+          "category": "it"
+        },
+        {
+          "date": "2019",
+          "title": "CoreCivic Payments Jump 64%",
+          "description": "Despite violence crisis, CoreCivic payments increase from $26M to $55M.",
+          "amount": 55112137,
+          "percentChange": 64,
+          "category": "prisons"
+        }
+      ]
+    },
+    {
+      "year": "2020",
+      "events": [
+        {
+          "date": "2020-03",
+          "title": "COVID-19 Pandemic Hits",
+          "description": "Pandemic causes massive surge in unemployment claims.",
+          "category": "context"
+        },
+        {
+          "date": "2020",
+          "title": "$3.8 BILLION Unemployment Fraud",
+          "description": "Criminals exploit vulnerabilities in Deloitte's unemployment system, stealing $3.8 billion in fraudulent claims.",
+          "amount": 3800000000,
+          "impact": "Largest fraud in Ohio history",
+          "category": "fraud"
+        },
+        {
+          "date": "2020",
+          "title": "Deloitte Gets $62M MORE",
+          "description": "After enabling the fraud, Deloitte receives even more state contracts.",
+          "amount": 62013773,
+          "percentChange": 111,
+          "category": "it"
+        }
+      ]
+    },
+    {
+      "year": "2021",
+      "events": [
+        {
+          "date": "2021",
+          "title": "Yost: 'No Evidence of Wrongdoing'",
+          "description": "AG Dave Yost declares no evidence of wrongdoing by Deloitte despite $3.8B fraud through their system.",
+          "impact": "No prosecution of Deloitte",
+          "category": "political"
+        },
+        {
+          "date": "2021",
+          "title": "Matt Huffman Becomes Senate President",
+          "description": "Huffman takes leadership of Ohio Senate. He received $5.87M in PAC money, 3.5x more than any other official.",
+          "category": "political"
+        }
+      ]
+    },
+    {
+      "year": "2025",
+      "events": [
+        {
+          "date": "2025-06-25T02:00:00",
+          "title": "JMOC Dissolved at 2 AM",
+          "description": "Joint Medicaid Oversight Committee dissolved at 2 AM while investigating Gainwell and Medicaid contractors. Huffman and McColley lead the effort.",
+          "impact": "Removes last oversight of $54B in MCO contracts",
+          "category": "political"
+        },
+        {
+          "date": "2025-01",
+          "title": "Matt Huffman Becomes House Speaker",
+          "description": "Huffman moves from Senate President to House Speaker, consolidating power.",
+          "category": "political"
+        },
+        {
+          "date": "2025-10",
+          "title": "Corcoran Returns to Vorys",
+          "description": "Maureen Corcoran leaves Medicaid Director role and returns to Vorys Health Care Advisors.",
+          "impact": "Completes revolving door cycle",
+          "category": "appointments"
+        }
+      ]
+    }
+  ]
+}

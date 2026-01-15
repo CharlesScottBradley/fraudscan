@@ -5,7 +5,8 @@
 
 // Page passwords - add new protected pages here
 const PAGE_PASSWORDS: Record<string, string> = {
-  'wewillwin': 'govfishback'
+  'wewillwin': 'govfishback',
+  'forohio': 'wewillwin'
 };
 
 /**

@@ -1,0 +1,246 @@
+{
+  "title": "Ohio State Spending Investigation",
+  "thesis": "Ohio's government spending system is designed to transfer public money to private interests through a series of mechanisms that make the transfers appear legitimate while removing any accountability.",
+  "subtitle": "This is not incompetence. This is not inefficiency. This is design.",
+  "conclusion": "The spending is not designed to serve the public. It's designed to serve the people who control it.",
+  "elevatorPitch": "Ohio's government spending system is designed to transfer public money to private interests. The proof: spending grows 40x faster than population, contractors who fail get more money, and oversight committees are dissolved at 2 AM when they start investigating. This isn't incompetence - Medicaid directors own stock in the companies they give contracts to, prison directors come from the companies they sell prisons to, and the one politician who got caught took $60 million in bribes. The system isn't broken. It's working exactly as designed - just not for taxpayers.",
+  "keyStats": {
+    "totalMedicaidMCO": 53700000000,
+    "deloittePayments": 165851966,
+    "corecivicPayments": 174509120,
+    "aramarkPayments": 241885631,
+    "accenturePayments": 306254766,
+    "kokosigPayments": 900234537,
+    "ohcaPACtoHuffman": 68000,
+    "huffmanTotalPAC": 5869843,
+    "jmocDissolutionDate": "2025-06-25T02:00:00",
+    "unemploymentFraud": 3800000000,
+    "totalBudget": 93400000000,
+    "populationGrowth": 2,
+    "medicaidGrowthPercent": 88
+  },
+  "irrationalSpendingTests": [
+    {
+      "test": "Does spending match demand?",
+      "expected": "Spending grows with population",
+      "actual": "Population +2%, Medicaid +88%, Vouchers +325%",
+      "verdict": "FAIL",
+      "implication": "If demand isn't driving spending, what is?"
+    },
+    {
+      "test": "Does performance affect contracts?",
+      "expected": "Failed contractors lose contracts",
+      "actual": "Deloitte enabled $3.8B fraud → got $207M more. Aramark had maggots in food → contract renewed.",
+      "verdict": "FAIL",
+      "implication": "If failure doesn't end contracts, what does?"
+    },
+    {
+      "test": "Is there functioning oversight?",
+      "expected": "Oversight catches problems",
+      "actual": "JMOC dissolved at 2 AM while investigating. JobsOhio audits forbidden by law.",
+      "verdict": "FAIL",
+      "implication": "If oversight is removed when it might find something, what are they hiding?"
+    },
+    {
+      "test": "Do approvers have conflicts of interest?",
+      "expected": "Gatekeepers are independent",
+      "actual": "Corcoran owned stock in MCOs she gave $22B. Mohr sold prison to his former employer.",
+      "verdict": "FAIL",
+      "implication": "If every gatekeeper has a conflict, is it coincidence?"
+    },
+    {
+      "test": "Is there a revolving door?",
+      "expected": "Regulators are independent",
+      "actual": "Corcoran: Vorys → Medicaid Director → back to Vorys. Mohr: CCA → Prison Director.",
+      "verdict": "FAIL",
+      "implication": "If everyone returns to the industry they regulated, was regulation ever real?"
+    }
+  ],
+  "industries": [
+    {
+      "name": "IT Contracts",
+      "total": 700000000,
+      "description": "Same IT vendors receive massive contracts despite documented failures",
+      "topContractors": [
+        {"name": "Deloitte", "amount": 166000000, "issue": "Enabled $3.8B unemployment fraud"},
+        {"name": "Accenture", "amount": 306000000, "issue": "1,100 defects in Ohio Benefits system"},
+        {"name": "Gainwell", "amount": 81000000, "issue": "$585M over budget, offshored jobs"},
+        {"name": "Conduent", "amount": 283000000, "issue": "Called in to fix others' failures"}
+      ],
+      "pattern": "Failure → No consequences → More contracts"
+    },
+    {
+      "name": "Medicaid MCOs",
+      "total": 53700000000,
+      "description": "Five managed care organizations control $54B with minimal oversight",
+      "topContractors": [
+        {"name": "CareSource", "amount": 26100000000, "issue": "Oversight dissolved while investigating"},
+        {"name": "UnitedHealthcare", "amount": 7700000000, "issue": "Director owned stock in company"},
+        {"name": "Molina", "amount": 7600000000, "issue": "Part of MCO oligopoly"},
+        {"name": "Buckeye Health Plan", "amount": 6600000000, "issue": "Centene subsidiary, settled $88M fraud"},
+        {"name": "Paramount Advantage", "amount": 5700000000, "issue": "Part of MCO oligopoly"}
+      ],
+      "pattern": "PAC donations → JMOC dissolved → $54B protected"
+    },
+    {
+      "name": "Prisons",
+      "total": 173000000,
+      "description": "Private prison operators get contracts despite violence and food safety crises",
+      "topContractors": [
+        {"name": "CoreCivic", "amount": 175000000, "issue": "Violence up 180-300%"},
+        {"name": "Aramark", "amount": 242000000, "issue": "Maggots in food, $235K fine"},
+        {"name": "MTC", "amount": 54000000, "issue": "Sues states for empty beds"}
+      ],
+      "pattern": "Ex-CCA exec appointed → Sold prison to former employer"
+    }
+  ],
+  "scandals": [
+    {
+      "name": "Deloitte Unemployment Fraud",
+      "amount": 3800000000,
+      "year": "2020",
+      "summary": "Deloitte built Ohio's unemployment system (uFACTS) that enabled $3.8 billion in fraud during COVID",
+      "details": [
+        "Contract value: $120.3 million through 9 amendments",
+        "Contract language prioritized 'speed over non-critical functionality'",
+        "Fraud rate jumped from 3.5% to 26% of all payments",
+        "Data breach exposed 120,000+ Ohioans' private information",
+        "State Auditor: 'We're not real impressed with the job Deloitte did, candidly'",
+        "Despite failures, Deloitte still receives Ohio contracts"
+      ],
+      "outcome": "No prosecution. Deloitte got $207M more in contracts.",
+      "quote": "We have serious concerns about Deloitte's lack of security protocols.",
+      "quoteSource": "Ohio Auditor Keith Faber"
+    },
+    {
+      "name": "JMOC Dissolution at 2 AM",
+      "year": "2025",
+      "summary": "The Joint Medicaid Oversight Committee was dissolved at 2 AM while investigating Gainwell Technologies",
+      "details": [
+        "Committee was actively investigating Medicaid contractor Gainwell",
+        "Language dissolving JMOC inserted into budget bill at 2 AM",
+        "Committee chair wasn't informed before the vote",
+        "Top recipients of OHCA PAC (Medicaid lobby): Huffman ($45K), McColley ($24K)",
+        "Those same two politicians led the dissolution"
+      ],
+      "outcome": "$54 billion in MCO contracts now have no legislative oversight.",
+      "quote": "Legislators' hands were tied.",
+      "quoteSource": "JMOC Member"
+    },
+    {
+      "name": "Aramark Prison Food Crisis",
+      "year": "2014-2019",
+      "summary": "Aramark's prison food service had maggots in food, shortages, and safety violations - contract renewed anyway",
+      "details": [
+        "Maggots found in prison food multiple times",
+        "Food shortages led to prisoner unrest",
+        "State fined Aramark $235,000 for violations",
+        "Despite documented failures, contract was renewed",
+        "Current contract value: $130M annually"
+      ],
+      "outcome": "Contract renewed. Now receiving $242M from state.",
+      "quote": null,
+      "quoteSource": null
+    },
+    {
+      "name": "CoreCivic Violence Crisis",
+      "year": "2017-present",
+      "summary": "Violence at CoreCivic's Lake Erie prison increased 180-300% after privatization",
+      "details": [
+        "Lake Erie Correctional Institution sold to CoreCivic in 2011",
+        "Gary Mohr, former CCA (CoreCivic) executive, approved the sale as Prison Director",
+        "Violence increased 180-300% compared to state-run facilities",
+        "Staffing levels consistently below requirements",
+        "No meaningful consequences for performance failures"
+      ],
+      "outcome": "Contract continues. CoreCivic received $175M (2017-2020).",
+      "quote": null,
+      "quoteSource": null
+    },
+    {
+      "name": "Corcoran Stock Conflict",
+      "year": "2019-2025",
+      "summary": "Medicaid Director Maureen Corcoran owned stock in companies she awarded $22 billion to",
+      "details": [
+        "Owned stock in UnitedHealth, CVS Health, Humana",
+        "Directed $22 billion to Medicaid MCOs she had financial interest in",
+        "Refused to disclose exact amounts (reported only '≥$1,000')",
+        "Ohio's defense: 'Only parent companies, not subsidiaries'",
+        "Came from Vorys Health Care Advisors, returned to Vorys after leaving government"
+      ],
+      "outcome": "Classic revolving door completed October 2025.",
+      "quote": null,
+      "quoteSource": null
+    },
+    {
+      "name": "FirstEnergy Bribery (The Proven Case)",
+      "year": "2020",
+      "summary": "The largest bribery scandal in Ohio history proves the system can work this way",
+      "details": [
+        "$60 million to Larry Householder's dark money group",
+        "$4.3 million directly to PUCO Chair Sam Randazzo",
+        "Governor DeWine appointed Randazzo to regulate the company that bribed him",
+        "DeWine signed the bribery-purchased bill (HB6)",
+        "Householder sentenced to 20 years in federal prison"
+      ],
+      "outcome": "Householder in prison. DeWine will testify at civil trial.",
+      "quote": null,
+      "quoteSource": null
+    }
+  ],
+  "roi": [
+    {
+      "source": "OHCA PAC",
+      "investment": 68000,
+      "recipient": "Huffman + McColley",
+      "return": "JMOC dissolved, $54B MCO contracts protected",
+      "returnValue": 54000000000,
+      "multiple": 720588
+    },
+    {
+      "source": "Deloitte PAC",
+      "investment": 48000,
+      "recipient": "DeWine, Yost, Sprague",
+      "return": "$166M contracts + no prosecution after fraud",
+      "returnValue": 166000000,
+      "multiple": 3458
+    },
+    {
+      "source": "Kokosing family",
+      "investment": 13000,
+      "recipient": "Various PACs",
+      "return": "$900M in ODOT contracts",
+      "returnValue": 900000000,
+      "multiple": 69231
+    }
+  ],
+  "verdictTests": [
+    {
+      "test": "Does spending match demand?",
+      "result": "FAIL",
+      "evidence": "Medicaid +88% vs population +2%"
+    },
+    {
+      "test": "Does performance affect contracts?",
+      "result": "FAIL",
+      "evidence": "Deloitte got +149% after enabling $3.8B fraud"
+    },
+    {
+      "test": "Is there functioning oversight?",
+      "result": "FAIL",
+      "evidence": "JMOC dissolved at 2 AM when investigating"
+    },
+    {
+      "test": "Do approvers have conflicts?",
+      "result": "FAIL",
+      "evidence": "Corcoran owned stock in MCOs she directed $54B to"
+    },
+    {
+      "test": "Is there a revolving door?",
+      "result": "FAIL",
+      "evidence": "Corcoran: Vorys → Medicaid Director → back to Vorys"
+    }
+  ],
+  "dataRange": "2017-2020",
+  "dataSources": ["OpenTheBooks.com Ohio State Checkbook", "Ohio Secretary of State Campaign Finance FTP"]
+}

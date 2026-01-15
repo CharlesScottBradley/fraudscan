@@ -1,0 +1,77 @@
+{
+  "primarySources": [
+    {
+      "name": "OpenTheBooks Ohio State Checkbook",
+      "url": "https://www.openthebooks.com/ohio-state-checkbook/",
+      "description": "Vendor payment data 2017-2020",
+      "dataType": "Contractor payments by year and agency"
+    },
+    {
+      "name": "Ohio Secretary of State Campaign Finance",
+      "url": "https://www.ohiosos.gov/campaign-finance/",
+      "description": "PAC expenditure data 2018-2025",
+      "dataType": "Campaign contributions and expenditures"
+    },
+    {
+      "name": "Ohio Checkbook",
+      "url": "https://checkbook.ohio.gov/",
+      "description": "Official state spending transparency portal",
+      "dataType": "State expenditure records"
+    }
+  ],
+  "newsAndReporting": [
+    {
+      "title": "JMOC Dissolved at 2 AM",
+      "source": "Ohio Capital Journal",
+      "url": "https://ohiocapitaljournal.com/",
+      "date": "2025-06-25",
+      "description": "Coverage of JMOC dissolution during budget process"
+    },
+    {
+      "title": "Ohio Unemployment Fraud Investigation",
+      "source": "Various Ohio news outlets",
+      "date": "2020-2021",
+      "description": "Coverage of $3.8B unemployment fraud through Deloitte system"
+    },
+    {
+      "title": "Prison Violence Crisis",
+      "source": "Cincinnati Enquirer, Columbus Dispatch",
+      "date": "2017-2019",
+      "description": "Reports on violence increases at private prisons"
+    },
+    {
+      "title": "Aramark Prison Food Violations",
+      "source": "Various",
+      "description": "Coverage of food safety violations including maggots in food"
+    }
+  ],
+  "governmentRecords": [
+    {
+      "name": "Ohio Revised Code 149.43",
+      "description": "Ohio Public Records Act - basis for transparency requests",
+      "url": "https://codes.ohio.gov/ohio-revised-code/section-149.43"
+    },
+    {
+      "name": "Controlling Board Records",
+      "description": "Contract approval records",
+      "url": "https://obm.ohio.gov/controlling-board"
+    },
+    {
+      "name": "JMOC Meeting Minutes (Historical)",
+      "description": "Minutes from Joint Medicaid Oversight Committee before dissolution",
+      "note": "Committee dissolved June 2025"
+    }
+  ],
+  "methodology": {
+    "contractData": "State checkbook data scraped from OpenTheBooks.com covering fiscal years 2017-2020. Records deduplicated by year+employer+vendor+amount combination. Totals aggregated by contractor name matching.",
+    "campaignFinance": "PAC expenditure files downloaded from Ohio Secretary of State FTP server. Parsed using grep-based extraction due to malformed CSV format. Expenditures aggregated by recipient.",
+    "crossReference": "Contractors identified in checkbook data were matched to PAC donors. Politicians receiving PAC money were matched to policy decisions affecting those contractors.",
+    "limitations": [
+      "Checkbook data only covers 2017-2020 (OpenTheBooks limitation)",
+      "Some campaign finance CSVs had formatting issues requiring grep parsing",
+      "Individual employee donations not fully analyzed",
+      "Post-2020 contract data requires public records request"
+    ]
+  },
+  "attribution": "Data sourced from OpenTheBooks.com (a project of American Transparency) and Ohio Secretary of State public records. Analysis performed January 2026."
+}
