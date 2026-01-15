@@ -28,6 +28,16 @@ const POLITICIAN = {
   totalEarmarkAmount: 211700000,
 };
 
+// Comparison to average congressman
+const EARMARK_COMPARISON = {
+  avgEarmarkCount: 34.9,
+  avgEarmarkAmount: 143493097,
+  medianEarmarkAmount: 107135291,
+  totalPoliticians: 394,
+  garciaAmountRank: 61,
+  garciaCountRank: 1, // #1 most earmarks of any congressman
+};
+
 // Pay-to-Play Connections
 const CONNECTIONS = [
   {
@@ -222,6 +232,51 @@ export default function CongressmanGarciaPage() {
           <p><span className="text-gray-600">├─</span> linked_donations <span className="text-yellow-400 ml-4">{formatMoney(totalLinkedDonations)}</span></p>
           <p><span className="text-gray-600">├─</span> linked_earmarks <span className="text-yellow-400 ml-4">{formatMoney(totalLinkedEarmarks)}</span></p>
           <p><span className="text-gray-600">└─</span> fraud_investigation <span className="text-red-400 ml-4">ACTIVE (Shangri-La Industries)</span></p>
+        </div>
+      </div>
+
+      {/* Comparison to Average */}
+      <div className="border border-yellow-800 bg-yellow-900/10 p-4 mb-8">
+        <h3 className="text-yellow-400 font-medium mb-3">Earmark Volume: #1 in Congress</h3>
+        <p className="text-sm text-gray-400 mb-4">
+          Garcia has requested <strong className="text-white">more individual earmarks than any other member of Congress</strong> in our database.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="bg-gray-900/50 p-3 rounded">
+            <p className="text-2xl font-mono text-white">{POLITICIAN.totalEarmarks}</p>
+            <p className="text-xs text-gray-500">Garcia earmarks</p>
+          </div>
+          <div className="bg-gray-900/50 p-3 rounded">
+            <p className="text-2xl font-mono text-gray-400">{EARMARK_COMPARISON.avgEarmarkCount}</p>
+            <p className="text-xs text-gray-500">Avg congressman</p>
+          </div>
+          <div className="bg-gray-900/50 p-3 rounded">
+            <p className="text-2xl font-mono text-yellow-400">2x</p>
+            <p className="text-xs text-gray-500">Above average count</p>
+          </div>
+          <div className="bg-gray-900/50 p-3 rounded">
+            <p className="text-2xl font-mono text-red-400">#1</p>
+            <p className="text-xs text-gray-500">Rank by count</p>
+          </div>
+        </div>
+        <div className="mt-4 pt-4 border-t border-yellow-900/50">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-gray-500">Total Amount:</span>
+              <span className="text-green-500 font-mono ml-2">{formatMoney(POLITICIAN.totalEarmarkAmount)}</span>
+              <span className="text-gray-600 ml-1">(avg: {formatMoney(EARMARK_COMPARISON.avgEarmarkAmount)})</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Amount Rank:</span>
+              <span className="text-white ml-2">#{EARMARK_COMPARISON.garciaAmountRank} of {EARMARK_COMPARISON.totalPoliticians}</span>
+              <span className="text-gray-600 ml-1">(top 15%)</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Above Median:</span>
+              <span className="text-yellow-400 ml-2">+98%</span>
+              <span className="text-gray-600 ml-1">({formatMoney(EARMARK_COMPARISON.medianEarmarkAmount)} median)</span>
+            </div>
+          </div>
         </div>
       </div>
 

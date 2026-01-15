@@ -122,6 +122,14 @@ async function getStats(): Promise<InvestigationStats> {
 
 const INVESTIGATION_TYPES = [
   {
+    id: 'congressman-garcia',
+    title: 'Rep. Robert Garcia Pay-to-Play',
+    description: '#1 earmark volume in Congress. $14K from Shangri-La Industries (under federal fraud investigation) while steering $42M to Long Beach area',
+    href: '/congressmangarcia',
+    stats: '$211.7M earmarks',
+    isNew: true
+  },
+  {
     id: 'indiana-child-welfare',
     title: 'Indiana Child Welfare Machine',
     description: '$4.29B in spending, $250M to consultants, 12,000 children in foster care - how consulting firms captured the system',
