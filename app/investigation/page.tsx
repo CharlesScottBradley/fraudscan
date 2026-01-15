@@ -130,6 +130,14 @@ const INVESTIGATION_TYPES = [
     isNew: true
   },
   {
+    id: 'congresswoman-stansbury',
+    title: 'Rep. Melanie Stansbury Pay-to-Play',
+    description: '#2 earmark volume in Congress. $97K from 31 tribes, $89M to Pueblo of Sandia (13,478:1 ROI). Native American Caucus Vice Chair.',
+    href: '/congresswomanstansbury',
+    stats: '$298.4M earmarks',
+    isNew: true
+  },
+  {
     id: 'indiana-child-welfare',
     title: 'Indiana Child Welfare Machine',
     description: '$4.29B in spending, $250M to consultants, 12,000 children in foster care - how consulting firms captured the system',
