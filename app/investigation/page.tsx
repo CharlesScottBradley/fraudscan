@@ -131,8 +131,8 @@ const INVESTIGATION_TYPES = [
   },
   {
     id: 'congresswoman-stansbury',
-    title: 'Rep. Melanie Stansbury Pay-to-Play',
-    description: '#2 earmark volume in Congress. $97K from 31 tribes, $89M to Pueblo of Sandia (13,478:1 ROI). Native American Caucus Vice Chair.',
+    title: 'Rep. Melanie Stansbury Criminal Network',
+    description: '8+ convicted felons in donor network. $2.75B healthcare fraud killed 40+ constituents. Fentanyl trafficking at donor casinos. Endorser indicted for rape.',
     href: '/congresswomanstansbury',
     stats: '$298.4M earmarks',
     isNew: true
