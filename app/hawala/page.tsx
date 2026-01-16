@@ -20,7 +20,7 @@ interface MoneyBroker {
 }
 
 const brokers: MoneyBroker[] = [
-  // Minnesota
+  // Minnesota - Cedar-Riverside Area (Little Mogadishu)
   {
     legalName: "AMAL MONEY WIRE, LLC",
     dbaName: "",
@@ -31,8 +31,21 @@ const brokers: MoneyBroker[] = [
     phone: "(612) 332-6893",
     email: "",
     website: "",
-    notes: "Cedar-Riverside (Little Mogadishu). Also at 2940 Pillsbury Ave (612) 822-2459. Hours: Mon-Sun 10am-7pm"
+    notes: "Cedar-Riverside. Also at 2940 Pillsbury Ave (612) 822-2459. Mon-Sun 10am-7pm"
   },
+  {
+    legalName: "OLYMPIC FINANCIAL GROUP INC",
+    dbaName: "",
+    address: "325 Cedar Avenue South Suite 7",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55454",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Cedar-Riverside. Operates in AZ, CO, IL, MN, NE, SD, VT, WA, WI"
+  },
+  // Minnesota - Pillsbury Ave / Lake St Area
   {
     legalName: "HODAN GLOBAL MONEY SERVICES, INC.",
     dbaName: "TaajPay",
@@ -44,6 +57,18 @@ const brokers: MoneyBroker[] = [
     email: "",
     website: "",
     notes: "Also known as TAAJ/TaajPay. Multiple locations: 417 E Lake St, 912 E 24th St A123"
+  },
+  {
+    legalName: "AMAANA MONEY TRANSFER, CO",
+    dbaName: "",
+    address: "2938 Pillsbury Ave S",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55408",
+    phone: "(612) 825-2992",
+    email: "",
+    website: "",
+    notes: "Whittier neighborhood. Also at 139 West Lake St"
   },
   {
     legalName: "Ramad Pay Inc.",
@@ -94,16 +119,40 @@ const brokers: MoneyBroker[] = [
     notes: "47 states coverage. 24hr customer care"
   },
   {
-    legalName: "AMAANA MONEY TRANSFER, CO",
-    dbaName: "",
-    address: "139 West Lake St",
-    city: "Minneapolis",
+    legalName: "Alif Global Trading LLC",
+    dbaName: "Touch Pay",
+    address: "5701 Shingle Creek Pkwy Suite 350F",
+    city: "Brooklyn Center",
     state: "MN",
-    zip: "55408",
+    zip: "55430",
     phone: "",
     email: "",
     website: "",
-    notes: "Lake Street area"
+    notes: "Brooklyn Center area"
+  },
+  {
+    legalName: "Banana Pay LLC",
+    dbaName: "",
+    address: "2200 E Franklin Ave Suite 204",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55404",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Franklin Ave area"
+  },
+  {
+    legalName: "Network Transfers Inc.",
+    dbaName: "",
+    address: "2817 Anthony Lane South Suite 205",
+    city: "St Anthony",
+    state: "MN",
+    zip: "55418",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "St Anthony area"
   },
   {
     legalName: "Barako Pay Inc",
