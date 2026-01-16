@@ -132,7 +132,7 @@ const INVESTIGATION_TYPES = [
   {
     id: 'congresswoman-stansbury',
     title: 'Rep. Melanie Stansbury Criminal Network',
-    description: '8+ convicted felons in donor network. $2.75B healthcare fraud killed 40+ constituents. Fentanyl trafficking at donor casinos. Endorser indicted for rape.',
+    description: '8+ convicted felons in donor network. $2.5B healthcare fraud killed 40+ constituents. Fentanyl trafficking at donor casinos. Endorser indicted for rape.',
     href: '/congresswomanstansbury',
     stats: '$298.4M earmarks',
     isNew: true

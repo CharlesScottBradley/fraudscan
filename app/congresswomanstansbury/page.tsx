@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Rep. Melanie Stansbury Pay-to-Play Investigation | SomaliScan',
-  description: 'Investigation into Rep. Melanie Stansbury (D-NM-01): 8+ convicted felons in donor network, $2.75B healthcare fraud that killed 40+ constituents, fentanyl trafficking at donor casinos, and tribal pay-to-play patterns.',
+  description: 'Investigation into Rep. Melanie Stansbury (D-NM-01): 8+ convicted felons in donor network, $2.5B healthcare fraud that killed 40+ constituents, fentanyl trafficking at donor casinos, and tribal pay-to-play patterns.',
 };
 
 function formatMoney(amount: number | null): string {
@@ -212,7 +212,7 @@ const CRIMINAL_DONORS = [
 
 // Healthcare Fraud Stats
 const HEALTHCARE_FRAUD = {
-  totalFraud: 2750000000,
+  totalFraud: 2500000000,
   peopleCharged: 193,
   deaths: 40,
   missingFromNM: 30,

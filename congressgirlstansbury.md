@@ -30,7 +30,7 @@
 | **Arrested (2025)** | 2+ | James Mountain (DWI), Holmes (fentanyl trafficking) |
 | **FBI manhunts** | 1 | Justin Aguino ($5,000 reward) |
 | **Drug trafficking cases** | 5+ | Isleta (37K pills), Sandia (fentanyl-for-sex), Mescalero (34 charged), Laguna |
-| **Healthcare fraud** | $2.75B | 193 charged, 40+ DEAD, Stansbury's constituents were victims |
+| **Healthcare fraud** | $2.5B | 193 charged, 40+ DEAD, Stansbury's constituents were victims |
 | **Human trafficking** | 1000s | NM Native Americans trafficked to AZ fake rehabs |
 | **Tribes under federal investigation** | 2+ | Poarch Creek (2019), multiple federal probes |
 | **Earmark recipients with audit problems** | 2+ | First Nations ($174K questioned), Region 9 ($2.2M no-bid) |
@@ -162,7 +162,7 @@ STANSBURY'S NETWORK OF CRIMINALS
 ├─ CONSTITUENTS: Navajo Nation (NM portion)
 │  └─ 1000s trafficked to AZ fake sober homes
 │  └─ Given fentanyl by staff - same drug at donor casinos
-│  └─ $2.75B fraud - Stansbury's committee had oversight
+│  └─ $2.5B fraud - Stansbury's committee had oversight
 │
 └─ CONNECTED: San Ildefonso Pueblo (Mountain's tribe)
    └─ CONVICTED: Thomas McIntosh - embezzlement, lottery theft
@@ -243,7 +243,7 @@ STANSBURY ADVOCATES FOR:
 ├─ Opioid treatment for Native Americans
 │
 WHILE:
-├─ $2.75B fraud exploits these exact programs (2019-2024)
+├─ $2.5B fraud exploits these exact programs (2019-2024)
 ├─ Her constituents are PRIMARY VICTIMS
 ├─ 40+ die, 30+ go missing from her state
 ├─ First Nations (she earmarked $1M) has DOJ audit problems
@@ -315,7 +315,7 @@ HEALTHCARE FRAUD NETWORK (Stansbury's Constituents = Victims)
 1. **House Natural Resources Subcommittee on Indian and Insular Affairs**
    - Oversees Indian Health Service
    - Oversees tribal healthcare programs
-   - The EXACT programs exploited by $2.75B fraud
+   - The EXACT programs exploited by $2.5B fraud
 
 2. **Hearing on "Biden's Border Crisis: Examining Efforts to Combat International Criminal Cartels"**
    - Heard testimony on cartel activity in Indian Country
@@ -344,7 +344,7 @@ HEALTHCARE FRAUD NETWORK (Stansbury's Constituents = Victims)
 
 ### Questions
 
-1. **Did any of the $2.75B fraud money flow through NM tribal entities?**
+1. **Did any of the $2.5B fraud money flow through NM tribal entities?**
 2. **Are the recruiters who targeted Navajo/Zuni connected to tribal leadership?**
 3. **Is there any connection between casino drug operations and healthcare fraud recruiters?**
 4. **What oversight did Stansbury's committee conduct during the fraud (2019-2024)?**
@@ -1185,7 +1185,7 @@ EARMARKS GO TO:
 ### Key Findings
 
 1. **8+ convicted felons** donated to Stansbury through tribal PACs
-2. **$2.75B healthcare fraud** killed 40+ of her constituents (Navajo, Zuni)
+2. **$2.5B healthcare fraud** killed 40+ of her constituents (Navajo, Zuni)
 3. **Fentanyl trafficking** documented at 3+ donor tribal casinos
 4. **James Mountain** (APCG Chairman who endorsed her) was indicted for rape in 2008, arrested for DWI in 2025
 5. **$3,300 → $3,575,000 connection**: Santa Ana Pueblo donated $3,300; their former governor embezzled $3.575M
@@ -1211,7 +1211,7 @@ GIVES EARMARKS TO:
 ├─ Recipients with no-bid contract violations
 │
 HER CONSTITUENTS:
-├─ Victims of $2.75B healthcare fraud
+├─ Victims of $2.5B healthcare fraud
 ├─ 40+ dead from fentanyl at fake sober homes
 ├─ 30+ still missing from Gallup, NM
 │
@@ -1221,7 +1221,7 @@ ENDORSERS:
 
 ### Bottom Line
 
-Rep. Melanie Stansbury receives money from tribes with convicted embezzlers and drug trafficking, gives earmarks to organizations with audit failures, sits on oversight committees that failed to detect $2.75B fraud targeting her own constituents, and accepted an endorsement from a man indicted for rape.
+Rep. Melanie Stansbury receives money from tribes with convicted embezzlers and drug trafficking, gives earmarks to organizations with audit failures, sits on oversight committees that failed to detect $2.5B fraud targeting her own constituents, and accepted an endorsement from a man indicted for rape.
 
 **She has not been charged with any wrongdoing**, but the pattern of connections warrants further investigation.
 
