@@ -45,7 +45,56 @@ const brokers: MoneyBroker[] = [
     website: "",
     notes: "Cedar-Riverside. Operates in AZ, CO, IL, MN, NE, SD, VT, WA, WI"
   },
-  // Minnesota - Pillsbury Ave / Lake St Area
+  {
+    legalName: "Mustaqbal Express",
+    dbaName: "",
+    address: "419 Cedar Ave S",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55454",
+    phone: "(612) 339-2714",
+    email: "",
+    website: "",
+    notes: "Cedar-Riverside. Also at Village Market (912 E 24th St)"
+  },
+  {
+    legalName: "Dahabshiil",
+    dbaName: "",
+    address: "415 Cedar Ave S",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55454",
+    phone: "",
+    email: "",
+    website: "dahabshiil.com",
+    notes: "Cedar-Riverside location of major Somali MTO"
+  },
+  {
+    legalName: "Money Transfer Service",
+    dbaName: "",
+    address: "611 Cedar Ave S",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55454",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Cedar-Riverside"
+  },
+  // Minnesota - Village Market / 24 Mall (912 E 24th St)
+  {
+    legalName: "Aaran Financial Services",
+    dbaName: "",
+    address: "912 E 24th St",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55404",
+    phone: "(612) 871-7200",
+    email: "",
+    website: "",
+    notes: "Village Market / 24 Mall"
+  },
+  // Minnesota - Pillsbury Ave / Lake St Area (Karmel Mall)
   {
     legalName: "HODAN GLOBAL MONEY SERVICES, INC.",
     dbaName: "TaajPay",
@@ -200,7 +249,55 @@ const brokers: MoneyBroker[] = [
     phone: "",
     email: "",
     website: "",
-    notes: "Same building as Hodan Global"
+    notes: "Karmel Mall - same building as Hodan Global"
+  },
+  {
+    legalName: "TAAJ Money Transfer",
+    dbaName: "",
+    address: "2910 Pillsbury Ave S #17",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55408",
+    phone: "(612) 208-1041",
+    email: "",
+    website: "",
+    notes: "Karmel Mall. Sun-Sat 11am-8pm (9pm Tues)"
+  },
+  {
+    legalName: "Tawakal Money Services",
+    dbaName: "",
+    address: "2910 Pleasant Ave Unit 78A",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55408",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Karmel Mall"
+  },
+  {
+    legalName: "Money Transfer (Pillsbury)",
+    dbaName: "",
+    address: "2910 Pillsbury Ave S",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55408",
+    phone: "(612) 886-3445",
+    email: "",
+    website: "",
+    notes: "Karmel Mall area. 13 years in business"
+  },
+  {
+    legalName: "Global Envios Express",
+    dbaName: "",
+    address: "323 E Lake St Suite B",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55408",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Lake Street. 10 years in business"
   },
   {
     legalName: "RASMI PAY LLC",
@@ -250,6 +347,67 @@ const brokers: MoneyBroker[] = [
     email: "",
     website: "",
     notes: "Afghan community remittance"
+  },
+  // Ohio - Columbus (Morse Rd / Cleveland Ave - Somali area)
+  {
+    legalName: "Amal Express",
+    dbaName: "",
+    address: "2210 Morse Rd #1",
+    city: "Columbus",
+    state: "OH",
+    zip: "43229",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Morse Road Somali corridor"
+  },
+  {
+    legalName: "Global Money Transfer",
+    dbaName: "",
+    address: "2203 Morse Rd",
+    city: "Columbus",
+    state: "OH",
+    zip: "43229",
+    phone: "(614) 476-2912",
+    email: "",
+    website: "",
+    notes: "Morse Road area"
+  },
+  {
+    legalName: "Money Transfer (Cleveland Ave)",
+    dbaName: "",
+    address: "3353 Cleveland Ave",
+    city: "Columbus",
+    state: "OH",
+    zip: "43224",
+    phone: "",
+    email: "",
+    website: "",
+    notes: "Cleveland Ave Somali corridor"
+  },
+  {
+    legalName: "Money Transfer (Cleveland Ave South)",
+    dbaName: "",
+    address: "3881 Cleveland Ave",
+    city: "Columbus",
+    state: "OH",
+    zip: "43224",
+    phone: "(614) 845-8198",
+    email: "",
+    website: "",
+    notes: "Cleveland Ave"
+  },
+  {
+    legalName: "Money Transfer (N Cleveland Ave)",
+    dbaName: "",
+    address: "5294 Cleveland Ave",
+    city: "Columbus",
+    state: "OH",
+    zip: "43231",
+    phone: "(614) 987-5937",
+    email: "",
+    website: "",
+    notes: "North Columbus"
   },
 ];
 
