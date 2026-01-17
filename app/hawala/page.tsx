@@ -64,10 +64,10 @@ const brokers: MoneyBroker[] = [
     city: "Minneapolis",
     state: "MN",
     zip: "55454",
-    phone: "",
+    phone: "(612) 343-4369",
     email: "",
     website: "dahabshiil.com",
-    notes: "Cedar-Riverside location of major Somali MTO"
+    notes: "Cedar-Riverside location of major Somali MTO. 12+ years in business. Mon-Sun 9am-8pm"
   },
   {
     legalName: "Money Transfer Service",
@@ -80,6 +80,18 @@ const brokers: MoneyBroker[] = [
     email: "",
     website: "",
     notes: "Cedar-Riverside"
+  },
+  {
+    legalName: "Tawakal Express",
+    dbaName: "",
+    address: "1001 E Franklin Ave",
+    city: "Minneapolis",
+    state: "MN",
+    zip: "55404",
+    phone: "(612) 870-8127",
+    email: "",
+    website: "tawakalexpress.net",
+    notes: "Franklin Ave. 20+ years in business. 5 stars. Also at 607 Cedar Ave S, 1519 E Franklin Ave"
   },
   // Minnesota - Village Market / 24 Mall (912 E 24th St)
   {
@@ -408,6 +420,30 @@ const brokers: MoneyBroker[] = [
     email: "",
     website: "",
     notes: "North Columbus"
+  },
+  {
+    legalName: "Hodan Global Money Service And Retails, INC",
+    dbaName: "",
+    address: "5306 Cleveland Ave",
+    city: "Columbus",
+    state: "OH",
+    zip: "43231",
+    phone: "(614) 404-5845",
+    email: "",
+    website: "",
+    notes: "Cleveland Ave corridor"
+  },
+  {
+    legalName: "Dahabshiil Columbus",
+    dbaName: "",
+    address: "3439 Sullivant Ave",
+    city: "Columbus",
+    state: "OH",
+    zip: "43228",
+    phone: "",
+    email: "",
+    website: "dahabshiil.com",
+    notes: "West Columbus location. Mon-Sat 9am-6pm"
   },
 ];
 
